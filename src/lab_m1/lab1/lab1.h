@@ -28,6 +28,16 @@ namespace m1
         void OnWindowResize(int width, int height) override;
 
         // TODO(student): Class variables go here
+        const glm::vec4 red = glm::vec4(1, 0, 0, 1);
+        const glm::vec4 green = glm::vec4(0, 1, 0, 1);
+        const glm::vec4 blue = glm::vec4(0, 0, 1, 1);
 
+        Mesh* currentMesh;
+        glm::vec3* playerPos = nullptr;
+        glm::vec3* moveDir = nullptr;
+        float speed = 1;
+
+        glm::vec3* cubePos = nullptr;
+        glm::vec3* cubeMoveDir = nullptr;
     };
 }   // namespace m1
