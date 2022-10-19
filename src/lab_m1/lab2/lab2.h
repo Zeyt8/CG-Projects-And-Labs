@@ -16,7 +16,7 @@ namespace m1
         void Init() override;
 
      private:
-        void CreateMesh(const char *name, const std::vector<VertexFormat> &vertices, const std::vector<unsigned int> &indices);
+        void CreateMesh(const char *name, const std::vector<VertexFormat> &vertices, const std::vector<unsigned int> &indices, int DRAW_MODE = GL_TRIANGLES);
 
         void FrameStart() override;
         void Update(float deltaTimeSeconds) override;
