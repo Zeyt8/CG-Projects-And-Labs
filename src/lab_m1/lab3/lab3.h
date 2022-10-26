@@ -33,8 +33,5 @@ namespace m1
         float translateX, translateY;
         float scaleX, scaleY;
         float angularStep;
-
-        // TODO(student): If you need any other class variables, define them here.
-
     };
 }   // namespace m1

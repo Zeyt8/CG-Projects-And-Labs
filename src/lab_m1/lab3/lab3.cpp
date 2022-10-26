@@ -39,10 +39,13 @@ void Lab3::Init()
     glm::vec3 corner = glm::vec3(0, 0, 0);
     float squareSide = 100;
 
-    // TODO(student): Compute coordinates of a square's center, and store
+    // Compute coordinates of a square's center, and store
     // then in the `cx` and `cy` class variables (see the header). Use
     // `corner` and `squareSide`. These two class variables will be used
     // in the `Update()` function. Think about it, why do you need them?
+
+    cx = corner.x + squareSide / 2;
+    cy = corner.y + squareSide / 2;
 
     // Initialize tx and ty (the translation steps)
     translateX = 0;
@@ -63,6 +66,21 @@ void Lab3::Init()
 
     Mesh* square3 = object2D::CreateSquare("square3", corner, squareSide, glm::vec3(0, 0, 1));
     AddMeshToList(square3);
+
+    Mesh* roata1 = object2D::CreateSquare("roata1", corner, 50, glm::vec3(0, 0, 1), true);
+    AddMeshToList(roata1);
+
+    Mesh* roata2 = object2D::CreateSquare("roata2", corner, 50, glm::vec3(0, 0, 1), true);
+    AddMeshToList(roata2);
+
+    Mesh* corp1 = object2D::CreateSquare("corp1", corner, squareSide, glm::vec3(1, 0, 0), true);
+    AddMeshToList(corp1);
+
+    Mesh* corp2 = object2D::CreateSquare("corp2", corner, squareSide, glm::vec3(1, 0, 0), true);
+    AddMeshToList(corp2);
+
+    Mesh* corp3 = object2D::CreateSquare("corp3", corner, 60, glm::vec3(1, 0, 0), true);
+    AddMeshToList(corp3);
 }
 
 
@@ -80,34 +98,39 @@ void Lab3::FrameStart()
 
 void Lab3::Update(float deltaTimeSeconds)
 {
-    // TODO(student): Update steps for translation, rotation and scale,
+    // Update steps for translation, rotation and scale,
     // in order to create animations. Use the class variables in the
     // class header, and if you need more of them to complete the task,
     // add them over there!
+    translateX += 10 * deltaTimeSeconds;
+    translateY += 10 * deltaTimeSeconds;
+    scaleX += 0.1f * deltaTimeSeconds;
+    scaleY += 0.1f * deltaTimeSeconds;
+    angularStep += 0.1f * deltaTimeSeconds;
 
     modelMatrix = glm::mat3(1);
-    modelMatrix *= transform2D::Translate(150, 250);
-    // TODO(student): Create animations by multiplying the current
-    // transform matrix with the matrices you just implemented.
-    // Remember, the last matrix in the chain will take effect first!
-
+    modelMatrix *= transform2D::Translate(translateX, translateY);
     RenderMesh2D(meshes["square1"], shaders["VertexColor"], modelMatrix);
 
-    modelMatrix = glm::mat3(1);
-    modelMatrix *= transform2D::Translate(400, 250);
-    // TODO(student): Create animations by multiplying the current
-    // transform matrix with the matrices you just implemented
-    // Remember, the last matrix in the chain will take effect first!
-
+    modelMatrix *= transform2D::Translate(cx, cy) * transform2D::Scale(scaleX, scaleY) * transform2D::Translate(-cx, -cy);
     RenderMesh2D(meshes["square2"], shaders["VertexColor"], modelMatrix);
 
-    modelMatrix = glm::mat3(1);
-    modelMatrix *= transform2D::Translate(650, 250);
-    // TODO(student): Create animations by multiplying the current
-    // transform matrix with the matrices you just implemented
-    // Remember, the last matrix in the chain will take effect first!
-
+    modelMatrix *= transform2D::Translate(cx, cy) * transform2D::Rotate(angularStep) * transform2D::Translate(-cx, -cy);
     RenderMesh2D(meshes["square3"], shaders["VertexColor"], modelMatrix);
+
+    //car
+    glm::mat3 roataPos = glm::mat3(1);
+    glm::mat3 roataPos2 = glm::mat3(1);
+    glm::mat3 corpPos = glm::mat3(1);
+    roataPos *= transform2D::Translate(translateX * 2 + 30, 10) * transform2D::Translate(25, 25) * transform2D::Rotate(-angularStep * 2) * transform2D::Translate(-25, -25);
+    RenderMesh2D(meshes["roata1"], shaders["VertexColor"], roataPos);
+    roataPos2 *= transform2D::Translate(translateX * 2 + 130, 10) * transform2D::Translate(25, 25) * transform2D::Rotate(-angularStep * 2) * transform2D::Translate(-25, -25);
+    RenderMesh2D(meshes["roata2"], shaders["VertexColor"], roataPos2);
+
+    corpPos *= transform2D::Translate(translateX * 2, 50) * transform2D::Scale(2, 1);
+    RenderMesh2D(meshes["corp1"], shaders["VertexColor"], corpPos);
+    corpPos *= transform2D::Translate(20, 70);
+    RenderMesh2D(meshes["corp3"], shaders["VertexColor"], corpPos);
 }
 
 
