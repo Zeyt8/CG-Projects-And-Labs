@@ -48,6 +48,7 @@ void Lab4::Init()
     angularStepOX = 0;
     angularStepOY = 0;
     angularStepOZ = 0;
+    secondRotY = 0;
 
     // Sets the resolution of the small viewport
     glm::ivec2 resolution = window->GetResolution();
@@ -78,6 +79,7 @@ void Lab4::RenderScene() {
 
     modelMatrix = glm::mat4(1);
     modelMatrix *= transform3D::Translate(2.5f, 0.5f, -1.5f);
+    modelMatrix *= transform3D::Translate(-2.5f, 0, 0) * transform3D::RotateOY(secondRotY) * transform3D::Translate(2.5f, 0, 0);
     modelMatrix *= transform3D::RotateOX(angularStepOX);
     modelMatrix *= transform3D::RotateOY(angularStepOY);
     modelMatrix *= transform3D::RotateOZ(angularStepOZ);
@@ -96,7 +98,8 @@ void Lab4::Update(float deltaTimeSeconds)
     glClear(GL_DEPTH_BUFFER_BIT);
     glViewport(miniViewportArea.x, miniViewportArea.y, miniViewportArea.width, miniViewportArea.height);
 
-    // TODO(student): render the scene again, in the new viewport
+    // render the scene again, in the new viewport
+    RenderScene();
     DrawCoordinateSystem();
 }
 
@@ -113,8 +116,75 @@ void Lab4::FrameEnd()
 
 void Lab4::OnInputUpdate(float deltaTime, int mods)
 {
-    // TODO(student): Add transformation logic
-
+    // Add transformation logic
+    if (window->KeyHold(GLFW_KEY_W))
+    {
+        translateZ += deltaTime;
+    }
+    if (window->KeyHold(GLFW_KEY_S))
+    {
+        translateZ -= deltaTime;
+    }
+    if (window->KeyHold(GLFW_KEY_A))
+    {
+        translateX -= deltaTime;
+    }
+    if (window->KeyHold(GLFW_KEY_D))
+    {
+        translateX += deltaTime;
+    }
+    if (window->KeyHold(GLFW_KEY_R))
+    {
+        translateY += deltaTime;
+    }
+    if (window->KeyHold(GLFW_KEY_F))
+    {
+        translateY -= deltaTime;
+    }
+    if (window->KeyHold(GLFW_KEY_1))
+    {
+        scaleX += deltaTime;
+        scaleY += deltaTime;
+        scaleZ += deltaTime;
+    }
+    if (window->KeyHold(GLFW_KEY_2))
+    {
+        scaleX -= deltaTime;
+        scaleY -= deltaTime;
+        scaleZ -= deltaTime;
+    }
+    if (window->KeyHold(GLFW_KEY_3))
+    {
+        angularStepOX += deltaTime;
+    }
+    if (window->KeyHold(GLFW_KEY_4))
+    {
+        angularStepOX -= deltaTime;
+    }
+    if (window->KeyHold(GLFW_KEY_5))
+    {
+        angularStepOY += deltaTime;
+    }
+    if (window->KeyHold(GLFW_KEY_6))
+    {
+        angularStepOY -= deltaTime;
+    }
+    if (window->KeyHold(GLFW_KEY_7))
+    {
+        angularStepOZ += deltaTime;
+    }
+    if (window->KeyHold(GLFW_KEY_8))
+    {
+        angularStepOZ -= deltaTime;
+    }
+    if (window->KeyHold(GLFW_KEY_N))
+    {
+        secondRotY += deltaTime;
+    }
+    if (window->KeyHold(GLFW_KEY_M))
+    {
+        secondRotY -= deltaTime;
+    }
 }
 
 
@@ -138,6 +208,34 @@ void Lab4::OnKeyPress(int key, int mods)
     }
     
     // TODO(student): Add viewport movement and scaling logic
+    if (key == GLFW_KEY_I)
+    {
+        miniViewportArea.y += 5;
+    }
+    if (key == GLFW_KEY_J)
+    {
+        miniViewportArea.x -= 5;
+    }
+    if (key == GLFW_KEY_K)
+    {
+        miniViewportArea.y -= 5;
+    }
+    if (key == GLFW_KEY_L)
+    {
+        miniViewportArea.x += 5;
+    }
+    if (key == GLFW_KEY_U)
+    {
+        float s = miniViewportArea.width / miniViewportArea.height;
+        miniViewportArea.height += 5;
+        miniViewportArea.width += 5 * s;
+    }
+    if (key == GLFW_KEY_O)
+    {
+        float s = miniViewportArea.width / miniViewportArea.height;
+        miniViewportArea.height -= 5;
+        miniViewportArea.width -= 5 * s;
+    }
 }
 
 
