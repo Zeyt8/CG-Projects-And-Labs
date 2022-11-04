@@ -1,6 +1,7 @@
 #include "lab_m1/Tema1/Tema1.h"
 #include "lab_m1/Tema1/GameObject.h"
 #include "lab_m1/Tema1/Duck/Duck.h"
+#include <glm/gtc/random.hpp>
 
 using namespace m1;
 
@@ -14,6 +15,13 @@ Tema1::~Tema1()
 
 void Tema1::Init()
 {
+	glm::ivec2 resolution = window->GetResolution() / 50;
+	auto camera = GetSceneCamera();
+	camera->SetOrthographic(0, (float)resolution.x, 0, (float)resolution.y, 0.01f, 100);
+	camera->SetPosition(glm::vec3(0, 0, 10));
+	camera->SetRotation(glm::vec3(0, 0, 0));
+	camera->Update();
+	GetCameraInput()->SetActive(true);
 	for (GameObject* go : gameObjects)
 	{
 		go->Awake();
@@ -50,7 +58,7 @@ void Tema1::Update(float deltaTimeSeconds)
 	timeSinceDuck += deltaTimeSeconds;
 	if (!isDuckInScene)
 	{
-		Duck* duck = new Duck(this, 1);
+		Duck* duck = new Duck(this, glm::linearRand(1, 2));
 		gameObjects.push_back(duck);
 		duck->Awake();
 		duck->Start();
@@ -60,7 +68,7 @@ void Tema1::Update(float deltaTimeSeconds)
 
 void Tema1::FrameEnd()
 {
-	DrawCoordinateSystem();
+
 }
 
 void Tema1::OnInputUpdate(float deltaTime, int mods)

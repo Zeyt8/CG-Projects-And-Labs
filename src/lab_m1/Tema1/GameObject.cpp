@@ -12,20 +12,6 @@ using namespace m1;
 
 GameObject::GameObject(Tema1* scene)
 {
-    {
-        Shader* shader = new Shader("VertexNormal");
-        shader->AddShader(PATH_JOIN(Engine::GetWindow()->props.selfDir, RESOURCE_PATH::SHADERS, "MVP.Texture.VS.glsl"), GL_VERTEX_SHADER);
-        shader->AddShader(PATH_JOIN(Engine::GetWindow()->props.selfDir, RESOURCE_PATH::SHADERS, "Normals.FS.glsl"), GL_FRAGMENT_SHADER);
-        shader->CreateAndLink();
-        shaders[shader->GetName()] = shader;
-    }
-    {
-        Shader* shader = new Shader("VertexColor");
-        shader->AddShader(PATH_JOIN(Engine::GetWindow()->props.selfDir, RESOURCE_PATH::SHADERS, "MVP.Texture.VS.glsl"), GL_VERTEX_SHADER);
-        shader->AddShader(PATH_JOIN(Engine::GetWindow()->props.selfDir, RESOURCE_PATH::SHADERS, "VertexColor.FS.glsl"), GL_FRAGMENT_SHADER);
-        shader->CreateAndLink();
-        shaders[shader->GetName()] = shader;
-    }
     position = glm::vec3(0);
     rotation = 0;
     scale = glm::vec3(1);

@@ -18,5 +18,10 @@ namespace m1
 		bool wingsDirection = true;
 		glm::vec3 movementDir;
 		float speed;
+
+		float xMin;
+		float xMax;
+		float yMin;
+		float yMax;
 	};
 }

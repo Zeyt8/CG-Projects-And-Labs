@@ -3,18 +3,35 @@
 #include "core/gpu/mesh.h"
 #include <vector>
 #include <glm/gtc/random.hpp>
+#include <glm/gtx/matrix_decompose.hpp>
+#include <iostream>
 
 using namespace m1;
 
 Duck::Duck(Tema1* scene, float speed) : GameObject(scene)
 {
     movementDir = glm::vec3(
-        (glm::linearRand(-1, 1) > 0 ? 1 : -1) * glm::linearRand(0.2f, 1.0f),
-        (glm::linearRand(-1, 1) > 0 ? 1 : -1) * glm::linearRand(0.2f, 1.0f),
+        (glm::linearRand(-1, 1) > 0 ? 1 : -1) * glm::linearRand(0.1f, 1.0f),
+        glm::linearRand(0.1f, 1.0f),
         0
     );
     movementDir = glm::normalize(movementDir);
     Duck::speed = speed;
+
+    glm::mat4 transformation = scene->GetSceneCamera()->GetViewMatrix() * glm::translate(glm::mat4(1), glm::vec3(0, 0, 0));
+    glm::vec3 scale;
+    glm::quat rotation;
+    glm::vec3 translation;
+    glm::vec3 skew;
+    glm::vec4 perspective;
+    glm::decompose(transformation, scale, rotation, translation, skew, perspective);
+    xMin = translation.x;
+    yMin = translation.y;
+
+    transformation = scene->GetSceneCamera()->GetViewMatrix() * glm::translate(glm::mat4(1), glm::vec3(scene->GetSceneCamera()->GetProjectionInfo().width, scene->GetSceneCamera()->GetProjectionInfo().height, 0));
+    glm::decompose(transformation, scale, rotation, translation, skew, perspective);
+    xMax = translation.x;
+    yMax = translation.y;
 }
 
 void Duck::Awake()
@@ -154,13 +171,37 @@ void Duck::Update(float deltaTime)
     modelMatrix = glm::rotate(modelMatrix, glm::radians(rotation), glm::vec3(0, 0, 1));
     modelMatrix = glm::scale(modelMatrix, scale);
 
-    scene->RenderMesh(meshes["duckBody"], shaders["VertexColor"], modelMatrix);
-    scene->RenderMesh(meshes["head"], shaders["VertexColor"], modelMatrix);
-    scene->RenderMesh(meshes["beak"], shaders["VertexColor"], modelMatrix);
+    scene->RenderMesh(meshes["duckBody"], scene->GetShader("VertexColor"), modelMatrix);
+    scene->RenderMesh(meshes["head"], scene->GetShader("VertexColor"), modelMatrix);
+    scene->RenderMesh(meshes["beak"], scene->GetShader("VertexColor"), modelMatrix);
 
     glm::mat4 leftWing = glm::rotate(modelMatrix, glm::radians(wingsRotation), glm::vec3(0, 0, 1));
-    scene->RenderMesh(meshes["leftWing"], shaders["VertexColor"], leftWing);
+    scene->RenderMesh(meshes["leftWing"], scene->GetShader("VertexColor"), leftWing);
 
     glm::mat4 rightWing = glm::rotate(modelMatrix, glm::radians(-wingsRotation), glm::vec3(0, 0, 1));
-    scene->RenderMesh(meshes["rightWing"], shaders["VertexColor"], rightWing);
+    scene->RenderMesh(meshes["rightWing"], scene->GetShader("VertexColor"), rightWing);
+
+    if (position.x > xMax && movementDir.x > 0)
+    {
+        movementDir = glm::reflect(movementDir, glm::vec3(-1, 0, 0));
+        scale.x *= -1;
+        std::cout << position << " " << xMin << std::endl;
+
+    }
+    else if (position.x < xMin && movementDir.x < 0)
+    {
+        movementDir =  glm::reflect(movementDir, glm::vec3(1, 0, 0));
+        scale.x *= -1;
+    }
+    if (position.y > yMax && movementDir.y > 0)
+    {
+        movementDir =  glm::reflect(movementDir, glm::vec3(0, -1, 0));
+        scale.y *= -1;
+    }
+    else if (position.y < yMin && movementDir.y < 0)
+    {
+        movementDir =  glm::reflect(movementDir, glm::vec3(0, 1, 0));
+        scale.y *= -1;
+    }
+
 }

@@ -25,7 +25,6 @@ namespace m1
 		glm::vec3 scale;
 
 		std::unordered_map<std::string, Mesh*> meshes;
-		std::unordered_map<std::string, Shader*> shaders;
 		Tema1 *scene;
 		std::vector<GameObject*> childObjects;
 	};

@@ -14,6 +14,14 @@ namespace m1
 
         void Init() override;
         virtual void RenderMesh(Mesh* mesh, Shader* shader, const glm::mat4& modelMatrix);
+        Shader* GetShader(std::string shader)
+        {
+            return shaders[shader];
+        }
+        gfxc::Camera* GetSceneCamera()
+        {
+            return SimpleScene::GetSceneCamera();
+        }
 
     private:
         void FrameStart() override;
