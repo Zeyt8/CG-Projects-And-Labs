@@ -22,6 +22,10 @@ namespace m1
         {
             return SimpleScene::GetSceneCamera();
         }
+        WindowObject* GetWindow()
+        {
+            return window;
+        }
 
     private:
         void FrameStart() override;

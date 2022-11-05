@@ -15,23 +15,18 @@ Duck::Duck(Tema1* scene, float speed) : GameObject(scene)
         glm::linearRand(0.1f, 1.0f),
         0
     );
+    if (movementDir.x < 0)
+    {
+        scale.x = -1;
+    }
     movementDir = glm::normalize(movementDir);
     Duck::speed = speed;
+    position = glm::vec3(5, -1, 0);
 
-    glm::mat4 transformation = scene->GetSceneCamera()->GetViewMatrix() * glm::translate(glm::mat4(1), glm::vec3(0, 0, 0));
-    glm::vec3 scale;
-    glm::quat rotation;
-    glm::vec3 translation;
-    glm::vec3 skew;
-    glm::vec4 perspective;
-    glm::decompose(transformation, scale, rotation, translation, skew, perspective);
-    xMin = translation.x;
-    yMin = translation.y;
-
-    transformation = scene->GetSceneCamera()->GetViewMatrix() * glm::translate(glm::mat4(1), glm::vec3(scene->GetSceneCamera()->GetProjectionInfo().width, scene->GetSceneCamera()->GetProjectionInfo().height, 0));
-    glm::decompose(transformation, scale, rotation, translation, skew, perspective);
-    xMax = translation.x;
-    yMax = translation.y;
+    xMin = 0;
+    yMin = 0;
+    xMax = scene->GetSceneCamera()->GetProjectionInfo().width;
+    yMax = scene->GetSceneCamera()->GetProjectionInfo().height;
 }
 
 void Duck::Awake()
@@ -145,8 +140,6 @@ void Duck::Update(float deltaTime)
     glLineWidth(3);
     glPointSize(5);
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-    glEnable(GL_CULL_FACE);
-    glCullFace(GL_BACK);
 
     position += movementDir * speed * deltaTime;
     if (wingsDirection)
@@ -185,8 +178,6 @@ void Duck::Update(float deltaTime)
     {
         movementDir = glm::reflect(movementDir, glm::vec3(-1, 0, 0));
         scale.x *= -1;
-        std::cout << position << " " << xMin << std::endl;
-
     }
     else if (position.x < xMin && movementDir.x < 0)
     {
@@ -196,12 +187,10 @@ void Duck::Update(float deltaTime)
     if (position.y > yMax && movementDir.y > 0)
     {
         movementDir =  glm::reflect(movementDir, glm::vec3(0, -1, 0));
-        scale.y *= -1;
     }
     else if (position.y < yMin && movementDir.y < 0)
     {
         movementDir =  glm::reflect(movementDir, glm::vec3(0, 1, 0));
-        scale.y *= -1;
     }
 
 }
