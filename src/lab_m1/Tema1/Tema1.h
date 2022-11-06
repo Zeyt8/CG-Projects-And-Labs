@@ -5,6 +5,8 @@
 namespace m1
 {
     class GameObject;
+    class Duck;
+    class Player;
 
     class Tema1 : public gfxc::SimpleScene
     {
@@ -43,8 +45,12 @@ namespace m1
 
     private:
         std::vector<GameObject*> gameObjects;
+        Duck* duck;
+        Player* player;
 
         bool isDuckInScene = false;
         float timeSinceDuck = 0;
+
+        void Shoot(int mouseX, int mouseY);
     };
 }

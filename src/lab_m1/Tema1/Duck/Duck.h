@@ -13,6 +13,9 @@ namespace m1
 		void Start();
 		void Update(float deltaTime);
 
+		void Die();
+		void Escape();
+
 	private:
 		float wingsRotation = 0;
 		bool wingsDirection = true;

@@ -1,4 +1,4 @@
-#include "Duck.h"
+#include "lab_m1/Tema1/Duck/Duck.h"
 #include "core/engine.h"
 #include "core/gpu/mesh.h"
 #include <vector>
@@ -192,5 +192,14 @@ void Duck::Update(float deltaTime)
     {
         movementDir =  glm::reflect(movementDir, glm::vec3(0, 1, 0));
     }
+}
+
+void Duck::Die()
+{
+
+}
+
+void Duck::Escape()
+{
 
 }

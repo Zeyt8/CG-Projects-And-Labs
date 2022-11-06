@@ -1,6 +1,7 @@
 #include "lab_m1/Tema1/Tema1.h"
 #include "lab_m1/Tema1/GameObject.h"
 #include "lab_m1/Tema1/Duck/Duck.h"
+#include "lab_m1/Tema1/Player/Player.h"
 #include <glm/gtc/random.hpp>
 
 using namespace m1;
@@ -22,6 +23,10 @@ void Tema1::Init()
 	camera->SetRotation(glm::vec3(0, 0, 0));
 	camera->Update();
 	GetCameraInput()->SetActive(true);
+
+	player = new Player(this);
+	gameObjects.push_back(player);
+
 	for (GameObject* go : gameObjects)
 	{
 		go->Awake();
@@ -58,11 +63,22 @@ void Tema1::Update(float deltaTimeSeconds)
 	timeSinceDuck += deltaTimeSeconds;
 	if (!isDuckInScene)
 	{
-		Duck* duck = new Duck(this, glm::linearRand(1, 2));
+		duck = new Duck(this, glm::linearRand(1, 2));
 		gameObjects.push_back(duck);
 		duck->Awake();
 		duck->Start();
 		isDuckInScene = true;
+		player->bullets = 3;
+		timeSinceDuck = 0;
+	}
+	else
+	{
+		if (timeSinceDuck >= 5)
+		{
+			duck->Escape();
+			delete[] duck;
+			player->health--;
+		}
 	}
 }
 
@@ -89,6 +105,10 @@ void Tema1::OnMouseMove(int mouseX, int mouseY, int deltaX, int deltaY)
 
 void Tema1::OnMouseBtnPress(int mouseX, int mouseY, int button, int mods)
 {
+	if (button == 0)
+	{
+		Shoot(mouseX, mouseY);
+	}
 }
 
 void Tema1::OnMouseBtnRelease(int mouseX, int mouseY, int button, int mods)
@@ -100,5 +120,9 @@ void Tema1::OnMouseScroll(int mouseX, int mouseY, int offsetX, int offsetY)
 }
 
 void Tema1::OnWindowResize(int width, int height)
+{
+}
+
+void m1::Tema1::Shoot(int mouseX, int mouseY)
 {
 }
