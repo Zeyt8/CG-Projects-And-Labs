@@ -2,6 +2,7 @@
 #include "lab_m1/Tema1/GameObject.h"
 #include "lab_m1/Tema1/Duck/Duck.h"
 #include "lab_m1/Tema1/Player/Player.h"
+#include "lab_m1/Tema1/Grass.h"
 #include <glm/gtc/random.hpp>
 
 using namespace m1;
@@ -26,6 +27,8 @@ void Tema1::Init()
 
 	player = new Player(this);
 	gameObjects.push_back(player);
+	Grass* grass = new Grass(this);
+	gameObjects.push_back(grass);
 
 	for (GameObject* go : gameObjects)
 	{
@@ -57,13 +60,20 @@ void Tema1::Update(float deltaTimeSeconds)
 {
 	for (GameObject* go : gameObjects)
 	{
+		if (go->Destroy)
+		{
+			gameObjects.erase(std::remove(gameObjects.begin(), gameObjects.end(), go), gameObjects.end());
+			delete go;
+			continue;
+		}
 		go->Update(deltaTimeSeconds);
 	}
 
 	timeSinceDuck += deltaTimeSeconds;
 	if (!isDuckInScene)
 	{
-		duck = new Duck(this, glm::linearRand(1, 2));
+		ducks++;
+		duck = new Duck(this, 2 + ducks);
 		gameObjects.push_back(duck);
 		duck->Awake();
 		duck->Start();
@@ -73,10 +83,9 @@ void Tema1::Update(float deltaTimeSeconds)
 	}
 	else
 	{
-		if (timeSinceDuck >= 5)
+		if (timeSinceDuck >= 10)
 		{
 			duck->Escape();
-			delete[] duck;
 			player->health--;
 		}
 	}
@@ -105,7 +114,7 @@ void Tema1::OnMouseMove(int mouseX, int mouseY, int deltaX, int deltaY)
 
 void Tema1::OnMouseBtnPress(int mouseX, int mouseY, int button, int mods)
 {
-	if (button == 0)
+	if (button == 1)
 	{
 		Shoot(mouseX, mouseY);
 	}
@@ -123,6 +132,23 @@ void Tema1::OnWindowResize(int width, int height)
 {
 }
 
-void m1::Tema1::Shoot(int mouseX, int mouseY)
+void Tema1::Shoot(int mouseX, int mouseY)
 {
+	if (player->bullets <= 0)
+	{
+		return;
+	}
+	float newMouseX = (float)mouseX / window->GetResolution().x * GetSceneCamera()->GetProjectionInfo().width;
+	float newMouseY = GetSceneCamera()->GetProjectionInfo().height - (float)mouseY / window->GetResolution().y * GetSceneCamera()->GetProjectionInfo().height;
+	if (duck->IsInBounds(newMouseX, newMouseY))
+	{
+		duck->Die();
+		player->score++;
+	}
+	player->bullets--;
+	if (player->bullets <= 0)
+	{
+		duck->Escape();
+		player->health--;
+	}
 }

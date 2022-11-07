@@ -12,16 +12,17 @@ Duck::Duck(Tema1* scene, float speed) : GameObject(scene)
 {
     movementDir = glm::vec3(
         (glm::linearRand(-1, 1) > 0 ? 1 : -1) * glm::linearRand(0.1f, 1.0f),
-        glm::linearRand(0.1f, 1.0f),
+        glm::linearRand(0.3f, 0.9f),
         0
     );
+    scale = glm::vec3(1.5f, 1.5f, 1.5f);
+    Duck::speed = speed;
     if (movementDir.x < 0)
     {
-        scale.x = -1;
+        scale.x *= -1;
     }
     movementDir = glm::normalize(movementDir);
-    Duck::speed = speed;
-    position = glm::vec3(5, -1, 0);
+    position = glm::vec3(glm::linearRand(5, 20), 0, 0);
 
     xMin = 0;
     yMin = 0;
@@ -137,10 +138,6 @@ void Duck::Start()
 
 void Duck::Update(float deltaTime)
 {
-    glLineWidth(3);
-    glPointSize(5);
-    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-
     position += movementDir * speed * deltaTime;
     if (wingsDirection)
     {
@@ -187,19 +184,51 @@ void Duck::Update(float deltaTime)
     if (position.y > yMax && movementDir.y > 0)
     {
         movementDir =  glm::reflect(movementDir, glm::vec3(0, -1, 0));
+        if (state == 2)
+        {
+            Destroy = true;
+            scene->isDuckInScene = false;
+        }
     }
     else if (position.y < yMin && movementDir.y < 0)
     {
         movementDir =  glm::reflect(movementDir, glm::vec3(0, 1, 0));
+        if (state == 1)
+        {
+            Destroy = true;
+            scene->isDuckInScene = false;
+        }
     }
 }
 
 void Duck::Die()
 {
-
+    state = 1;
+    scale.x = glm::abs(scale.x);
+    rotation = -90;
+    movementDir = glm::vec3(0, -1, 0);
+    speed *= 2;
 }
 
 void Duck::Escape()
 {
+    if (state != 0)
+    {
+        return;
+    }
+    state = 2;
+    scale.x = glm::abs(scale.x);
+    rotation = 90;
+    movementDir = glm::vec3(0, 1, 0);
+    speed *= 2;
+}
 
+bool Duck::IsInBounds(float mouseX, float mouseY)
+{
+    float xMin = position.x - (scale.x > 0 ? 0.5f : 1.5f);
+    float xMax = position.x + (scale.x > 0 ? 1.5f : 0.5f);
+    float yMin = position.y - 0.5f;
+    float yMax = position.y + 0.5f;
+
+    return mouseX >= xMin && mouseX <= xMax && mouseY >= yMin && mouseY <= yMax;
 }

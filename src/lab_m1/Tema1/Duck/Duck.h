@@ -16,11 +16,14 @@ namespace m1
 		void Die();
 		void Escape();
 
+		bool IsInBounds(float mouseX, float mouseY);
+
 	private:
 		float wingsRotation = 0;
 		bool wingsDirection = true;
 		glm::vec3 movementDir;
 		float speed;
+		int state = 0;
 
 		float xMin;
 		float xMax;

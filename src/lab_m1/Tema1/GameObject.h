@@ -15,6 +15,7 @@ namespace m1
 		virtual void Awake() = 0;
 		virtual void Start() = 0;
 		virtual void Update(float deltaTime) = 0;
+		bool Destroy = false;;
 
 	protected:
 		void GameObject::CreateMesh(const char* name, const std::vector<VertexFormat>& vertices, const std::vector<unsigned int>& indices);
