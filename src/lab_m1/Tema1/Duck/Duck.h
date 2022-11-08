@@ -1,6 +1,7 @@
 #pragma once
 
 #include "lab_m1/Tema1/GameObject.h"
+#include <vector>
 
 namespace m1
 {
@@ -29,5 +30,7 @@ namespace m1
 		float xMax;
 		float yMin;
 		float yMax;
+
+		std::vector<glm::vec3> colors;
 	};
 }

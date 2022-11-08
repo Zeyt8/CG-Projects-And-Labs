@@ -4,7 +4,6 @@
 #include <vector>
 #include <glm/gtc/random.hpp>
 #include <glm/gtx/matrix_decompose.hpp>
-#include <iostream>
 
 using namespace m1;
 
@@ -28,16 +27,21 @@ Duck::Duck(Tema1* scene, float speed) : GameObject(scene)
     yMin = 0;
     xMax = scene->GetSceneCamera()->GetProjectionInfo().width;
     yMax = scene->GetSceneCamera()->GetProjectionInfo().height;
+
+    colors.push_back(glm::vec3(0.42f, 0.19f, 0.05f));
+    colors.push_back(glm::vec3(0.73f, 0.13f, 0.06f));
+    colors.push_back(glm::vec3(0.54f, 0.55f, 0.02f));
 }
 
 void Duck::Awake()
 {
     {
+        int r = rand() % colors.size();
         std::vector<VertexFormat> vertices
         {
-            VertexFormat(glm::vec3(1.5f, 0, 0), glm::vec3(0.42f, 0.19f, 0.05f), glm::vec3(0.2, 0.8, 0.6)),
-            VertexFormat(glm::vec3(-0.5f, 0.5f, 0), glm::vec3(0.42f, 0.19f, 0.05f), glm::vec3(0.2, 0.8, 0.6)),
-            VertexFormat(glm::vec3(-0.5f, -0.5f, 0), glm::vec3(0.42f, 0.19f, 0.05f), glm::vec3(0.2, 0.8, 0.6)),
+            VertexFormat(glm::vec3(1.5f, 0, 0), colors[r], glm::vec3(0.2, 0.8, 0.6)),
+            VertexFormat(glm::vec3(-0.5f, 0.5f, 0), colors[r], glm::vec3(0.2, 0.8, 0.6)),
+            VertexFormat(glm::vec3(-0.5f, -0.5f, 0), colors[r], glm::vec3(0.2, 0.8, 0.6)),
         };
 
         std::vector<unsigned int> indices
@@ -225,10 +229,10 @@ void Duck::Escape()
 
 bool Duck::IsInBounds(float mouseX, float mouseY)
 {
-    float xMin = position.x - (scale.x > 0 ? 0.5f : 1.5f);
-    float xMax = position.x + (scale.x > 0 ? 1.5f : 0.5f);
-    float yMin = position.y - 0.5f;
-    float yMax = position.y + 0.5f;
+    float xMin = position.x - (scale.x > 0 ? 0.6f : 1.6f);
+    float xMax = position.x + (scale.x > 0 ? 1.6f : 0.6f);
+    float yMin = position.y - 0.6f;
+    float yMax = position.y + 0.6f;
 
     return mouseX >= xMin && mouseX <= xMax && mouseY >= yMin && mouseY <= yMax;
 }

@@ -3,6 +3,7 @@
 #include "lab_m1/Tema1/Duck/Duck.h"
 #include "lab_m1/Tema1/Player/Player.h"
 #include "lab_m1/Tema1/Grass.h"
+#include "lab_m1/Tema1/Crosshair.h"
 #include <glm/gtc/random.hpp>
 
 using namespace m1;
@@ -29,6 +30,8 @@ void Tema1::Init()
 	gameObjects.push_back(player);
 	Grass* grass = new Grass(this);
 	gameObjects.push_back(grass);
+	Crosshair* crosshair = new Crosshair(this);
+	gameObjects.push_back(crosshair);
 
 	for (GameObject* go : gameObjects)
 	{
@@ -48,7 +51,7 @@ void Tema1::RenderMesh(Mesh* mesh, Shader* shader, const glm::mat4& modelMatrix)
 void Tema1::FrameStart()
 {
 	// Clears the color buffer (using the previously set color) and depth buffer
-	glClearColor(0, 0, 0, 1);
+	glClearColor(0.23f, 0.71f, 0.87f, 1);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	glm::ivec2 resolution = window->GetResolution();
@@ -70,10 +73,10 @@ void Tema1::Update(float deltaTimeSeconds)
 	}
 
 	timeSinceDuck += deltaTimeSeconds;
-	if (!isDuckInScene)
+	if (!isDuckInScene && player->score < 10 && player->health > 0)
 	{
 		ducks++;
-		duck = new Duck(this, 2 + ducks);
+		duck = new Duck(this, 2 + ducks * 0.9f);
 		gameObjects.push_back(duck);
 		duck->Awake();
 		duck->Start();
