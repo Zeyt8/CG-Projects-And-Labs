@@ -35,7 +35,8 @@ namespace m1
         glm::mat4 projectionMatrix;
         bool renderCameraTarget;
 
-        // TODO(student): If you need any other class variables, define them here.
-
+        float fov = 60;
+        float size = 100;
+        bool ortho = false;
     };
 }   // namespace m1
