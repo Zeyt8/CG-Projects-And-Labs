@@ -4,6 +4,7 @@
 #include "lab_m1/Tema1/Player/Player.h"
 #include "lab_m1/Tema1/Grass.h"
 #include "lab_m1/Tema1/Crosshair.h"
+#include "lab_m1/Tema1/Gun.h"
 #include <glm/gtc/random.hpp>
 
 using namespace m1;
@@ -32,6 +33,8 @@ void Tema1::Init()
 	gameObjects.push_back(grass);
 	Crosshair* crosshair = new Crosshair(this);
 	gameObjects.push_back(crosshair);
+	Gun* gun = new Gun(this);
+	gameObjects.push_back(gun);
 
 	for (GameObject* go : gameObjects)
 	{
@@ -76,7 +79,7 @@ void Tema1::Update(float deltaTimeSeconds)
 	if (!isDuckInScene && player->score < 10 && player->health > 0)
 	{
 		ducks++;
-		duck = new Duck(this, 2 + ducks * 0.9f);
+		duck = new Duck(this, 3 + (ducks / 5) * 2);
 		gameObjects.push_back(duck);
 		duck->Awake();
 		duck->Start();
@@ -90,6 +93,7 @@ void Tema1::Update(float deltaTimeSeconds)
 		{
 			duck->Escape();
 			player->health--;
+			timeSinceDuck = 0;
 		}
 	}
 }

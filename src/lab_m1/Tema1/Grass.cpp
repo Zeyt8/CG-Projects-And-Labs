@@ -12,7 +12,7 @@ void Grass::Awake()
     int xMin = 0;
     int yMin = 0;
     int xMax = scene->GetSceneCamera()->GetProjectionInfo().width;
-    int yMax = scene->GetSceneCamera()->GetProjectionInfo().height / 6;
+    int yMax = scene->GetSceneCamera()->GetProjectionInfo().height / 5;
     {
         std::vector<VertexFormat> vertices
         {

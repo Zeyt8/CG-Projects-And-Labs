@@ -23,10 +23,10 @@ Duck::Duck(Tema1* scene, float speed) : GameObject(scene)
     movementDir = glm::normalize(movementDir);
     position = glm::vec3(glm::linearRand(5, 20), 0, 0);
 
-    xMin = 0;
-    yMin = 0;
-    xMax = scene->GetSceneCamera()->GetProjectionInfo().width;
-    yMax = scene->GetSceneCamera()->GetProjectionInfo().height;
+    xMin = 1;
+    yMin = 0.5f;
+    xMax = scene->GetSceneCamera()->GetProjectionInfo().width - 1;
+    yMax = scene->GetSceneCamera()->GetProjectionInfo().height - 0.5f;
 
     colors.push_back(glm::vec3(0.42f, 0.19f, 0.05f));
     colors.push_back(glm::vec3(0.73f, 0.13f, 0.06f));
@@ -187,21 +187,21 @@ void Duck::Update(float deltaTime)
     }
     if (position.y > yMax && movementDir.y > 0)
     {
-        movementDir =  glm::reflect(movementDir, glm::vec3(0, -1, 0));
         if (state == 2)
         {
             Destroy = true;
             scene->isDuckInScene = false;
         }
+        movementDir = glm::reflect(movementDir, glm::vec3(0, -1, 0));
     }
     else if (position.y < yMin && movementDir.y < 0)
     {
-        movementDir =  glm::reflect(movementDir, glm::vec3(0, 1, 0));
         if (state == 1)
         {
             Destroy = true;
             scene->isDuckInScene = false;
         }
+        movementDir = glm::reflect(movementDir, glm::vec3(0, 1, 0));
     }
 }
 

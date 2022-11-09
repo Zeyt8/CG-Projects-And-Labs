@@ -92,7 +92,7 @@ void Player::Update(float deltaTime)
 
 void Player::DrawHealth()
 {
-    for (int i = 0; i < 3; i++)
+    for (int i = 0; i < health; i++)
     {
         glm::mat4 modelMatrix = glm::mat4(1);
         modelMatrix = glm::translate(
