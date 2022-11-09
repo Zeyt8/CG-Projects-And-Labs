@@ -26,6 +26,8 @@ void m1::Gun::Awake()
 
         CreateMesh("gun", vertices, indices);
     }
+
+    position = glm::vec3(scene->GetSceneCamera()->GetProjectionInfo().width / 2, 1, 0.16f);
 }
 
 void m1::Gun::Start()
@@ -35,7 +37,7 @@ void m1::Gun::Start()
 void m1::Gun::Update(float deltaTime)
 {
     glm::mat4 modelMatrix = glm::mat4(1);
-    modelMatrix = glm::translate(modelMatrix, glm::vec3(scene->GetSceneCamera()->GetProjectionInfo().width / 2, 1, 0.16f));
+    modelMatrix = glm::translate(modelMatrix, position);
     glm::vec2 pos = glm::vec2(
         (float)scene->GetWindow()->props.cursorPos.x / scene->GetWindow()->GetResolution().x * scene->GetSceneCamera()->GetProjectionInfo().width,
         scene->GetSceneCamera()->GetProjectionInfo().height - (float)scene->GetWindow()->props.cursorPos.y / scene->GetWindow()->GetResolution().y * scene->GetSceneCamera()->GetProjectionInfo().height

@@ -14,6 +14,7 @@ namespace m1
 		void Update(float deltaTime);
 
 	public:
+		inline static Player* Instance;
 		int health = 3;
 		int bullets = 3;
 		int score = 0;

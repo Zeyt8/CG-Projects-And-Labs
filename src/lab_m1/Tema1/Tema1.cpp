@@ -5,6 +5,7 @@
 #include "lab_m1/Tema1/Grass.h"
 #include "lab_m1/Tema1/Crosshair.h"
 #include "lab_m1/Tema1/Gun.h"
+#include "lab_m1/Tema1/Duck/BossDuck.h"
 #include <glm/gtc/random.hpp>
 
 using namespace m1;
@@ -79,7 +80,14 @@ void Tema1::Update(float deltaTimeSeconds)
 	if (!isDuckInScene && player->score < 10 && player->health > 0)
 	{
 		ducks++;
-		duck = new Duck(this, 3 + (ducks / 5) * 2);
+		if (ducks == 6)
+		{
+			duck = new BossDuck(this);
+		}
+		else
+		{
+			duck = new Duck(this, 3 + (ducks / 5) * 2);
+		}
 		gameObjects.push_back(duck);
 		duck->Awake();
 		duck->Start();
@@ -149,13 +157,11 @@ void Tema1::Shoot(int mouseX, int mouseY)
 	float newMouseY = GetSceneCamera()->GetProjectionInfo().height - (float)mouseY / window->GetResolution().y * GetSceneCamera()->GetProjectionInfo().height;
 	if (duck->IsInBounds(newMouseX, newMouseY))
 	{
-		duck->Die();
-		player->score++;
+		duck->TakeDamage();
 	}
 	player->bullets--;
 	if (player->bullets <= 0)
 	{
 		duck->Escape();
-		player->health--;
 	}
 }

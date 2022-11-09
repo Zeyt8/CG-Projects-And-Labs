@@ -46,9 +46,9 @@ namespace m1
     private:
         std::vector<GameObject*> gameObjects;
         Duck* duck;
-        Player* player;
         float timeSinceDuck = 0;
         int ducks = 0;
+        Player* player;
         void Shoot(int mouseX, int mouseY);
     public:
         bool isDuckInScene = false;

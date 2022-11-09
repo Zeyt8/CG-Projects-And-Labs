@@ -16,8 +16,12 @@ namespace m1
 
 		void Die();
 		void Escape();
+		virtual void TakeDamage();
 
 		bool IsInBounds(float mouseX, float mouseY);
+
+	protected:
+		int health = 1;
 
 	private:
 		float wingsRotation = 0;

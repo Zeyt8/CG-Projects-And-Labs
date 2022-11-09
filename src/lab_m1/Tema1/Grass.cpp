@@ -33,6 +33,8 @@ void Grass::Awake()
 
         CreateMesh("grass", vertices, indices);
     }
+
+    position = glm::vec3(0, 0, 0.1f);
 }
 
 void Grass::Start()
@@ -43,6 +45,6 @@ void Grass::Start()
 void Grass::Update(float deltaTime)
 {
     glm::mat4 modelMatrix = glm::mat4(1);
-    modelMatrix = glm::translate(modelMatrix, glm::vec3(0, 0, 0.1f));
+    modelMatrix = glm::translate(modelMatrix, position);
     scene->RenderMesh(meshes["grass"], scene->GetShader("VertexColor"), modelMatrix);
 }

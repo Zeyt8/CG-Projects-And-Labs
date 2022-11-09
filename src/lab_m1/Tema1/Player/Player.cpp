@@ -2,8 +2,9 @@
 
 using namespace m1;
 
-m1::Player::Player(Tema1* scene) : GameObject(scene)
+Player::Player(Tema1* scene) : GameObject(scene)
 {
+    Instance = this;
 }
 
 void Player::Awake()

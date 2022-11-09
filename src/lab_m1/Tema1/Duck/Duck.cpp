@@ -1,6 +1,7 @@
 #include "lab_m1/Tema1/Duck/Duck.h"
 #include "core/engine.h"
 #include "core/gpu/mesh.h"
+#include "lab_m1/Tema1/Player/Player.h"
 #include <vector>
 #include <glm/gtc/random.hpp>
 #include <glm/gtx/matrix_decompose.hpp>
@@ -212,6 +213,7 @@ void Duck::Die()
     rotation = -90;
     movementDir = glm::vec3(0, -1, 0);
     speed *= 2;
+    Player::Instance->score++;
 }
 
 void Duck::Escape()
@@ -225,14 +227,24 @@ void Duck::Escape()
     rotation = 90;
     movementDir = glm::vec3(0, 1, 0);
     speed *= 2;
+    Player::Instance->health--;
+}
+
+void m1::Duck::TakeDamage()
+{
+    health--;
+    if (health <= 0)
+    {
+        Die();
+    }
 }
 
 bool Duck::IsInBounds(float mouseX, float mouseY)
 {
-    float xMin = position.x - (scale.x > 0 ? 0.6f : 1.6f);
-    float xMax = position.x + (scale.x > 0 ? 1.6f : 0.6f);
-    float yMin = position.y - 0.6f;
-    float yMax = position.y + 0.6f;
+    float xMin = position.x - (scale.x > 0 ? 0.6f : 1.6f) * glm::abs(scale.x);
+    float xMax = position.x + (scale.x > 0 ? 1.6f : 0.6f) * glm::abs(scale.x);
+    float yMin = position.y - 0.6f * scale.y;
+    float yMax = position.y + 0.6f * scale.y;
 
     return mouseX >= xMin && mouseX <= xMax && mouseY >= yMin && mouseY <= yMax;
 }
