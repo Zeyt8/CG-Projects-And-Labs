@@ -97,10 +97,9 @@ void Tema1::Update(float deltaTimeSeconds)
 	}
 	else
 	{
-		if (timeSinceDuck >= 10)
+		if (timeSinceDuck >= 9)
 		{
 			duck->Escape();
-			player->health--;
 			timeSinceDuck = 0;
 		}
 	}
