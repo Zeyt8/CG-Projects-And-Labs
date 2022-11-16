@@ -70,3 +70,36 @@ void GameObject::CreateMesh(const char* name, const std::vector<VertexFormat>& v
     meshes[name]->SetDrawMode(GL_TRIANGLES);
     meshes[name]->InitFromBuffer(VAO, static_cast<unsigned int>(indices.size()));
 }
+
+glm::mat4 GameObject::Translate(glm::mat4 model, glm::vec3 pos)
+{
+    glm::mat4 trans = glm::mat4(
+        1, 0, 0, pos.x,
+        0, 1, 0, pos.y,
+        0, 0, 1, pos.z,
+        0, 0, 0, 1
+    );
+    return model * glm::transpose(trans);
+}
+
+glm::mat4 GameObject::Rotate(glm::mat4 model, float rot, glm::vec3 axis)
+{
+    glm::mat4 rotZ = glm::mat4(
+        glm::cos(rot), -glm::sin(rot), 0, 0,
+        glm::sin(rot), glm::cos(rot), 0, 0,
+        0, 0, 1, 0,
+        0, 0, 0, 1
+    );
+    return model * glm::transpose(rotZ);
+}
+
+glm::mat4 GameObject::Scale(glm::mat4 model, glm::vec3 scale)
+{
+    glm::mat4 scaleMat = glm::mat4(
+        scale.x, 0, 0, 0,
+        0, scale.y, 0, 0,
+        0, 0, scale.z, 0,
+        0, 0, 0, 1
+    );
+    return model * glm::transpose(scaleMat);
+}

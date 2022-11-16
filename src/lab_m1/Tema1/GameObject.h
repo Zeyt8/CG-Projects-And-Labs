@@ -19,6 +19,9 @@ namespace m1
 
 	protected:
 		void GameObject::CreateMesh(const char* name, const std::vector<VertexFormat>& vertices, const std::vector<unsigned int>& indices);
+		glm::mat4 Translate(glm::mat4 model, glm::vec3 pos);
+		glm::mat4 Rotate(glm::mat4 model, float rot, glm::vec3 axis);
+		glm::mat4 Scale(glm::mat4 model, glm::vec3 scale);
 
 	protected:
 		glm::vec3 position;

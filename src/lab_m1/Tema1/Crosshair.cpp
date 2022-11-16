@@ -49,6 +49,6 @@ void Crosshair::Update(float deltaTime)
         scene->GetSceneCamera()->GetProjectionInfo().height - (float)scene->GetWindow()->props.cursorPos.y / scene->GetWindow()->GetResolution().y * scene->GetSceneCamera()->GetProjectionInfo().height
     );
     position = glm::vec3(pos.x, pos.y, 0.15f);
-    modelMatrix = glm::translate(modelMatrix, position);
+    modelMatrix = Translate(modelMatrix, position);
     scene->RenderMesh(meshes["crosshair"], scene->GetShader("VertexColor"), modelMatrix);
 }

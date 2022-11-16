@@ -37,7 +37,7 @@ void m1::Gun::Start()
 void m1::Gun::Update(float deltaTime)
 {
     glm::mat4 modelMatrix = glm::mat4(1);
-    modelMatrix = glm::translate(modelMatrix, position);
+    modelMatrix = Translate(modelMatrix, position);
     glm::vec2 pos = glm::vec2(
         (float)scene->GetWindow()->props.cursorPos.x / scene->GetWindow()->GetResolution().x * scene->GetSceneCamera()->GetProjectionInfo().width,
         scene->GetSceneCamera()->GetProjectionInfo().height - (float)scene->GetWindow()->props.cursorPos.y / scene->GetWindow()->GetResolution().y * scene->GetSceneCamera()->GetProjectionInfo().height
@@ -45,6 +45,6 @@ void m1::Gun::Update(float deltaTime)
     glm::vec2 dir = glm::normalize(pos - glm::vec2(scene->GetSceneCamera()->GetProjectionInfo().width / 2, 1));
     float angle = glm::acos(glm::dot(glm::vec2(0, 1), dir));
     angle *= dir.x > 0 ? -1 : 1;
-    modelMatrix = glm::rotate(modelMatrix, angle, glm::vec3(0, 0, 1));
+    modelMatrix = Rotate(modelMatrix, angle, glm::vec3(0, 0, 1));
     scene->RenderMesh(meshes["gun"], scene->GetShader("VertexColor"), modelMatrix);
 }

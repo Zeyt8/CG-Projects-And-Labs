@@ -45,6 +45,6 @@ void Grass::Start()
 void Grass::Update(float deltaTime)
 {
     glm::mat4 modelMatrix = glm::mat4(1);
-    modelMatrix = glm::translate(modelMatrix, position);
+    modelMatrix = Translate(modelMatrix, position);
     scene->RenderMesh(meshes["grass"], scene->GetShader("VertexColor"), modelMatrix);
 }

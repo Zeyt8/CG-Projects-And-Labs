@@ -86,7 +86,7 @@ void Tema1::Update(float deltaTimeSeconds)
 		}
 		else
 		{
-			duck = new Duck(this, 3 + (ducks / 5) * 2);
+			duck = new Duck(this, 3 + (ducks / 5) * 3);
 		}
 		gameObjects.push_back(duck);
 		duck->Awake();

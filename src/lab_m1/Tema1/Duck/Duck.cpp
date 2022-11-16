@@ -162,18 +162,18 @@ void Duck::Update(float deltaTime)
     }
 
     glm::mat4 modelMatrix = glm::mat4(1);
-    modelMatrix = glm::translate(modelMatrix, position);
-    modelMatrix = glm::rotate(modelMatrix, glm::radians(rotation), glm::vec3(0, 0, 1));
-    modelMatrix = glm::scale(modelMatrix, scale);
+    modelMatrix = Translate(modelMatrix, position);
+    modelMatrix = Rotate(modelMatrix, glm::radians(rotation), glm::vec3(0, 0, 1));
+    modelMatrix = Scale(modelMatrix, scale);
 
     scene->RenderMesh(meshes["duckBody"], scene->GetShader("VertexColor"), modelMatrix);
     scene->RenderMesh(meshes["head"], scene->GetShader("VertexColor"), modelMatrix);
     scene->RenderMesh(meshes["beak"], scene->GetShader("VertexColor"), modelMatrix);
 
-    glm::mat4 leftWing = glm::rotate(modelMatrix, glm::radians(wingsRotation), glm::vec3(0, 0, 1));
+    glm::mat4 leftWing = Rotate(modelMatrix, glm::radians(wingsRotation), glm::vec3(0, 0, 1));
     scene->RenderMesh(meshes["leftWing"], scene->GetShader("VertexColor"), leftWing);
 
-    glm::mat4 rightWing = glm::rotate(modelMatrix, glm::radians(-wingsRotation), glm::vec3(0, 0, 1));
+    glm::mat4 rightWing = Rotate(modelMatrix, glm::radians(-wingsRotation), glm::vec3(0, 0, 1));
     scene->RenderMesh(meshes["rightWing"], scene->GetShader("VertexColor"), rightWing);
 
     if (position.x > xMax && movementDir.x > 0)

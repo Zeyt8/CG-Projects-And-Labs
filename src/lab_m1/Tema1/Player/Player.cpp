@@ -98,11 +98,11 @@ void Player::DrawHealth()
     for (int i = 0; i < health; i++)
     {
         glm::mat4 modelMatrix = glm::mat4(1);
-        modelMatrix = glm::translate(
+        modelMatrix = Translate(
             modelMatrix,
             glm::vec3(scene->GetSceneCamera()->GetProjectionInfo().width - i - 1, scene->GetSceneCamera()->GetProjectionInfo().height * 0.95f, 0.2f)
         );
-        modelMatrix = glm::scale(modelMatrix, glm::vec3(0.4f, 0.4f, 0.4f));
+        modelMatrix = Scale(modelMatrix, glm::vec3(0.4f, 0.4f, 0.4f));
         scene->RenderMesh(meshes["circle"], scene->GetShader("VertexColor"), modelMatrix);
     }
 }
@@ -112,11 +112,11 @@ void Player::DrawBullets()
     for (int i = 0; i < bullets; i++)
     {
         glm::mat4 modelMatrix = glm::mat4(1);
-        modelMatrix = glm::translate(
+        modelMatrix = Translate(
             modelMatrix,
             glm::vec3(scene->GetSceneCamera()->GetProjectionInfo().width - i - 1, scene->GetSceneCamera()->GetProjectionInfo().height * 0.89f, 0.2f)
         );
-        modelMatrix = glm::scale(modelMatrix, glm::vec3(0.5f, 0.5f, 0.5f));
+        modelMatrix = Scale(modelMatrix, glm::vec3(0.5f, 0.5f, 0.5f));
         scene->RenderMesh(meshes["square"], scene->GetShader("VertexColor"), modelMatrix);
     }
 }
@@ -124,15 +124,15 @@ void Player::DrawBullets()
 void Player::DrawScore()
 {
     glm::mat4 modelMatrix = glm::mat4(1);
-    modelMatrix = glm::translate(
+    modelMatrix = Translate(
         modelMatrix,
         glm::vec3(scene->GetSceneCamera()->GetProjectionInfo().width - 3.5f, scene->GetSceneCamera()->GetProjectionInfo().height * 0.82f, 0.2f)
     );
 
-    glm::mat4 modelMatrix1 = glm::scale(modelMatrix, glm::vec3(3, 0.8f, 0.8f));
+    glm::mat4 modelMatrix1 = Scale(modelMatrix, glm::vec3(3, 0.8f, 0.8f));
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     scene->RenderMesh(meshes["score"], scene->GetShader("VertexColor"), modelMatrix1);
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-    glm::mat4 modelMatrix2 = glm::scale(modelMatrix, glm::vec3((float)score * 3 / 10, 0.8f, 0.8f));
+    glm::mat4 modelMatrix2 = Scale(modelMatrix, glm::vec3((float)score * 3 / 10, 0.8f, 0.8f));
     scene->RenderMesh(meshes["score"], scene->GetShader("VertexColor"), modelMatrix2);
 }
