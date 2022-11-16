@@ -2,6 +2,8 @@
 
 using namespace m1;
 
+Player* Player::Instance = nullptr;
+
 Player::Player(Tema1* scene) : GameObject(scene)
 {
     Instance = this;
