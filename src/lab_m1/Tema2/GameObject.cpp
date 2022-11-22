@@ -1,12 +1,15 @@
-#include "lab_m1/Tema1/GameObject.h"
-#include "components/simple_scene.h"
+#include "lab_m1/Tema2/GameObject.h"
 
-using namespace m1;
+using namespace p2;
 
-GameObject::GameObject(Tema1* scene)
+p2::GameObject::GameObject()
+{
+}
+
+GameObject::GameObject(Tema2* scene)
 {
     position = glm::vec3(0);
-    rotation = 0;
+    rotation = glm::vec3(0);
     scale = glm::vec3(1);
     GameObject::scene = scene;
 }
@@ -64,35 +67,50 @@ void GameObject::CreateMesh(const char* name, const std::vector<VertexFormat>& v
     meshes[name]->InitFromBuffer(VAO, static_cast<unsigned int>(indices.size()));
 }
 
-glm::mat4 GameObject::Translate(glm::mat4 model, glm::vec3 pos)
+void GameObject::SetPosition(glm::vec3 pos)
 {
     glm::mat4 trans = glm::mat4(
-        1, 0, 0, pos.x,
-        0, 1, 0, pos.y,
-        0, 0, 1, pos.z,
+        1, 0, 0, -position.x + pos.x,
+        0, 1, 0, -position.y + pos.y,
+        0, 0, 1, -position.z + pos.z,
         0, 0, 0, 1
     );
-    return model * glm::transpose(trans);
+    position = pos;
+    modelMatrix = trans * modelMatrix;
 }
 
-glm::mat4 GameObject::Rotate(glm::mat4 model, float rot, glm::vec3 axis)
+void GameObject::SetRotation(glm::vec3 rot)
 {
+    glm::mat4 rotX = glm::mat4(
+        1, 0, 0, 0,
+        0, glm::cos(-rotation.x + rot.x), -glm::sin(-rotation.x + rot.x), 0,
+        0, glm::sin(-rotation.x + rot.x), glm::cos(-rotation.x + rot.x), 0,
+        0, 0, 0, 1
+    );
+    glm::mat4 rotY = glm::mat4(
+        glm::cos(-rotation.y + rot.y), 0, glm::sin(-rotation.y + rot.y), 0,
+        0, 1, 0, 0,
+        -glm::sin(-rotation.y + rot.y), 0, glm::cos(-rotation.y + rot.y), 0,
+        0, 0, 0, 1
+    );
     glm::mat4 rotZ = glm::mat4(
-        glm::cos(rot), -glm::sin(rot), 0, 0,
-        glm::sin(rot), glm::cos(rot), 0, 0,
+        glm::cos(-rotation.z + rot.z), -glm::sin(-rotation.z + rot.z), 0, 0,
+        glm::sin(-rotation.z + rot.z), glm::cos(-rotation.z + rot.z), 0, 0,
         0, 0, 1, 0,
         0, 0, 0, 1
     );
-    return model * glm::transpose(rotZ);
+    rotation = rot;
+    modelMatrix = rot.x * rot.y * rotZ * modelMatrix;
 }
 
-glm::mat4 GameObject::Scale(glm::mat4 model, glm::vec3 scale)
+void GameObject::SetScale(glm::vec3 sc)
 {
     glm::mat4 scaleMat = glm::mat4(
-        scale.x, 0, 0, 0,
-        0, scale.y, 0, 0,
-        0, 0, scale.z, 0,
+        -scale.x + sc.x, 0, 0, 0,
+        0, -scale.y + sc.y, 0, 0,
+        0, 0, -scale.z + sc.z, 0,
         0, 0, 0, 1
     );
-    return model * glm::transpose(scaleMat);
+    scale = sc;
+    modelMatrix = scaleMat * modelMatrix;
 }
