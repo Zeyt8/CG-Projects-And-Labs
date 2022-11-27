@@ -1,20 +1,20 @@
 #pragma once
 
 #include "GameObject.h"
-#include <vector>
 
 namespace p2
 {
-	class Track : public GameObject
+	class Car : public GameObject
 	{
 	public:
-		Track(Tema2* scene);
+		Car(Tema2* scene);
+		~Car();
 
 		void Awake() override;
 		void Start() override;
 		void Update(float deltaTime) override;
 
-	private:
-		std::vector<glm::vec3> points;
+	protected:
+		float speed;
 	};
 }

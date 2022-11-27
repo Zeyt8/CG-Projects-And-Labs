@@ -1,8 +1,6 @@
 #pragma once
 
-#include "utils/glm_utils.h"
-#include "utils/math_utils.h"
-#include "lab_m1/Tema2/GameObject.h"
+#include "GameObject.h"
 
 namespace p2
 {
@@ -15,7 +13,7 @@ namespace p2
             forward     = glm::vec3(0, 0, -1);
             up          = glm::vec3(0, 1, 0);
             right       = glm::vec3(1, 0, 0);
-            distanceToTarget = 2;
+            distanceToTarget = 4;
         }
 
         Camera(const glm::vec3 &position, const glm::vec3 &center, const glm::vec3 &up)
@@ -23,7 +21,7 @@ namespace p2
             Set(position, center, up);
         }
 
-        ~Camera()
+        virtual ~Camera()
         { }
 
         void Set(const glm::vec3 &position, const glm::vec3 &center, const glm::vec3 &up)
@@ -34,54 +32,63 @@ namespace p2
             this->up    = glm::cross(right, forward);
         }
 
-        void TranslateForward(float distance)
+        void TranslateForward(const float distance)
         {
             position += forward * distance;
         }
 
-        void RotateThirdPerson_OX(float angle)
+        void RotateThirdPerson_OX(const float angle)
         {
             TranslateForward(distanceToTarget);
-            forward = glm::vec3(glm::rotate(glm::mat4(1), angle, right) * glm::vec4(forward, 1));
+            forward = glm::rotate(glm::mat4(1.0f), angle, right) * glm::vec4(forward, 1);
             forward = glm::normalize(forward);
-            up = glm::vec3(glm::rotate(glm::mat4(1), angle, right) * glm::vec4(up, 1));
-            up = glm::normalize(up);
+            up = glm::cross(right, forward);
             TranslateForward(-distanceToTarget);
         }
 
-        void RotateThirdPerson_OY(float angle)
+        void RotateThirdPerson_OY(const float angle)
         {
             TranslateForward(distanceToTarget);
             forward = glm::vec3(glm::rotate(glm::mat4(1), angle, glm::vec3(0, 1, 0)) * glm::vec4(forward, 1));
             forward = glm::normalize(forward);
-            up = glm::vec3(glm::rotate(glm::mat4(1), angle, glm::vec3(0, 1, 0)) * glm::vec4(up, 1));
-            up = glm::normalize(up);
             right = glm::vec3(glm::rotate(glm::mat4(1), angle, glm::vec3(0, 1, 0)) * glm::vec4(right, 1));
             right = glm::normalize(right);
+            up = glm::cross(right, forward);
             TranslateForward(-distanceToTarget);
         }
 
-        void RotateThirdPerson_OZ(float angle)
+        void RotateThirdPerson_OZ(const float angle)
         {
             TranslateForward(distanceToTarget);
-            up = glm::vec3(glm::rotate(glm::mat4(1), angle, forward) * glm::vec4(up, 1));
-            up = glm::normalize(up);
-            right = glm::vec3(glm::rotate(glm::mat4(1), angle, forward) * glm::vec4(right, 1));
-            right = glm::normalize(right);
+            right = glm::rotate(glm::mat4(1.0f), angle, forward) * glm::vec4(right, 1);
+            right = glm::normalize(forward);
+			up = glm::cross(forward, right);
             TranslateForward(-distanceToTarget);
         }
 
-        glm::mat4 GetViewMatrix()
+        glm::mat4 GetViewMatrix() const
         {
             return glm::lookAt(position, position + forward, up);
         }
 
-        glm::vec3 GetTargetPosition()
+        void Awake() override
         {
-            return position + forward * distanceToTarget;
         }
 
-     public:
+		void Start() override
+		{
+		}
+
+		void Update(float deltaTime) override
+		{
+			if (target != nullptr)
+			{
+				position = target->position - forward * distanceToTarget;
+			}
+		}
+
+    public:
+    	GameObject* target;
         float distanceToTarget;
         glm::vec3 forward;
         glm::vec3 right;

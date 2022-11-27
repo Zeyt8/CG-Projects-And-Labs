@@ -19,16 +19,19 @@ namespace p2
 		bool Destroy = false;
 		glm::mat4 modelMatrix = glm::mat4(1);
 
-	protected:
-		void GameObject::CreateMesh(const char* name, const std::vector<VertexFormat>& vertices, const std::vector<unsigned int>& indices);
+	public:
+		void CreateMesh(const char* name, const std::vector<VertexFormat>& vertices, const std::vector<unsigned int>& indices);
 		void SetPosition(glm::vec3 pos);
 		void SetRotation(glm::vec3 rot);
 		void SetScale(glm::vec3 sc);
 
-	protected:
+	private:
+		void GameObject::SetModelMatrix(glm::vec3 pos, glm::vec3 rot, glm::vec3 sc);
+
+	public:
 		glm::vec3 position = glm::vec3(0);
 		glm::vec3 rotation = glm::vec3(0);
-		glm::vec3 scale = glm::vec3(0);
+		glm::vec3 scale = glm::vec3(1);
 
 		std::unordered_map<std::string, Mesh*> meshes;
 		Tema2 *scene = nullptr;

@@ -1,4 +1,5 @@
 #pragma once
+
 #include "components/simple_scene.h"
 #include <vector>
 
@@ -14,19 +15,20 @@ namespace p2
         ~Tema2();
 
         void Init() override;
-        virtual void RenderMesh(Mesh* mesh, Shader* shader, const glm::mat4& modelMatrix);
-        Shader* GetShader(std::string shader)
+        void RenderMesh(Mesh* mesh, Shader* shader, const glm::mat4& modelMatrix) override;
+        Shader* GetShader(const std::string& shader)
         {
             return shaders[shader];
         }
-        gfxc::Camera* GetSceneCamera()
+        Camera* GetCamera() const
         {
-            return SimpleScene::GetSceneCamera();
+            return camera;
         }
-        WindowObject* GetWindow()
+        WindowObject* GetWindow() const
         {
             return window;
         }
+        void AddObject(GameObject* object);
 
     private:
         void FrameStart() override;
@@ -42,8 +44,9 @@ namespace p2
         void OnMouseScroll(int mouseX, int mouseY, int offsetX, int offsetY) override;
         void OnWindowResize(int width, int height) override;
 
-    private:
+    protected:
         std::vector<GameObject*> gameObjects;
         Camera* camera;
+        glm::mat4 projectionMatrix;
     };
 }

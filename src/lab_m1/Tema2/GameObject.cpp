@@ -1,4 +1,6 @@
-#include "lab_m1/Tema2/GameObject.h"
+#include "GameObject.h"
+
+#include <iostream>
 
 using namespace p2;
 
@@ -69,48 +71,54 @@ void GameObject::CreateMesh(const char* name, const std::vector<VertexFormat>& v
 
 void GameObject::SetPosition(glm::vec3 pos)
 {
-    glm::mat4 trans = glm::mat4(
-        1, 0, 0, -position.x + pos.x,
-        0, 1, 0, -position.y + pos.y,
-        0, 0, 1, -position.z + pos.z,
-        0, 0, 0, 1
-    );
-    position = pos;
-    modelMatrix = trans * modelMatrix;
+	SetModelMatrix(pos, rotation, scale);
 }
 
 void GameObject::SetRotation(glm::vec3 rot)
 {
-    glm::mat4 rotX = glm::mat4(
-        1, 0, 0, 0,
-        0, glm::cos(-rotation.x + rot.x), -glm::sin(-rotation.x + rot.x), 0,
-        0, glm::sin(-rotation.x + rot.x), glm::cos(-rotation.x + rot.x), 0,
-        0, 0, 0, 1
-    );
-    glm::mat4 rotY = glm::mat4(
-        glm::cos(-rotation.y + rot.y), 0, glm::sin(-rotation.y + rot.y), 0,
-        0, 1, 0, 0,
-        -glm::sin(-rotation.y + rot.y), 0, glm::cos(-rotation.y + rot.y), 0,
-        0, 0, 0, 1
-    );
-    glm::mat4 rotZ = glm::mat4(
-        glm::cos(-rotation.z + rot.z), -glm::sin(-rotation.z + rot.z), 0, 0,
-        glm::sin(-rotation.z + rot.z), glm::cos(-rotation.z + rot.z), 0, 0,
-        0, 0, 1, 0,
-        0, 0, 0, 1
-    );
-    rotation = rot;
-    modelMatrix = rot.x * rot.y * rotZ * modelMatrix;
+	SetModelMatrix(position, rot, scale);
 }
 
 void GameObject::SetScale(glm::vec3 sc)
 {
-    glm::mat4 scaleMat = glm::mat4(
-        -scale.x + sc.x, 0, 0, 0,
-        0, -scale.y + sc.y, 0, 0,
-        0, 0, -scale.z + sc.z, 0,
+	SetModelMatrix(position, rotation, sc);
+}
+
+void GameObject::SetModelMatrix(glm::vec3 pos, glm::vec3 rot, glm::vec3 sc)
+{
+    const glm::mat4 trans = glm::mat4(
+        1, 0, 0, pos.x,
+        0, 1, 0, pos.y,
+        0, 0, 1, pos.z,
         0, 0, 0, 1
     );
+
+    const glm::mat4 rotX = glm::mat4(
+        1, 0, 0, 0,
+        0, glm::cos(rot.x), -glm::sin(rot.x), 0,
+        0, glm::sin(rot.x), glm::cos(rot.x), 0,
+        0, 0, 0, 1
+    );
+    const glm::mat4 rotY = glm::mat4(
+        glm::cos(rot.y), 0, glm::sin(rot.y), 0,
+        0, 1, 0, 0,
+        -glm::sin(rot.y), 0, glm::cos(rot.y), 0,
+        0, 0, 0, 1
+    );
+    const glm::mat4 rotZ = glm::mat4(
+        glm::cos(rot.z), -glm::sin(rot.z), 0, 0,
+        glm::sin(rot.z), glm::cos(rot.z), 0, 0,
+        0, 0, 1, 0,
+        0, 0, 0, 1
+    );
+    const glm::mat4 scaleMat = glm::mat4(
+        sc.x, 0, 0, 0,
+        0, sc.y, 0, 0,
+        0, 0, sc.z, 0,
+        0, 0, 0, 1
+    );
+    position = pos;
+    rotation = rot;
     scale = sc;
-    modelMatrix = scaleMat * modelMatrix;
+    modelMatrix = glm::mat4(1) * glm::transpose(trans) * glm::transpose(rotX * rotY * rotZ) * glm::transpose(scaleMat);
 }
