@@ -2,7 +2,10 @@
 #include "GameObject.h"
 #include "Track.h"
 #include "Camera.h"
-#include "Car.h"
+#include "Minimap.h"
+#include "Grass.h"
+#include "Cars/Player.h"
+#include "Cars/Enemy.h"
 
 using namespace p2;
 
@@ -17,14 +20,23 @@ Tema2::~Tema2()
 void Tema2::Init()
 {
 	camera = new Camera();
-	camera->Set(glm::vec3(0, 2, 3.5f), glm::vec3(0, 1, 0), glm::vec3(0, 1, 0));
+	camera->SetPosition(glm::vec3(0, 2, 3.5f));
+	camera->RotateThirdPerson_OX(RADIANS(-30));
+	gameObjects.push_back(camera);
 
 	Track* track = new Track(this);
 	gameObjects.push_back(track);
-	gameObjects.push_back(camera);
-	Car* car = new Car(this);
+	Player* car = new Player(this);
 	gameObjects.push_back(car);
-	camera->target = car;
+
+	camera->followTarget = car;
+	camera->lookAtTarget = car;
+
+	Minimap* minimap = new Minimap(this, car);
+	gameObjects.push_back(minimap);
+
+	Grass* grass = new Grass(this);
+	gameObjects.push_back(grass);
 
 	for (int i = 0; i < gameObjects.size(); i++)
 	{
@@ -35,14 +47,20 @@ void Tema2::Init()
 		gameObjects[i]->Start();
 	}
 
+	for (int i = 0; i < objectsToAdd.size(); i++)
+	{
+		objectsToAdd[i]->Awake();
+		objectsToAdd[i]->Start();
+		gameObjects.push_back(objectsToAdd[i]);
+	}
+	objectsToAdd.clear();
+
 	projectionMatrix = glm::perspective(RADIANS(60), window->props.aspectRatio, 0.01f, 200.0f);
 }
 
 void Tema2::AddObject(GameObject* object)
 {
-	object->Awake();
-	object->Start();
-	gameObjects.push_back(object);
+	objectsToAdd.push_back(object);
 }
 
 void Tema2::FrameStart()
@@ -69,7 +87,19 @@ void Tema2::Update(float deltaTimeSeconds)
 			continue;
 		}
 		gameObjects[i]->Update(deltaTimeSeconds);
+		gameObjects[i]->Render();
 	}
+	for (int i = gameObjects.size() - 1; i >= 0; i--)
+	{
+		gameObjects[i]->LateUpdate(deltaTimeSeconds);
+	}
+	for (int i = 0; i < objectsToAdd.size(); i++)
+	{
+		objectsToAdd[i]->Awake();
+		objectsToAdd[i]->Start();
+		gameObjects.push_back(objectsToAdd[i]);
+	}
+	objectsToAdd.clear();
 }
 
 void Tema2::RenderMesh(Mesh* mesh, Shader* shader, const glm::mat4& modelMatrix)
@@ -92,6 +122,10 @@ void Tema2::FrameEnd()
 
 void Tema2::OnInputUpdate(float deltaTime, int mods)
 {
+	for (GameObject* object : gameObjects)
+	{
+		object->OnInputUpdate(deltaTime, mods);
+	}
 }
 
 void Tema2::OnKeyPress(int key, int mods)

@@ -9,28 +9,15 @@ namespace p2
      public:
         Camera()
         {
-            position    = glm::vec3(0, 2, 5);
+            position    = glm::vec3(0, 0, 0);
             forward     = glm::vec3(0, 0, -1);
             up          = glm::vec3(0, 1, 0);
             right       = glm::vec3(1, 0, 0);
             distanceToTarget = 4;
         }
 
-        Camera(const glm::vec3 &position, const glm::vec3 &center, const glm::vec3 &up)
-        {
-            Set(position, center, up);
-        }
-
         virtual ~Camera()
         { }
-
-        void Set(const glm::vec3 &position, const glm::vec3 &center, const glm::vec3 &up)
-        {
-            this->position = position;
-            forward     = glm::normalize(center - position);
-            right       = glm::cross(forward, up);
-            this->up    = glm::cross(right, forward);
-        }
 
         void TranslateForward(const float distance)
         {
@@ -43,6 +30,7 @@ namespace p2
             forward = glm::rotate(glm::mat4(1.0f), angle, right) * glm::vec4(forward, 1);
             forward = glm::normalize(forward);
             up = glm::cross(right, forward);
+			rotation.x += angle;
             TranslateForward(-distanceToTarget);
         }
 
@@ -54,6 +42,7 @@ namespace p2
             right = glm::vec3(glm::rotate(glm::mat4(1), angle, glm::vec3(0, 1, 0)) * glm::vec4(right, 1));
             right = glm::normalize(right);
             up = glm::cross(right, forward);
+			rotation.y += angle;
             TranslateForward(-distanceToTarget);
         }
 
@@ -63,6 +52,7 @@ namespace p2
             right = glm::rotate(glm::mat4(1.0f), angle, forward) * glm::vec4(right, 1);
             right = glm::normalize(forward);
 			up = glm::cross(forward, right);
+			rotation.z += angle;
             TranslateForward(-distanceToTarget);
         }
 
@@ -71,24 +61,25 @@ namespace p2
             return glm::lookAt(position, position + forward, up);
         }
 
-        void Awake() override
-        {
-        }
+        void Awake() override {}
 
-		void Start() override
-		{
-		}
+		void Start() override {}
 
 		void Update(float deltaTime) override
 		{
-			if (target != nullptr)
+			if (followTarget != nullptr)
 			{
-				position = target->position - forward * distanceToTarget;
+				position = followTarget->position - forward * distanceToTarget;
 			}
+            if (lookAtTarget != nullptr)
+            {
+                RotateThirdPerson_OY(lookAtTarget->rotation.y - rotation.y);
+            }
 		}
 
     public:
-    	GameObject* target;
+    	GameObject* followTarget = nullptr;
+    	GameObject* lookAtTarget = nullptr;
         float distanceToTarget;
         glm::vec3 forward;
         glm::vec3 right;

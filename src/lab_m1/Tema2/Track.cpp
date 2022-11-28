@@ -26,7 +26,7 @@ Track::Track(Tema2* scene) : GameObject(scene)
 
 	for (glm::vec3& point : points)
 	{
-		point *= 10;
+		point *= 15;
 	}
 	
 	// Subdivide track
@@ -48,14 +48,14 @@ Track::Track(Tema2* scene) : GameObject(scene)
 		glm::vec3 d = newPoints[i + 1] - newPoints[i];
 		glm::vec3 p = glm::cross(d, glm::vec3(0, 1, 0));
 		p = glm::normalize(p);
-		vertices.emplace_back(newPoints[i] - p * 2.0f);
-		vertices.emplace_back(newPoints[i] + p * 2.0f);
+		vertices.emplace_back(newPoints[i] - p * 4.0f, glm::vec3(0.2f, 0.2f, 0.19f));
+		vertices.emplace_back(newPoints[i] + p * 4.0f, glm::vec3(0.2f, 0.2f, 0.19f));
 	}
 	const glm::vec3 d = newPoints[0] - newPoints[newPoints.size() - 1];
 	glm::vec3 p = glm::cross(d, glm::vec3(0, 1, 0));
 	p = glm::normalize(p);
-	vertices.emplace_back(newPoints[newPoints.size() - 1] - p * 2.0f);
-	vertices.emplace_back(newPoints[newPoints.size() - 1] + p * 2.0f);
+	vertices.emplace_back(newPoints[newPoints.size() - 1] - p * 5.0f, glm::vec3(0.2f, 0.2f, 0.19f));
+	vertices.emplace_back(newPoints[newPoints.size() - 1] + p * 5.0f, glm::vec3(0.2f, 0.2f, 0.19f));
 	
 	// Generate faces
 	std::vector<unsigned int> indices;
@@ -90,12 +90,12 @@ void Track::Awake()
 		p = glm::normalize(p);
 		{
 			Tree* tree = new Tree(scene);
-			tree->SetPosition(points[i] - p * 3.5f);
+			tree->SetPosition(points[i] - p * 7.0f);
 			scene->AddObject(tree);
 		}
 		{
 			Tree* tree = new Tree(scene);
-			tree->SetPosition(points[i] + p * 3.5f);
+			tree->SetPosition(points[i] + p * 7.0f);
 			scene->AddObject(tree);
 		}
 	}
@@ -106,6 +106,10 @@ void Track::Start()
 }
 
 void Track::Update(float deltaTime)
+{
+}
+
+void Track::Render()
 {
 	scene->RenderMesh(meshes["track"], scene->GetShader("VertexColor"), modelMatrix);
 }

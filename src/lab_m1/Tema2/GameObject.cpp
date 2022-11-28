@@ -20,6 +20,18 @@ GameObject::~GameObject()
 {
 }
 
+void GameObject::LateUpdate(float deltaTime)
+{
+}
+
+void GameObject::OnInputUpdate(float deltaTime, int mods)
+{
+}
+
+void GameObject::Render()
+{
+}
+
 void GameObject::CreateMesh(const char* name, const std::vector<VertexFormat>& vertices, const std::vector<unsigned int>& indices)
 {
     unsigned int VAO = 0;

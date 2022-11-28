@@ -1,17 +1,19 @@
 #pragma once
-#include "GameObject.h"
+
+#include "Car.h"
 
 namespace p2
 {
-	class Tree : public GameObject
+	class Player : public Car
 	{
 	public:
-		Tree(Tema2* scene);
-		~Tree();
+		Player(Tema2* scene);
+		~Player();
 
 		void Awake() override;
 		void Start() override;
 		void Update(float deltaTime) override;
+		void OnInputUpdate(float deltaTime, int mods) override;
 		void Render() override;
 	};
 }

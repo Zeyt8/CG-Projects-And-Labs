@@ -20,6 +20,10 @@ namespace p2
         {
             return shaders[shader];
         }
+		void SetCamera(Camera* camera)
+		{
+			this->camera = camera;
+		}
         Camera* GetCamera() const
         {
             return camera;
@@ -44,9 +48,11 @@ namespace p2
         void OnMouseScroll(int mouseX, int mouseY, int offsetX, int offsetY) override;
         void OnWindowResize(int width, int height) override;
 
-    protected:
+    public:
         std::vector<GameObject*> gameObjects;
-        Camera* camera;
         glm::mat4 projectionMatrix;
+    protected:
+        std::vector<GameObject*> objectsToAdd;
+        Camera* camera;
     };
 }

@@ -207,7 +207,7 @@ void Lab4::OnKeyPress(int key, int mods)
         }
     }
     
-    // TODO(student): Add viewport movement and scaling logic
+    // Add viewport movement and scaling logic
     if (key == GLFW_KEY_I)
     {
         miniViewportArea.y += 5;

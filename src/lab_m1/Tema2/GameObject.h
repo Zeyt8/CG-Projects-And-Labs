@@ -1,7 +1,6 @@
 #pragma once
 #include <unordered_map>
 #include "core/gpu/mesh.h"
-#include "core/gpu/shader.h"
 #include "lab_m1/Tema2/Tema2.h"
 
 namespace p2
@@ -16,10 +15,12 @@ namespace p2
 		virtual void Awake() = 0;
 		virtual void Start() = 0;
 		virtual void Update(float deltaTime) = 0;
+		virtual void LateUpdate(float deltaTime);
+		virtual void OnInputUpdate(float deltaTime, int mods);
+		virtual void Render();
 		bool Destroy = false;
 		glm::mat4 modelMatrix = glm::mat4(1);
 
-	public:
 		void CreateMesh(const char* name, const std::vector<VertexFormat>& vertices, const std::vector<unsigned int>& indices);
 		void SetPosition(glm::vec3 pos);
 		void SetRotation(glm::vec3 rot);

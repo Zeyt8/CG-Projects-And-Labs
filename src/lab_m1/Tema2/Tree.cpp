@@ -18,15 +18,15 @@ Tree::Tree(Tema2* scene) : GameObject(scene)
             VertexFormat(glm::vec3(-0.5f, 1, -0.5f), glm::vec3(0.47f, 0.2f, 0), glm::vec3(0.2, 0.8, 0.6)),
             VertexFormat(glm::vec3(0.5f, 1, -0.5f), glm::vec3(0.47f, 0.2f, 0), glm::vec3(0.2, 0.8, 0.6)),
 
-            VertexFormat(glm::vec3(-1, 1, 1), glm::vec3(0, 1, 0), glm::vec3(0.2, 0.8, 0.6)),
-            VertexFormat(glm::vec3(1, 1, 1), glm::vec3(0, 1, 0), glm::vec3(0.2, 0.8, 0.6)),
-            VertexFormat(glm::vec3(-1, 3, 1), glm::vec3(0, 1, 0), glm::vec3(0.2, 0.8, 0.6)),
-            VertexFormat(glm::vec3(1, 3, 1), glm::vec3(0, 1, 0), glm::vec3(0.2, 0.8, 0.6)),
+            VertexFormat(glm::vec3(-1, 1, 1), glm::vec3(0.1f, 0.4f, 0.1f), glm::vec3(0.2, 0.8, 0.6)),
+            VertexFormat(glm::vec3(1, 1, 1), glm::vec3(0.1f, 0.4f, 0.1f), glm::vec3(0.2, 0.8, 0.6)),
+            VertexFormat(glm::vec3(-1, 3, 1), glm::vec3(0.1f, 0.4f, 0.1f), glm::vec3(0.2, 0.8, 0.6)),
+            VertexFormat(glm::vec3(1, 3, 1), glm::vec3(0.1f, 0.4f, 0.1f), glm::vec3(0.2, 0.8, 0.6)),
 
-            VertexFormat(glm::vec3(-1, 1, -1), glm::vec3(0, 1, 0), glm::vec3(0.2, 0.8, 0.6)),
-            VertexFormat(glm::vec3(1, 1, -1), glm::vec3(0, 1, 0), glm::vec3(0.2, 0.8, 0.6)),
-            VertexFormat(glm::vec3(-1, 3, -1), glm::vec3(0, 1, 0), glm::vec3(0.2, 0.8, 0.6)),
-            VertexFormat(glm::vec3(1, 3, -1), glm::vec3(0, 1, 0), glm::vec3(0.2, 0.8, 0.6)),
+            VertexFormat(glm::vec3(-1, 1, -1), glm::vec3(0.1f, 0.4f, 0.1f), glm::vec3(0.2, 0.8, 0.6)),
+            VertexFormat(glm::vec3(1, 1, -1), glm::vec3(0.1f, 0.4f, 0.1f), glm::vec3(0.2, 0.8, 0.6)),
+            VertexFormat(glm::vec3(-1, 3, -1), glm::vec3(0.1f, 0.4f, 0.1f), glm::vec3(0.2, 0.8, 0.6)),
+            VertexFormat(glm::vec3(1, 3, -1), glm::vec3(0.1f, 0.4f, 0.1f), glm::vec3(0.2, 0.8, 0.6)),
         };
 
         const std::vector<unsigned int> indices =
@@ -77,5 +77,9 @@ void Tree::Start()
 
 void Tree::Update(float deltaTime)
 {
-	scene->RenderMesh(meshes["tree"], scene->GetShader("VertexColor"), modelMatrix);
+}
+
+void Tree::Render()
+{
+    scene->RenderMesh(meshes["tree"], scene->GetShader("VertexColor"), modelMatrix);
 }

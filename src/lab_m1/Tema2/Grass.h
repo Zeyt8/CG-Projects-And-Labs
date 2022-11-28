@@ -1,13 +1,14 @@
 #pragma once
+
 #include "GameObject.h"
 
 namespace p2
 {
-	class Tree : public GameObject
+	class Grass : public GameObject
 	{
 	public:
-		Tree(Tema2* scene);
-		~Tree();
+		Grass(Tema2* scene);
+		~Grass();
 
 		void Awake() override;
 		void Start() override;

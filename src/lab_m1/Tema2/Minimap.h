@@ -1,21 +1,25 @@
 #pragma once
-
 #include "GameObject.h"
-#include <vector>
+#include "Cars/Car.h"
 
 namespace p2
 {
-	class Track : public GameObject
+	class Minimap : public GameObject
 	{
 	public:
-		Track(Tema2* scene);
+		Minimap(Tema2* scene, Car* car);
+		~Minimap();
 
 		void Awake() override;
 		void Start() override;
 		void Update(float deltaTime) override;
+		void LateUpdate(float deltaTime) override;
 		void Render() override;
 
+	public:
+		Car* car;
+
 	private:
-		std::vector<glm::vec3> points;
+		Camera* camera;
 	};
 }
