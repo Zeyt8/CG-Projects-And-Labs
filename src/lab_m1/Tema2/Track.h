@@ -15,6 +15,8 @@ namespace p2
 		void Update(float deltaTime) override;
 		void Render() override;
 
+	public:
+		static std::vector<glm::vec3> paths[2];
 	private:
 		std::vector<glm::vec3> points;
 	};

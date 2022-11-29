@@ -29,7 +29,7 @@ void Minimap::Update(float deltaTime)
 void Minimap::LateUpdate(float deltaTime)
 {
 	glClear(GL_DEPTH_BUFFER_BIT);
-	glViewport(50, 50, scene->GetWindow()->GetResolution().x / 5.0f, scene->GetWindow()->GetResolution().y / 5.0f);
+	glViewport(50, 50, scene->GetWindow()->GetResolution().x / 4.0f, scene->GetWindow()->GetResolution().y / 4.0f);
 
 	glm::mat4 oldProj = scene->projectionMatrix;
 	const float size = 20.0f;

@@ -2,7 +2,7 @@
 
 using namespace p2;
 
-Car::Car(Tema2* scene) : GameObject(scene)
+Car::Car(Tema2* scene, glm::vec3 color) : GameObject(scene)
 {
     const std::vector<VertexFormat> vertices
     {
@@ -49,6 +49,8 @@ void Car::Awake()
 
 void Car::Start()
 {
+    SetRotation(glm::vec3(0, RADIANS(71), 0));
+    SetScale(glm::vec3(1, 1, 2));
 }
 
 void Car::Update(float deltaTime)
@@ -61,5 +63,5 @@ void Car::OnInputUpdate(float deltaTime, int mods)
 
 void Car::Render()
 {
-    scene->RenderMesh(meshes["car"], scene->GetShader("VertexColor"), modelMatrix);
+    scene->RenderMesh(meshes["car"], scene->GetShader("Curve"), modelMatrix);
 }

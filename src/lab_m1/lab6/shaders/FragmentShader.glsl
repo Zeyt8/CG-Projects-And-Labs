@@ -7,7 +7,6 @@ in vec3 frag_color;
 // Output
 layout(location = 0) out vec4 out_color;
 
-
 void main()
 {
     // Write pixel out color

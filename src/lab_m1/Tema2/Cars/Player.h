@@ -7,7 +7,7 @@ namespace p2
 	class Player : public Car
 	{
 	public:
-		Player(Tema2* scene);
+		Player(Tema2* scene, glm::vec3 color);
 		~Player();
 
 		void Awake() override;

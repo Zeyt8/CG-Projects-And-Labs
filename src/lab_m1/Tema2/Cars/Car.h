@@ -7,7 +7,7 @@ namespace p2
 	class Car : public GameObject
 	{
 	public:
-		Car(Tema2* scene);
+		Car(Tema2* scene, glm::vec3 color);
 		~Car();
 
 		void Awake() override;
@@ -18,6 +18,5 @@ namespace p2
 
 	protected:
 		float speed;
-		glm::vec3 color = glm::vec3(0.8f, 0, 0);
 	};
 }

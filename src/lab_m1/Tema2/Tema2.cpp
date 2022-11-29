@@ -26,7 +26,7 @@ void Tema2::Init()
 
 	Track* track = new Track(this);
 	gameObjects.push_back(track);
-	Player* car = new Player(this);
+	Player* car = new Player(this, glm::vec3(0, 0, 0.6f));
 	gameObjects.push_back(car);
 
 	camera->followTarget = car;
@@ -37,6 +37,14 @@ void Tema2::Init()
 
 	Grass* grass = new Grass(this);
 	gameObjects.push_back(grass);
+
+	for (int i = 0; i < 2; i++)
+	{
+		Enemy* enemy = new Enemy(this, glm::vec3(0.6f, 0, 0));
+		enemy->path = Track::paths[i];
+		gameObjects.push_back(enemy);
+		enemies.push_back(enemy);
+	}
 
 	for (int i = 0; i < gameObjects.size(); i++)
 	{
@@ -56,6 +64,14 @@ void Tema2::Init()
 	objectsToAdd.clear();
 
 	projectionMatrix = glm::perspective(RADIANS(60), window->props.aspectRatio, 0.01f, 200.0f);
+
+	{
+		Shader* shader = new Shader("Curve");
+		shader->AddShader(PATH_JOIN(window->props.selfDir, SOURCE_PATH::M1, "Tema2", "curveVS.glsl"), GL_VERTEX_SHADER);
+		shader->AddShader(PATH_JOIN(window->props.selfDir, SOURCE_PATH::M1, "Tema2", "curveFS.glsl"), GL_FRAGMENT_SHADER);
+		shader->CreateAndLink();
+		shaders[shader->GetName()] = shader;
+	}
 }
 
 void Tema2::AddObject(GameObject* object)

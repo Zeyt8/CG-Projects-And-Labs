@@ -32,28 +32,28 @@ void GameObject::Render()
 {
 }
 
-void GameObject::CreateMesh(const char* name, const std::vector<VertexFormat>& vertices, const std::vector<unsigned int>& indices)
+Mesh* GameObject::CreateMesh(const char* name, const std::vector<VertexFormat>& vertices, const std::vector<unsigned>& indices)
 {
     unsigned int VAO = 0;
+    // Create the VAO and bind it
     glGenVertexArrays(1, &VAO);
     glBindVertexArray(VAO);
 
-    unsigned int VBO = 0;
+    // Create the VBO and bind it
+    unsigned int VBO;
     glGenBuffers(1, &VBO);
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
+
+    // Send vertices data into the VBO buffer
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices[0]) * vertices.size(), &vertices[0], GL_STATIC_DRAW);
 
-    unsigned int IBO = 0;
+    // Create the IBO and bind it
+    unsigned int IBO;
     glGenBuffers(1, &IBO);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices[0]) * indices.size(), &indices[0], GL_STATIC_DRAW);
 
-    // ========================================================================
-    // This section demonstrates how the GPU vertex shader program
-    // receives data. It will be learned later, when GLSL shaders will be
-    // introduced. For the moment, just think that each property value from
-    // our vertex format needs to be sent to a certain channel, in order to
-    // know how to receive it in the GLSL vertex shader.
+    // Send indices data into the IBO buffer
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices[0]) * indices.size(), &indices[0], GL_STATIC_DRAW);
 
     // Set vertex position attribute
     glEnableVertexAttribArray(0);
@@ -75,10 +75,15 @@ void GameObject::CreateMesh(const char* name, const std::vector<VertexFormat>& v
     // Unbind the VAO
     glBindVertexArray(0);
 
+    // Check for OpenGL errors
+    CheckOpenGLError();
+
     // Mesh information is saved into a Mesh object
     meshes[name] = new Mesh(name);
-    meshes[name]->SetDrawMode(GL_TRIANGLES);
     meshes[name]->InitFromBuffer(VAO, static_cast<unsigned int>(indices.size()));
+    meshes[name]->vertices = vertices;
+    meshes[name]->indices = indices;
+    return meshes[name];
 }
 
 void GameObject::SetPosition(glm::vec3 pos)

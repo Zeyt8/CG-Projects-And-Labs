@@ -7,6 +7,7 @@ namespace p2
 {
     class GameObject;
     class Camera;
+    class Car;
 
     class Tema2 : public gfxc::SimpleScene
     {
@@ -51,6 +52,7 @@ namespace p2
     public:
         std::vector<GameObject*> gameObjects;
         glm::mat4 projectionMatrix;
+        std::vector<Car*> enemies;
     protected:
         std::vector<GameObject*> objectsToAdd;
         Camera* camera;
