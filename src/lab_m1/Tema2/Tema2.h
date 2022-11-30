@@ -16,7 +16,7 @@ namespace p2
         ~Tema2();
 
         void Init() override;
-        void RenderMesh(Mesh* mesh, Shader* shader, const glm::mat4& modelMatrix) override;
+        void RenderMesh(Mesh* mesh, Shader* shader, const glm::mat4& modelMatrix, glm::vec3 pos);
         Shader* GetShader(const std::string& shader)
         {
             return shaders[shader];
@@ -56,5 +56,6 @@ namespace p2
     protected:
         std::vector<GameObject*> objectsToAdd;
         Camera* camera;
+        Car* player;
     };
 }

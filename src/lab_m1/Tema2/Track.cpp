@@ -5,9 +5,12 @@
 using namespace p2;
 
 std::vector<glm::vec3> Track::paths[] = { std::vector<glm::vec3>(), std::vector<glm::vec3>() };
+Track* Track::Instance = nullptr;
 
 Track::Track(Tema2* scene) : GameObject(scene)
 {
+	Instance = this;
+
 	points.emplace_back(2.26f, 0, -1.66f);
 	points.emplace_back(0.82f, 0, -2.04f);
 	points.emplace_back(-1.07f, 0, -1.76f);
@@ -44,23 +47,23 @@ Track::Track(Tema2* scene) : GameObject(scene)
 		glm::vec3 p3 = glm::normalize(glm::cross(d2, glm::vec3(0, 1, 0)));
 
 		// Subdivide
-		for (int j = 0; j < 5; j++)
+		for (int j = 0; j < 10; j++)
 		{
 			glm::vec3 p1 = points[i] - p * 4.0f;
 			glm::vec3 p2 = points[(i + 1) % points.size()] - p3 * 4.0f;
-			vertices.emplace_back(p1 + (p2 - p1) / 5.0f * (float)j, glm::vec3(0.2f, 0.2f, 0.19f));
+			vertices.emplace_back(p1 + (p2 - p1) / 10.0f * (float)j, glm::vec3(0.2f, 0.2f, 0.19f));
 
 			p1 = points[i] + p * 4.0f;
 			p2 = points[(i + 1) % points.size()] + p3 * 4.0f;
-			vertices.emplace_back(p1 + (p2 - p1) / 5.0f * (float)j, glm::vec3(0.2f, 0.2f, 0.19f));
+			vertices.emplace_back(p1 + (p2 - p1) / 10.0f * (float)j, glm::vec3(0.2f, 0.2f, 0.19f));
 
 			p1 = points[i] - p * 2.0f;
 			p2 = points[(i + 1) % points.size()] - p3 * 2.0f;
-			paths[0].push_back(p1 + (p2 - p1) / 5.0f * (float)j);
+			paths[0].push_back(p1 + (p2 - p1) / 10.0f * (float)j);
 
 			p1 = points[i] + p * 2.0f;
 			p2 = points[(i + 1) % points.size()] + p3 * 2.0f;
-			paths[1].push_back(p1 + (p2 - p1) / 5.0f * (float)j);
+			paths[1].push_back(p1 + (p2 - p1) / 10.0f * (float)j);
 		}
 	}
 	
@@ -118,5 +121,5 @@ void Track::Update(float deltaTime)
 
 void Track::Render()
 {
-	scene->RenderMesh(meshes["track"], scene->GetShader("Curve"), modelMatrix);
+	scene->RenderMesh(meshes["track"], scene->GetShader("Curve"), modelMatrix, position);
 }

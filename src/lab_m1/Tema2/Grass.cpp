@@ -4,13 +4,13 @@ using namespace p2;
 
 Grass::Grass(Tema2* scene) : GameObject(scene)
 {
-    int res = 120;
+    int res = 300;
     std::vector<VertexFormat> vertices;
     for (int i = 0; i < res; i++)
     {
 	    for (int j = 0; j < res; j++)
 	    {
-			vertices.emplace_back(glm::vec3(i * 5, 0, j * 5), glm::vec3(0.09f, 0.82f, 0.29f));
+			vertices.emplace_back(glm::vec3(i * 2.0f - res / 2, 0, j * 2.0f - res / 2), glm::vec3(0.09f, 0.82f, 0.29f));
 	    }
     }
 
@@ -33,7 +33,7 @@ Grass::Grass(Tema2* scene) : GameObject(scene)
 
     CreateMesh("grass", vertices, indices);
 
-    SetPosition(glm::vec3(-110, -0.1f, -100));
+    SetPosition(glm::vec3(0, -0.05f, 0));
 }
 
 Grass::~Grass() = default;
@@ -53,5 +53,5 @@ void Grass::Update(float deltaTime)
 
 void Grass::Render()
 {
-	scene->RenderMesh(meshes["grass"], scene->GetShader("Curve"), modelMatrix);
+	scene->RenderMesh(meshes["grass"], scene->GetShader("Curve"), modelMatrix, position);
 }

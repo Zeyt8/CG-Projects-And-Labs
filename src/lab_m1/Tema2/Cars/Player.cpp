@@ -1,5 +1,6 @@
 #include "Player.h"
 #include "../Camera.h"
+#include "../Track.h"
 
 using namespace p2;
 
@@ -41,15 +42,25 @@ void Player::OnInputUpdate(float deltaTime, int mods)
         newPos -= moveDir * speed * deltaTime;
     }
 
-    bool canMove = true;
-	for (Car* car : scene->enemies)
-	{
-		if (glm::distance(newPos, car->position) < 1.5f)
-		{
-			canMove = false;
-			break;
-		}
-	}
+    bool canMove = false;
+    const std::vector<VertexFormat> poss = Track::Instance->meshes["track"]->vertices;
+    const std::vector<unsigned int> inds = Track::Instance->meshes["track"]->indices;
+    for (int i = 0; i < inds.size() - 2; i += 3)
+    {
+	    if (IsInTriangle(poss[inds[i]].position, poss[inds[i + 1]].position, poss[inds[i + 2]].position, newPos))
+	    {
+            canMove = true;
+            break;
+	    }
+    }
+    for (Car* car : scene->enemies)
+    {
+        if (glm::distance(newPos, car->position) < 1.5f)
+        {
+            canMove = false;
+            break;
+        }
+    }
     if (canMove)
     {
         SetPosition(newPos);
@@ -69,4 +80,23 @@ void Player::OnInputUpdate(float deltaTime, int mods)
 void Player::Render()
 {
 	Car::Render();
+}
+
+bool Player::IsInTriangle(glm::vec3 A, glm::vec3 B, glm::vec3 C, glm::vec3 newPos) const
+{
+    const glm::vec3 v0 = C - A;
+    const glm::vec3 v1 = B - A;
+	const glm::vec3 v2 = newPos - A;
+
+	const float dot00 = glm::dot(v0, v0);
+	const float dot01 = glm::dot(v0, v1);
+	const float dot02 = glm::dot(v0, v2);
+	const float dot11 = glm::dot(v1, v1);
+	const float dot12 = glm::dot(v1, v2);
+
+	const float invDenom = 1 / (dot00 * dot11 - dot01 * dot01);
+	const float u = (dot11 * dot02 - dot01 * dot12) * invDenom;
+	const float v = (dot00 * dot12 - dot01 * dot02) * invDenom;
+
+	return (u >= 0) && (v >= 0) && (u + v < 1);
 }

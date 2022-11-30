@@ -27,6 +27,7 @@ void Tema2::Init()
 	Track* track = new Track(this);
 	gameObjects.push_back(track);
 	Player* car = new Player(this, glm::vec3(0, 0, 0.6f));
+	player = car;
 	gameObjects.push_back(car);
 
 	camera->followTarget = car;
@@ -118,7 +119,7 @@ void Tema2::Update(float deltaTimeSeconds)
 	objectsToAdd.clear();
 }
 
-void Tema2::RenderMesh(Mesh* mesh, Shader* shader, const glm::mat4& modelMatrix)
+void Tema2::RenderMesh(Mesh* mesh, Shader* shader, const glm::mat4& modelMatrix, glm::vec3 pos)
 {
 	if (!mesh || !shader || !shader->program)
 		return;
@@ -128,6 +129,12 @@ void Tema2::RenderMesh(Mesh* mesh, Shader* shader, const glm::mat4& modelMatrix)
 	glUniformMatrix4fv(shader->loc_view_matrix, 1, GL_FALSE, glm::value_ptr(camera->GetViewMatrix()));
 	glUniformMatrix4fv(shader->loc_projection_matrix, 1, GL_FALSE, glm::value_ptr(projectionMatrix));
 	glUniformMatrix4fv(shader->loc_model_matrix, 1, GL_FALSE, glm::value_ptr(modelMatrix));
+
+	int location = glGetUniformLocation(shader->program, "car_position");
+	glUniform3fv(location, 1, glm::value_ptr(player->position));
+
+	location = glGetUniformLocation(shader->program, "obj_position");
+	glUniform3fv(location, 1, glm::value_ptr(pos));
 
 	mesh->Render();
 }

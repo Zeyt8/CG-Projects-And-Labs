@@ -1,4 +1,5 @@
 #include "Car.h"
+#include <iostream>
 
 using namespace p2;
 
@@ -63,5 +64,5 @@ void Car::OnInputUpdate(float deltaTime, int mods)
 
 void Car::Render()
 {
-    scene->RenderMesh(meshes["car"], scene->GetShader("Curve"), modelMatrix);
+    scene->RenderMesh(meshes["car"], scene->GetShader("Curve"), modelMatrix, position);
 }

@@ -70,6 +70,7 @@ Mesh* GameObject::CreateMesh(const char* name, const std::vector<VertexFormat>& 
     // Set vertex color attribute
     glEnableVertexAttribArray(3);
     glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(VertexFormat), (void*)(2 * sizeof(glm::vec3) + sizeof(glm::vec2)));
+
     // ========================================================================
 
     // Unbind the VAO
