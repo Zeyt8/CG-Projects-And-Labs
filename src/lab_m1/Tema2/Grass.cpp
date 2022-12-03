@@ -28,9 +28,6 @@ Grass::Grass(Tema2* scene) : GameObject(scene)
         }
     }
 
-    meshes["grass"] = new Mesh("grass");
-    meshes["grass"]->InitFromData(vertices, indices);
-
     CreateMesh("grass", vertices, indices);
 
     SetPosition(glm::vec3(0, -0.05f, 0));

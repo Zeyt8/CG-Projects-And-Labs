@@ -36,6 +36,7 @@ namespace p2
 
 		std::unordered_map<std::string, Mesh*> meshes;
 		Tema2 *scene = nullptr;
-		std::vector<GameObject*> childObjects;
+		GameObject* parent;
+		std::vector<GameObject*> children;
 	};
 }

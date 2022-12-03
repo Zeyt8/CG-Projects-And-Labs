@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../GameObject.h"
+#include "Wheel.h"
 
 namespace p2
 {
@@ -17,6 +18,8 @@ namespace p2
 		void Render() override;
 
 	protected:
-		float speed;
+		float maxSpeed = 10;
+		float speed = 0;
+		std::vector<Wheel*> wheels;
 	};
 }

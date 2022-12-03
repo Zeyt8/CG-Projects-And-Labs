@@ -20,13 +20,14 @@ void Enemy::Start()
 	Car::Start();
 	SetPosition(path[0]);
 	nextNode = 1;
+	speed = 6;
 }
 
 void Enemy::Update(float deltaTime)
 {
-	Car::Update(deltaTime);
+	//Car::Update(deltaTime);
 	SetPosition(position + glm::normalize(path[nextNode] - position) * speed * deltaTime);
-	if (glm::distance(path[nextNode], position) < 0.05f)
+	if (glm::distance(path[nextNode], position) < 0.1f)
 	{
 		nextNode++;
 		if (nextNode >= path.size())

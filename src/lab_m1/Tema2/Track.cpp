@@ -85,9 +85,6 @@ Track::Track(Tema2* scene) : GameObject(scene)
 	indices.push_back(1);
 	indices.push_back(0);
 
-	meshes["track"] = new Mesh("track");
-	meshes["track"]->InitFromData(vertices, indices);
-
 	CreateMesh("track", vertices, indices);
 }
 

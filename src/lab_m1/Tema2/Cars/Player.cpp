@@ -24,36 +24,37 @@ void Player::Start()
 void Player::Update(float deltaTime)
 {
 	Car::Update(deltaTime);
-}
 
-void Player::OnInputUpdate(float deltaTime, int mods)
-{
-	Car::OnInputUpdate(deltaTime, mods);
+    // Movement
     glm::vec3 moveDir = glm::vec3(scene->GetCamera()->forward.x, 0, scene->GetCamera()->forward.z);
     moveDir = glm::normalize(moveDir);
-
     glm::vec3 newPos = position;
-    if (scene->GetWindow()->KeyHold(GLFW_KEY_W))
-    {
-        newPos += moveDir * speed * deltaTime;
-    }
-    if (scene->GetWindow()->KeyHold(GLFW_KEY_S))
-    {
-        newPos -= moveDir * speed * deltaTime;
-    }
+    newPos += moveDir * speed * deltaTime;
+	if (!scene->GetWindow()->KeyHold(GLFW_KEY_W) && !scene->GetWindow()->KeyHold(GLFW_KEY_S))
+	{
+        if (speed > 0)
+        {
+			speed -= deltaTime * 10;
+        }
+        else if (speed < 0)
+        {
+            speed += deltaTime * 10;
+        }
+	}
 
+    // Collision detection
     bool canMove = false;
     const std::vector<VertexFormat> poss = Track::Instance->meshes["track"]->vertices;
     const std::vector<unsigned int> inds = Track::Instance->meshes["track"]->indices;
     for (int i = 0; i < inds.size() - 2; i += 3)
     {
-	    if (IsInTriangle(poss[inds[i]].position, poss[inds[i + 1]].position, poss[inds[i + 2]].position, newPos))
-	    {
+        if (IsInTriangle(poss[inds[i]].position, poss[inds[i + 1]].position, poss[inds[i + 2]].position, newPos))
+        {
             canMove = true;
             break;
-	    }
+        }
     }
-    for (Car* car : scene->enemies)
+    for (const Car* car : scene->enemies)
     {
         if (glm::distance(newPos, car->position) < 1.5f)
         {
@@ -65,7 +66,31 @@ void Player::OnInputUpdate(float deltaTime, int mods)
     {
         SetPosition(newPos);
     }
+}
 
+void Player::OnInputUpdate(float deltaTime, int mods)
+{
+	Car::OnInputUpdate(deltaTime, mods);
+    
+    // Movement Input
+    if (scene->GetWindow()->KeyHold(GLFW_KEY_W))
+    {
+        speed += deltaTime * 2;
+        if (speed > maxSpeed)
+        {
+            speed = maxSpeed;
+        }
+    }
+    else if (scene->GetWindow()->KeyHold(GLFW_KEY_S))
+    {
+		speed -= deltaTime * 2;
+        if (speed < -maxSpeed)
+        {
+            speed = -maxSpeed;
+        }
+    }
+
+    // Rotation
     if (scene->GetWindow()->KeyHold(GLFW_KEY_A))
     {
         SetRotation(rotation + glm::vec3(0, 1, 0) * deltaTime);

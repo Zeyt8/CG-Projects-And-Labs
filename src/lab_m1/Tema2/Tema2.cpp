@@ -119,7 +119,7 @@ void Tema2::Update(float deltaTimeSeconds)
 	objectsToAdd.clear();
 }
 
-void Tema2::RenderMesh(Mesh* mesh, Shader* shader, const glm::mat4& modelMatrix, glm::vec3 pos)
+void Tema2::RenderMesh(Mesh* mesh, Shader* shader, const glm::mat4& modelMatrix, glm::vec3 pos, glm::vec3 rotation)
 {
 	if (!mesh || !shader || !shader->program)
 		return;
@@ -135,6 +135,9 @@ void Tema2::RenderMesh(Mesh* mesh, Shader* shader, const glm::mat4& modelMatrix,
 
 	location = glGetUniformLocation(shader->program, "obj_position");
 	glUniform3fv(location, 1, glm::value_ptr(pos));
+
+	location = glGetUniformLocation(shader->program, "obj_rotation");
+	glUniform3fv(location, 1, glm::value_ptr(rotation));
 
 	mesh->Render();
 }

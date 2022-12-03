@@ -58,9 +58,6 @@ Tree::Tree(Tema2* scene) : GameObject(scene)
             8, 10, 12
         };
 
-        meshes["tree"] = new Mesh("tree");
-        meshes["tree"]->InitFromData(vertices, indices);
-
         CreateMesh("tree", vertices, indices);
     }
 }

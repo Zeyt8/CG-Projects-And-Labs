@@ -8,6 +8,7 @@ namespace p2
     class GameObject;
     class Camera;
     class Car;
+    class Player;
 
     class Tema2 : public gfxc::SimpleScene
     {
@@ -16,7 +17,7 @@ namespace p2
         ~Tema2();
 
         void Init() override;
-        void RenderMesh(Mesh* mesh, Shader* shader, const glm::mat4& modelMatrix, glm::vec3 pos);
+        void RenderMesh(Mesh* mesh, Shader* shader, const glm::mat4& modelMatrix, glm::vec3 pos = glm::vec3(0), glm::vec3 rotation = glm::vec3(0));
         Shader* GetShader(const std::string& shader)
         {
             return shaders[shader];
@@ -56,6 +57,6 @@ namespace p2
     protected:
         std::vector<GameObject*> objectsToAdd;
         Camera* camera;
-        Car* player;
+        Player* player;
     };
 }

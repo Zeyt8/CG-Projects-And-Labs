@@ -1,5 +1,4 @@
 #include "Car.h"
-#include <iostream>
 
 using namespace p2;
 
@@ -7,15 +6,15 @@ Car::Car(Tema2* scene, glm::vec3 color) : GameObject(scene)
 {
     const std::vector<VertexFormat> vertices
     {
-        VertexFormat(glm::vec3(-0.5f, 0, 0.5f), color, glm::vec3(0.2, 0.8, 0.6)),
-        VertexFormat(glm::vec3(0.5f, 0, 0.5f), color, glm::vec3(0.2, 0.8, 0.6)),
-        VertexFormat(glm::vec3(-0.5f, 1, 0.5f), color, glm::vec3(0.2, 0.8, 0.6)),
-        VertexFormat(glm::vec3(0.5f, 1, 0.5f), color, glm::vec3(0.2, 0.8, 0.6)),
-
-        VertexFormat(glm::vec3(-0.5f, 0, -0.5f), color, glm::vec3(0.2, 0.8, 0.6)),
-        VertexFormat(glm::vec3(0.5f, 0, -0.5f), color, glm::vec3(0.2, 0.8, 0.6)),
-        VertexFormat(glm::vec3(-0.5f, 1, -0.5f), color, glm::vec3(0.2, 0.8, 0.6)),
-        VertexFormat(glm::vec3(0.5f, 1, -0.5f), color, glm::vec3(0.2, 0.8, 0.6)),
+        VertexFormat(glm::vec3(-0.5f, 0.1f, 1), color, glm::vec3(0.2, 0.8, 0.6)),
+        VertexFormat(glm::vec3(0.5f, 0.1f, 1), color, glm::vec3(0.2, 0.8, 0.6)),
+        VertexFormat(glm::vec3(-0.5f, 1, 1), color, glm::vec3(0.2, 0.8, 0.6)),
+        VertexFormat(glm::vec3(0.5f, 1, 1), color, glm::vec3(0.2, 0.8, 0.6)),
+		
+        VertexFormat(glm::vec3(-0.5f, 0.1f, -1), color, glm::vec3(0.2, 0.8, 0.6)),
+        VertexFormat(glm::vec3(0.5f, 0.1f, -1), color, glm::vec3(0.2, 0.8, 0.6)),
+        VertexFormat(glm::vec3(-0.5f, 1, -1), color, glm::vec3(0.2, 0.8, 0.6)),
+        VertexFormat(glm::vec3(0.5f, 1, -1), color, glm::vec3(0.2, 0.8, 0.6)),
     };
 
     const std::vector<unsigned int> indices =
@@ -34,12 +33,20 @@ Car::Car(Tema2* scene, glm::vec3 color) : GameObject(scene)
         0, 2, 4,
     };
 	
-    meshes["car"] = new Mesh("car");
-    meshes["car"]->InitFromData(vertices, indices);
-
     CreateMesh("car", vertices, indices);
 
-    speed = 5;
+    for (int i = 0; i < 4; i++)
+    {
+        Wheel* wheel = new Wheel(scene);
+        wheel->parent = this;
+        children.push_back(wheel);
+		wheels.push_back(wheel);
+		scene->AddObject(wheel);
+	}
+	wheels[0]->SetPosition(glm::vec3(-0.6f, 0.2f, 0.6f));
+	wheels[1]->SetPosition(glm::vec3(0.6f, 0.2f, 0.6f));
+	wheels[2]->SetPosition(glm::vec3(-0.6f, 0.2f, -0.6f));
+	wheels[3]->SetPosition(glm::vec3(0.6f, 0.2f, -0.6f));
 }
 
 Car::~Car() = default;
@@ -51,11 +58,14 @@ void Car::Awake()
 void Car::Start()
 {
     SetRotation(glm::vec3(0, RADIANS(71), 0));
-    SetScale(glm::vec3(1, 1, 2));
 }
 
 void Car::Update(float deltaTime)
 {
+    for (Wheel* wheel : wheels)
+    {
+        wheel->rotationSpeed = speed;
+    }
 }
 
 void Car::OnInputUpdate(float deltaTime, int mods)

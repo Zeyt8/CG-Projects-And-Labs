@@ -8,6 +8,7 @@ uniform mat4 View;
 uniform mat4 Projection;
 uniform vec3 car_position;
 uniform vec3 obj_position;
+uniform vec3 obj_rotation;
 
 out vec3 frag_color;
 
