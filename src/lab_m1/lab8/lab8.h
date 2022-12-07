@@ -30,13 +30,14 @@ namespace m1
         void OnMouseScroll(int mouseX, int mouseY, int offsetX, int offsetY) override;
         void OnWindowResize(int width, int height) override;
 
-        glm::vec3 lightPosition;
-        glm::vec3 lightDirection;
+        std::vector<glm::vec3> lightPositions;
+        std::vector<glm::vec3> lightDirections;
         unsigned int materialShininess;
         float materialKd;
         float materialKs;
 
-        // TODO(student): If you need any other class variables, define them here.
-
+        // If you need any other class variables, define them here.
+        bool usingSpotLight;
+        float spotAngle = 30;
     };
 }   // namespace m1

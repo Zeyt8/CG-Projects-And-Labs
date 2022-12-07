@@ -9,16 +9,21 @@ layout(location = 2) in vec2 v_texture_coord;
 uniform mat4 Model;
 uniform mat4 View;
 uniform mat4 Projection;
+uniform vec3 light_position[2];
+uniform vec3 light_direction[2];
+uniform float spot_angle;
+uniform bool spot_light;
 
 // Output values to fragment shader
 out vec3 world_position;
 out vec3 world_normal;
 
-
 void main()
 {
-    // TODO(student): Compute world space vertex position and normal,
+    // Compute world space vertex position and normal,
     // and send them to the fragment shader
+	world_position = (Model * vec4(v_position, 1)).xyz;
+    world_normal = normalize(mat3(Model) * v_normal);
 
     gl_Position = Projection * View * Model * vec4(v_position, 1.0);
 }
