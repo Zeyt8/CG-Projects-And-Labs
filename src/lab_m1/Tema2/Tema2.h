@@ -17,7 +17,7 @@ namespace p2
         ~Tema2();
 
         void Init() override;
-        void RenderMesh(Mesh* mesh, Shader* shader, const glm::mat4& modelMatrix, glm::vec3 pos = glm::vec3(0), glm::vec3 rotation = glm::vec3(0));
+        void RenderMesh(Mesh* mesh, Shader* shader, const glm::mat4& modelMatrix);
         Shader* GetShader(const std::string& shader)
         {
             return shaders[shader];

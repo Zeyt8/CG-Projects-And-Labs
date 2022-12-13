@@ -78,5 +78,5 @@ void Tree::Update(float deltaTime)
 
 void Tree::Render()
 {
-    scene->RenderMesh(meshes["tree"], scene->GetShader("Curve"), modelMatrix, position);
+    scene->RenderMesh(meshes["tree"], scene->GetShader("Curve"), modelMatrix);
 }

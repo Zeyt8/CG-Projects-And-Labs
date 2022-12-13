@@ -74,5 +74,5 @@ void Car::OnInputUpdate(float deltaTime, int mods)
 
 void Car::Render()
 {
-    scene->RenderMesh(meshes["car"], scene->GetShader("Curve"), modelMatrix, position);
+    scene->RenderMesh(meshes["car"], scene->GetShader("Curve"), modelMatrix);
 }

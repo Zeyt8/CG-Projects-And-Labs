@@ -54,7 +54,7 @@ namespace p2
 		{
 			const glm::mat4 mm = parent->modelMatrix * modelMatrix;
 			SetRotation(rotation - glm::vec3(deltaTime * rotationSpeed, 0, 0));
-			scene->RenderMesh(meshes["wheel"], scene->GetShader("Curve"), mm, parent->position + position, RADIANS(parent->rotation + rotation));
+			scene->RenderMesh(meshes["wheel"], scene->GetShader("Curve"), mm);
 		}
 
 	public:

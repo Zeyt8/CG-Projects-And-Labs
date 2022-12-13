@@ -118,5 +118,5 @@ void Track::Update(float deltaTime)
 
 void Track::Render()
 {
-	scene->RenderMesh(meshes["track"], scene->GetShader("Curve"), modelMatrix, position);
+	scene->RenderMesh(meshes["track"], scene->GetShader("Curve"), modelMatrix);
 }

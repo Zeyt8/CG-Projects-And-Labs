@@ -50,5 +50,5 @@ void Grass::Update(float deltaTime)
 
 void Grass::Render()
 {
-	scene->RenderMesh(meshes["grass"], scene->GetShader("Curve"), modelMatrix, position);
+	scene->RenderMesh(meshes["grass"], scene->GetShader("Curve"), modelMatrix);
 }
