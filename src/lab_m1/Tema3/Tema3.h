@@ -7,6 +7,7 @@ namespace p3
 {
     class GameObject;
     class Camera;
+    class Player;
 
     class Tema3 : public gfxc::SimpleScene
     {
@@ -15,7 +16,7 @@ namespace p3
         ~Tema3();
 
         void Init() override;
-        void RenderMesh(Mesh* mesh, Shader* shader, const glm::mat4& modelMatrix);
+        void RenderMesh(Mesh* mesh, Shader* shader, const glm::mat4& modelMatrix, Texture2D* texture = nullptr);
         Shader* GetShader(const std::string& shader)
         {
             return shaders[shader];
@@ -50,7 +51,11 @@ namespace p3
 
     public:
         std::vector<GameObject*> gameObjects;
+        std::unordered_map<std::string, Texture2D*> textures;
+        const std::string sourceTextureDir = PATH_JOIN(window->props.selfDir, RESOURCE_PATH::TEXTURES, "Tema3");
+        const std::string sourcePrimitiveDir = PATH_JOIN(window->props.selfDir, RESOURCE_PATH::MODELS, "primitives");
         glm::mat4 projectionMatrix;
+        Player* player;
     protected:
         std::vector<GameObject*> objectsToAdd;
         Camera* camera;

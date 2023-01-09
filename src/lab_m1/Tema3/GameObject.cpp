@@ -6,17 +6,29 @@ using namespace p3;
 
 GameObject::GameObject()
 {
-}
-
-GameObject::GameObject(Tema3* scene)
-{
     position = glm::vec3(0);
     rotation = glm::vec3(0);
     scale = glm::vec3(1);
-    GameObject::scene = scene;
 }
 
 GameObject::~GameObject()
+{
+}
+
+GameObject::GameObject(Tema3* scene) : GameObject()
+{
+    GameObject::scene = scene;
+}
+
+void p3::GameObject::Awake()
+{
+}
+
+void p3::GameObject::Start()
+{
+}
+
+void p3::GameObject::Update(float deltaTime)
 {
 }
 

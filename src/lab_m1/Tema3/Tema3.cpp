@@ -1,6 +1,7 @@
 #include "Tema3.h"
 #include "GameObject.h"
 #include "Camera.h"
+#include "Player.h"
 
 using namespace p3;
 
@@ -18,6 +19,9 @@ void Tema3::Init()
 	camera->SetPosition(glm::vec3(0, 2, 3.5f));
 	camera->RotateThirdPerson_OX(RADIANS(-30));
 	gameObjects.push_back(camera);
+
+	player = new Player(this);
+	gameObjects.push_back(player);
 
 	for (int i = 0; i < gameObjects.size(); i++)
 	{
@@ -39,11 +43,18 @@ void Tema3::Init()
 	projectionMatrix = glm::perspective(RADIANS(60), window->props.aspectRatio, 0.01f, 200.0f);
 
 	{
-		/*Shader* shader = new Shader("Curve");
-		shader->AddShader(PATH_JOIN(window->props.selfDir, SOURCE_PATH::M1, "Tema2", "curveVS.glsl"), GL_VERTEX_SHADER);
-		shader->AddShader(PATH_JOIN(window->props.selfDir, SOURCE_PATH::M1, "Tema2", "curveFS.glsl"), GL_FRAGMENT_SHADER);
+		Shader* shader = new Shader("Texture");
+		shader->AddShader(PATH_JOIN(window->props.selfDir, SOURCE_PATH::M1, "Tema3", "shaders", "textureVS.glsl"), GL_VERTEX_SHADER);
+		shader->AddShader(PATH_JOIN(window->props.selfDir, SOURCE_PATH::M1, "Tema3", "shaders", "textureFS.glsl"), GL_FRAGMENT_SHADER);
 		shader->CreateAndLink();
-		shaders[shader->GetName()] = shader;*/
+		shaders[shader->GetName()] = shader;
+	}
+	{
+		Shader* shader = new Shader("Snow");
+		shader->AddShader(PATH_JOIN(window->props.selfDir, SOURCE_PATH::M1, "Tema3", "shaders", "snowVS.glsl"), GL_VERTEX_SHADER);
+		shader->AddShader(PATH_JOIN(window->props.selfDir, SOURCE_PATH::M1, "Tema3", "shaders", "snowFS.glsl"), GL_FRAGMENT_SHADER);
+		shader->CreateAndLink();
+		shaders[shader->GetName()] = shader;
 	}
 }
 
@@ -91,18 +102,41 @@ void Tema3::Update(float deltaTimeSeconds)
 	objectsToAdd.clear();
 }
 
-void Tema3::RenderMesh(Mesh* mesh, Shader* shader, const glm::mat4& modelMatrix)
+void Tema3::RenderMesh(Mesh* mesh, Shader* shader, const glm::mat4& modelMatrix, Texture2D* texture)
 {
-	if (!mesh || !shader || !shader->program)
+	if (!mesh || !shader || !shader->GetProgramID())
 		return;
 
 	// Render an object using the specified shader and the specified position
-	shader->Use();
-	glUniformMatrix4fv(shader->loc_view_matrix, 1, GL_FALSE, glm::value_ptr(camera->GetViewMatrix()));
-	glUniformMatrix4fv(shader->loc_projection_matrix, 1, GL_FALSE, glm::value_ptr(projectionMatrix));
-	glUniformMatrix4fv(shader->loc_model_matrix, 1, GL_FALSE, glm::value_ptr(modelMatrix));
+	glUseProgram(shader->program);
 
-	mesh->Render();
+	// Bind model matrix
+	GLint loc_model_matrix = glGetUniformLocation(shader->program, "Model");
+	glUniformMatrix4fv(loc_model_matrix, 1, GL_FALSE, glm::value_ptr(modelMatrix));
+
+	// Bind view matrix
+	glm::mat4 viewMatrix = GetSceneCamera()->GetViewMatrix();
+	int loc_view_matrix = glGetUniformLocation(shader->program, "View");
+	glUniformMatrix4fv(loc_view_matrix, 1, GL_FALSE, glm::value_ptr(viewMatrix));
+
+	// Bind projection matrix
+	glm::mat4 projectionMatrix = GetSceneCamera()->GetProjectionMatrix();
+	int loc_projection_matrix = glGetUniformLocation(shader->program, "Projection");
+	glUniformMatrix4fv(loc_projection_matrix, 1, GL_FALSE, glm::value_ptr(projectionMatrix));
+
+	if (texture)
+	{
+		// - activate texture location 0
+		// - bind the texture ID
+		// - send the uniform value
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, texture->GetTextureID());
+		glUniform1i(glGetUniformLocation(shader->program, "texture"), 0);
+	}
+
+	// Draw the object
+	glBindVertexArray(mesh->GetBuffers()->m_VAO);
+	glDrawElements(mesh->GetDrawMode(), static_cast<int>(mesh->indices.size()), GL_UNSIGNED_INT, 0);
 }
 
 void Tema3::FrameEnd()

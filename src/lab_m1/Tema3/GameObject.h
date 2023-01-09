@@ -12,9 +12,9 @@ namespace p3
 		GameObject(Tema3* scene);
 		~GameObject();
 
-		virtual void Awake() = 0;
-		virtual void Start() = 0;
-		virtual void Update(float deltaTime) = 0;
+		virtual void Awake();
+		virtual void Start();
+		virtual void Update(float deltaTime);
 		virtual void LateUpdate(float deltaTime);
 		virtual void OnInputUpdate(float deltaTime, int mods);
 		virtual void Render();
@@ -36,7 +36,7 @@ namespace p3
 
 		std::unordered_map<std::string, Mesh*> meshes;
 		Tema3 *scene = nullptr;
-		GameObject* parent;
+		GameObject* parent = nullptr;
 		std::vector<GameObject*> children;
 	};
 }
