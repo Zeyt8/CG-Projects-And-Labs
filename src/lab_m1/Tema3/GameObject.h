@@ -21,7 +21,10 @@ namespace p3
 		bool Destroy = false;
 		glm::mat4 modelMatrix = glm::mat4(1);
 
-		Mesh* CreateMesh(const char* name, const std::vector<VertexFormat>& vertices, const std::vector<unsigned int>& indices);
+		Mesh* CreateMesh(const char* name, const std::vector<glm::vec3>& positions,
+			const std::vector<glm::vec3>& normals,
+			const std::vector<glm::vec2>& texCoords,
+			const std::vector<unsigned int>& indices);
 		void SetPosition(glm::vec3 pos);
 		void SetRotation(glm::vec3 rot);
 		void SetScale(glm::vec3 sc);

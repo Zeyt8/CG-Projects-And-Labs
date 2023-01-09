@@ -78,6 +78,7 @@ namespace p3
 		}
 
     public:
+        glm::mat4 projectionMatrix;
     	GameObject* followTarget = nullptr;
     	GameObject* lookAtTarget = nullptr;
         float distanceToTarget;

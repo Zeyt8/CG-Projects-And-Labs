@@ -2,6 +2,8 @@
 #include "GameObject.h"
 #include "Camera.h"
 #include "Player.h"
+#include "Map.h"
+#include <iostream>
 
 using namespace p3;
 
@@ -18,10 +20,16 @@ void Tema3::Init()
 	camera = new Camera();
 	camera->SetPosition(glm::vec3(0, 2, 3.5f));
 	camera->RotateThirdPerson_OX(RADIANS(-30));
+	camera->projectionMatrix = glm::perspective(RADIANS(60), window->props.aspectRatio, 0.01f, 200.0f);
 	gameObjects.push_back(camera);
 
 	player = new Player(this);
 	gameObjects.push_back(player);
+
+	Map* map = new Map(this);
+	gameObjects.push_back(map);
+
+	camera->followTarget = map;
 
 	for (int i = 0; i < gameObjects.size(); i++)
 	{
@@ -40,17 +48,15 @@ void Tema3::Init()
 	}
 	objectsToAdd.clear();
 
-	projectionMatrix = glm::perspective(RADIANS(60), window->props.aspectRatio, 0.01f, 200.0f);
-
 	{
-		Shader* shader = new Shader("Texture");
+		Shader* shader = new Shader("texture");
 		shader->AddShader(PATH_JOIN(window->props.selfDir, SOURCE_PATH::M1, "Tema3", "shaders", "textureVS.glsl"), GL_VERTEX_SHADER);
 		shader->AddShader(PATH_JOIN(window->props.selfDir, SOURCE_PATH::M1, "Tema3", "shaders", "textureFS.glsl"), GL_FRAGMENT_SHADER);
 		shader->CreateAndLink();
 		shaders[shader->GetName()] = shader;
 	}
 	{
-		Shader* shader = new Shader("Snow");
+		Shader* shader = new Shader("snow");
 		shader->AddShader(PATH_JOIN(window->props.selfDir, SOURCE_PATH::M1, "Tema3", "shaders", "snowVS.glsl"), GL_VERTEX_SHADER);
 		shader->AddShader(PATH_JOIN(window->props.selfDir, SOURCE_PATH::M1, "Tema3", "shaders", "snowFS.glsl"), GL_FRAGMENT_SHADER);
 		shader->CreateAndLink();
@@ -115,12 +121,12 @@ void Tema3::RenderMesh(Mesh* mesh, Shader* shader, const glm::mat4& modelMatrix,
 	glUniformMatrix4fv(loc_model_matrix, 1, GL_FALSE, glm::value_ptr(modelMatrix));
 
 	// Bind view matrix
-	glm::mat4 viewMatrix = GetSceneCamera()->GetViewMatrix();
+	glm::mat4 viewMatrix = GetCamera()->GetViewMatrix();
 	int loc_view_matrix = glGetUniformLocation(shader->program, "View");
 	glUniformMatrix4fv(loc_view_matrix, 1, GL_FALSE, glm::value_ptr(viewMatrix));
 
 	// Bind projection matrix
-	glm::mat4 projectionMatrix = GetSceneCamera()->GetProjectionMatrix();
+	glm::mat4 projectionMatrix = GetCamera()->projectionMatrix;
 	int loc_projection_matrix = glGetUniformLocation(shader->program, "Projection");
 	glUniformMatrix4fv(loc_projection_matrix, 1, GL_FALSE, glm::value_ptr(projectionMatrix));
 
@@ -131,7 +137,7 @@ void Tema3::RenderMesh(Mesh* mesh, Shader* shader, const glm::mat4& modelMatrix,
 		// - send the uniform value
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, texture->GetTextureID());
-		glUniform1i(glGetUniformLocation(shader->program, "texture"), 0);
+		glUniform1i(glGetUniformLocation(shader->program, "texture_1"), 0);
 	}
 
 	// Draw the object
