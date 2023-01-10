@@ -19,7 +19,7 @@ namespace p3
 		virtual void OnInputUpdate(float deltaTime, int mods);
 		virtual void Render();
 		bool Destroy = false;
-		glm::mat4 modelMatrix = glm::mat4(1);
+		glm::mat4 ModelMatrix = glm::mat4(1);
 
 		Mesh* CreateMesh(const char* name, const std::vector<glm::vec3>& positions,
 			const std::vector<glm::vec3>& normals,
@@ -28,18 +28,22 @@ namespace p3
 		void SetPosition(glm::vec3 pos);
 		void SetRotation(glm::vec3 rot);
 		void SetScale(glm::vec3 sc);
+		static glm::mat4 TranslateMatrix(glm::mat4 modelMatrix, glm::vec3 translation);
+		static glm::mat4 ScaleMatrix(glm::mat4 modelMatrix, glm::vec3 scale);
+		glm::vec2 GetScreenPosition() const;
 
 	private:
-		void GameObject::SetModelMatrix(glm::vec3 pos, glm::vec3 rot, glm::vec3 sc);
+		void SetModelMatrix(glm::vec3 pos, glm::vec3 rot, glm::vec3 sc);
 
 	public:
-		glm::vec3 position = glm::vec3(0);
-		glm::vec3 rotation = glm::vec3(0);
-		glm::vec3 scale = glm::vec3(1);
+		glm::vec3 Position = glm::vec3(0);
+		glm::vec3 Rotation = glm::vec3(0);
+		glm::vec3 Scale = glm::vec3(1);
+		glm::vec3 Forward = glm::vec3(0, 0, 1);
 
-		std::unordered_map<std::string, Mesh*> meshes;
-		Tema3 *scene = nullptr;
-		GameObject* parent = nullptr;
-		std::vector<GameObject*> children;
+		std::unordered_map<std::string, Mesh*> Meshes;
+		Tema3 *Scene = nullptr;
+		GameObject* Parent = nullptr;
+		std::vector<GameObject*> Children;
 	};
 }

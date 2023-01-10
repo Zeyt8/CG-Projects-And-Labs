@@ -8,6 +8,6 @@ namespace p3
 		Rock(Tema3* scene);
 		~Rock();
 
-		void Update(float deltaTime) override;
+		void Render() override;
 	};
 }

@@ -1,14 +1,14 @@
 #include "GameObject.h"
-
-#include <iostream>
+#include "Camera.h"
+#include <glm/gtx/rotate_vector.hpp>
 
 using namespace p3;
 
 GameObject::GameObject()
 {
-    position = glm::vec3(0);
-    rotation = glm::vec3(0);
-    scale = glm::vec3(1);
+    Position = glm::vec3(0);
+    Rotation = glm::vec3(0);
+    Scale = glm::vec3(1);
 }
 
 GameObject::~GameObject()
@@ -17,7 +17,7 @@ GameObject::~GameObject()
 
 GameObject::GameObject(Tema3* scene) : GameObject()
 {
-    GameObject::scene = scene;
+    GameObject::Scene = scene;
 }
 
 void p3::GameObject::Awake()
@@ -50,24 +50,54 @@ Mesh* GameObject::CreateMesh(const char* name, const std::vector<glm::vec3>& pos
     const std::vector<unsigned int>& indices)
 {
     // Mesh information is saved into a Mesh object
-    meshes[name] = new Mesh(name);
-    meshes[name]->InitFromData(positions, normals, texCoords, indices);
-    return meshes[name];
+    Meshes[name] = new Mesh(name);
+    Meshes[name]->InitFromData(positions, normals, texCoords, indices);
+    return Meshes[name];
 }
 
-void GameObject::SetPosition(glm::vec3 pos)
+glm::vec2 GameObject::GetScreenPosition() const
 {
-	SetModelMatrix(pos, rotation, scale);
+    return Scene->GetCamera()->projectionMatrix * Scene->GetCamera()->GetViewMatrix() * ModelMatrix * glm::vec4(Position, 1.0);
 }
 
-void GameObject::SetRotation(glm::vec3 rot)
+void GameObject::SetPosition(const glm::vec3 pos)
 {
-	SetModelMatrix(position, rot, scale);
+	SetModelMatrix(pos, Rotation, Scale);
 }
 
-void GameObject::SetScale(glm::vec3 sc)
+void GameObject::SetRotation(const glm::vec3 rot)
 {
-	SetModelMatrix(position, rotation, sc);
+	Forward = glm::rotateX(glm::vec3(0, 0, 1), rot.x);
+	Forward = glm::rotateY(Forward, rot.y);
+	Forward = glm::rotateZ(Forward, rot.z);
+	SetModelMatrix(Position, rot, Scale);
+}
+
+void GameObject::SetScale(const glm::vec3 sc)
+{
+	SetModelMatrix(Position, Rotation, sc);
+}
+
+glm::mat4 GameObject::TranslateMatrix(const glm::mat4 modelMatrix, const glm::vec3 translation)
+{
+    const glm::mat4 trans = glm::mat4(
+        1, 0, 0, translation.x,
+        0, 1, 0, translation.y,
+        0, 0, 1, translation.z,
+        0, 0, 0, 1
+    );
+    return modelMatrix * glm::transpose(trans);
+}
+
+glm::mat4 GameObject::ScaleMatrix(const glm::mat4 modelMatrix, const glm::vec3 scale)
+{
+    const glm::mat4 scaleMat = glm::mat4(
+        scale.x, 0, 0, 0,
+        0, scale.y, 0, 0,
+        0, 0, scale.z, 0,
+        0, 0, 0, 1
+    );
+	return modelMatrix * glm::transpose(scaleMat);
 }
 
 void GameObject::SetModelMatrix(glm::vec3 pos, glm::vec3 rot, glm::vec3 sc)
@@ -103,8 +133,8 @@ void GameObject::SetModelMatrix(glm::vec3 pos, glm::vec3 rot, glm::vec3 sc)
         0, 0, sc.z, 0,
         0, 0, 0, 1
     );
-    position = pos;
-    rotation = rot;
-    scale = sc;
-    modelMatrix = glm::mat4(1) * glm::transpose(trans) * glm::transpose(rotX * rotY * rotZ) * glm::transpose(scaleMat);
+    Position = pos;
+    Rotation = rot;
+    Scale = sc;
+    ModelMatrix = glm::mat4(1) * glm::transpose(trans) * glm::transpose(rotZ * rotY * rotX) * glm::transpose(scaleMat);
 }

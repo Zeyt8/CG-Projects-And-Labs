@@ -3,7 +3,11 @@
 #include "Camera.h"
 #include "Player.h"
 #include "Map.h"
-#include <iostream>
+#include "Tree.h"
+#include "Rock.h"
+#include "Gift.h"
+#include "Lamp.h"
+#include <glm/gtx/rotate_vector.hpp>
 
 using namespace p3;
 
@@ -17,36 +21,51 @@ Tema3::~Tema3()
 
 void Tema3::Init()
 {
-	camera = new Camera();
-	camera->SetPosition(glm::vec3(0, 2, 3.5f));
-	camera->RotateThirdPerson_OX(RADIANS(-30));
-	camera->projectionMatrix = glm::perspective(RADIANS(60), window->props.aspectRatio, 0.01f, 200.0f);
-	gameObjects.push_back(camera);
+	_camera = new Camera();
+	_camera->SetPosition(glm::vec3(0, 2, 3.5f));
+	_camera->RotateThirdPerson_OX(RADIANS(-20));
+	_camera->projectionMatrix = glm::perspective(RADIANS(60), window->props.aspectRatio, 0.01f, 200.0f);
+	GameObjects.push_back(_camera);
 
-	player = new Player(this);
-	gameObjects.push_back(player);
+	PlayerObject = new Player(this);
+	GameObjects.push_back(PlayerObject);
+
+	_camera->followTarget = PlayerObject;
 
 	Map* map = new Map(this);
-	gameObjects.push_back(map);
+	GameObjects.push_back(map);
 
-	camera->followTarget = map;
+	Tree* tree = new Tree(this);
+	GameObjects.push_back(tree);
 
-	for (int i = 0; i < gameObjects.size(); i++)
+	Rock* rock = new Rock(this);
+	rock->SetPosition(rock->Position + ConvertToTiltedPlane(glm::vec3(0, 0, 1)));
+	GameObjects.push_back(rock);
+
+	Lamp* lamp = new Lamp(this);
+	lamp->SetPosition(lamp->Position + ConvertToTiltedPlane(glm::vec3(0, 0, 3)));
+	GameObjects.push_back(lamp);
+
+	Gift* gift = new Gift(this);
+	gift->SetPosition(gift->Position + ConvertToTiltedPlane(glm::vec3(0, 0, 5)));
+	GameObjects.push_back(gift);
+
+	for (int i = 0; i < GameObjects.size(); i++)
 	{
-		gameObjects[i]->Awake();
+		GameObjects[i]->Awake();
 	}
-	for (int i = 0; i < gameObjects.size(); i++)
+	for (int i = 0; i < GameObjects.size(); i++)
 	{
-		gameObjects[i]->Start();
+		GameObjects[i]->Start();
 	}
 
-	for (int i = 0; i < objectsToAdd.size(); i++)
+	for (int i = 0; i < _objectsToAdd.size(); i++)
 	{
-		objectsToAdd[i]->Awake();
-		objectsToAdd[i]->Start();
-		gameObjects.push_back(objectsToAdd[i]);
+		_objectsToAdd[i]->Awake();
+		_objectsToAdd[i]->Start();
+		GameObjects.push_back(_objectsToAdd[i]);
 	}
-	objectsToAdd.clear();
+	_objectsToAdd.clear();
 
 	{
 		Shader* shader = new Shader("texture");
@@ -66,7 +85,12 @@ void Tema3::Init()
 
 void Tema3::AddObject(GameObject* object)
 {
-	objectsToAdd.push_back(object);
+	_objectsToAdd.push_back(object);
+}
+
+glm::vec3 Tema3::ConvertToTiltedPlane(glm::vec3 vector)
+{
+	return glm::rotateX(vector, RADIANS(30));
 }
 
 void Tema3::FrameStart()
@@ -84,31 +108,31 @@ void Tema3::FrameStart()
 
 void Tema3::Update(float deltaTimeSeconds)
 {
-	for (int i = gameObjects.size() - 1; i >= 0; i--)
+	for (int i = GameObjects.size() - 1; i >= 0; i--)
 	{
-		if (gameObjects[i]->Destroy)
+		if (GameObjects[i]->Destroy)
 		{
-			gameObjects.erase(std::remove(gameObjects.begin(), gameObjects.end(), gameObjects[i]), gameObjects.end());
-			delete gameObjects[i];
+			GameObjects.erase(std::remove(GameObjects.begin(), GameObjects.end(), GameObjects[i]), GameObjects.end());
+			delete GameObjects[i];
 			continue;
 		}
-		gameObjects[i]->Update(deltaTimeSeconds);
-		gameObjects[i]->Render();
+		GameObjects[i]->Update(deltaTimeSeconds);
+		GameObjects[i]->Render();
 	}
-	for (int i = gameObjects.size() - 1; i >= 0; i--)
+	for (int i = GameObjects.size() - 1; i >= 0; i--)
 	{
-		gameObjects[i]->LateUpdate(deltaTimeSeconds);
+		GameObjects[i]->LateUpdate(deltaTimeSeconds);
 	}
-	for (int i = 0; i < objectsToAdd.size(); i++)
+	for (int i = 0; i < _objectsToAdd.size(); i++)
 	{
-		objectsToAdd[i]->Awake();
-		objectsToAdd[i]->Start();
-		gameObjects.push_back(objectsToAdd[i]);
+		_objectsToAdd[i]->Awake();
+		_objectsToAdd[i]->Start();
+		GameObjects.push_back(_objectsToAdd[i]);
 	}
-	objectsToAdd.clear();
+	_objectsToAdd.clear();
 }
 
-void Tema3::RenderMesh(Mesh* mesh, Shader* shader, const glm::mat4& modelMatrix, Texture2D* texture)
+void Tema3::RenderMesh(Mesh* mesh, Shader* shader, const glm::mat4& modelMatrix, Texture2D* texture, bool time)
 {
 	if (!mesh || !shader || !shader->GetProgramID())
 		return;
@@ -140,6 +164,11 @@ void Tema3::RenderMesh(Mesh* mesh, Shader* shader, const glm::mat4& modelMatrix,
 		glUniform1i(glGetUniformLocation(shader->program, "texture_1"), 0);
 	}
 
+	if (time)
+	{
+		glUniform2fv(glGetUniformLocation(shader->program, "displacement"), 1, glm::value_ptr(glm::vec2(PlayerObject->Position.x, PlayerObject->Position.z) / 50.0f));
+	}
+
 	// Draw the object
 	glBindVertexArray(mesh->GetBuffers()->m_VAO);
 	glDrawElements(mesh->GetDrawMode(), static_cast<int>(mesh->indices.size()), GL_UNSIGNED_INT, 0);
@@ -151,7 +180,7 @@ void Tema3::FrameEnd()
 
 void Tema3::OnInputUpdate(float deltaTime, int mods)
 {
-	for (GameObject* object : gameObjects)
+	for (GameObject* object : GameObjects)
 	{
 		object->OnInputUpdate(deltaTime, mods);
 	}

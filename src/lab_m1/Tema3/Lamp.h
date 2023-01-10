@@ -7,6 +7,6 @@ namespace p3
 	public:
 		Lamp(Tema3* scene);
 		~Lamp();
-		void Update(float deltaTime) override;
+		void Render() override;
 	};
 }

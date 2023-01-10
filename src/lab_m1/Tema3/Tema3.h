@@ -16,24 +16,25 @@ namespace p3
         ~Tema3();
 
         void Init() override;
-        void RenderMesh(Mesh* mesh, Shader* shader, const glm::mat4& modelMatrix, Texture2D* texture = nullptr);
+        void RenderMesh(Mesh* mesh, Shader* shader, const glm::mat4& modelMatrix, Texture2D* texture = nullptr, bool time = false);
         Shader* GetShader(const std::string& shader)
         {
             return shaders[shader];
         }
 		void SetCamera(Camera* camera)
 		{
-			this->camera = camera;
+			_camera = camera;
 		}
         Camera* GetCamera() const
         {
-            return camera;
+            return _camera;
         }
         WindowObject* GetWindow() const
         {
             return window;
         }
         void AddObject(GameObject* object);
+        static glm::vec3 ConvertToTiltedPlane(glm::vec3);
 
     private:
         void FrameStart() override;
@@ -50,14 +51,14 @@ namespace p3
         void OnWindowResize(int width, int height) override;
 
     public:
-        std::vector<GameObject*> gameObjects;
-        std::unordered_map<std::string, Texture2D*> textures;
-        const std::string sourceTextureDir = PATH_JOIN(window->props.selfDir, RESOURCE_PATH::TEXTURES, "Tema3");
-        const std::string sourcePrimitiveDir = PATH_JOIN(window->props.selfDir, RESOURCE_PATH::MODELS, "primitives");
-        glm::mat4 projectionMatrix;
-        Player* player;
+        std::vector<GameObject*> GameObjects;
+        std::unordered_map<std::string, Texture2D*> Textures;
+        const std::string SourceTextureDir = PATH_JOIN(window->props.selfDir, RESOURCE_PATH::TEXTURES, "Tema3");
+        const std::string SourcePrimitiveDir = PATH_JOIN(window->props.selfDir, RESOURCE_PATH::MODELS, "primitives");
+        glm::mat4 ProjectionMatrix;
+        Player* PlayerObject;
     protected:
-        std::vector<GameObject*> objectsToAdd;
-        Camera* camera;
+        std::vector<GameObject*> _objectsToAdd;
+        Camera* _camera;
     };
 }

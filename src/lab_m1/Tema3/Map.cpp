@@ -4,43 +4,15 @@
 
 p3::Map::Map(Tema3* scene) : GameObject(scene)
 {
-    const std::vector<glm::vec3> vertices
-    {
-        glm::vec3(-0.5f, 0, -0.5f),
-        glm::vec3(-0.5f, 0, 0.5f),
-        glm::vec3(0.5f, 0, 0.5f),
-        glm::vec3(0.5f, 0, -0.5f)
-    };
-
-    const std::vector<unsigned int> indices =
-    {
-        0, 1, 2,
-        0, 2, 3,
-    };
-
-    const std::vector<glm::vec3> normals =
-    {
-        glm::vec3(0, 1, 1),
-        glm::vec3(1, 0, 1),
-        glm::vec3(1, 0, 0),
-        glm::vec3(0, 1, 0)
-    };
-
-    const std::vector<glm::vec2> tex =
-    {
-        glm::vec2(0.0f, 0.0f),
-        glm::vec2(0, 1),
-        glm::vec2(1, 1),
-        glm::vec2(1, 0)
-    };
-    
-    CreateMesh("snow", vertices, normals, tex, indices);
+    Mesh* mesh = new Mesh("snow");
+    mesh->LoadMesh(scene->SourcePrimitiveDir, "plane50.obj");
+    Meshes[mesh->GetMeshID()] = mesh;
 
     Texture2D* texture = new Texture2D();
-    texture->Load2D(PATH_JOIN(scene->sourceTextureDir, "Snow.png").c_str(), GL_REPEAT);
-    scene->textures["snow"] = texture;
+    texture->Load2D(PATH_JOIN(scene->SourceTextureDir, "Snow.png").c_str(), GL_REPEAT);
+    scene->Textures["snow"] = texture;
 
-    scale = glm::vec3(10, 1, 10);
+    SetRotation(glm::vec3(RADIANS(30), 0, 0));
 }
 
 p3::Map::~Map()
@@ -49,10 +21,10 @@ p3::Map::~Map()
 
 void p3::Map::Update(float deltaTime)
 {
-	SetPosition(scene->player->position);
+	SetPosition(Scene->PlayerObject->Position);
 }
 
 void p3::Map::Render()
 {
-    scene->RenderMesh(meshes["snow"], scene->GetShader("texture"), modelMatrix, scene->textures["snow"]);
+    Scene->RenderMesh(Meshes["snow"], Scene->GetShader("snow"), ModelMatrix, Scene->Textures["snow"], true);
 }

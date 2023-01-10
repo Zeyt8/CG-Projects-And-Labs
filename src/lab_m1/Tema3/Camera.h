@@ -9,11 +9,11 @@ namespace p3
      public:
         Camera()
         {
-            position    = glm::vec3(0, 0, 0);
+            Position    = glm::vec3(0, 0, 0);
             forward     = glm::vec3(0, 0, -1);
             up          = glm::vec3(0, 1, 0);
             right       = glm::vec3(1, 0, 0);
-            distanceToTarget = 5;
+            distanceToTarget = 20;
         }
 
         virtual ~Camera()
@@ -21,7 +21,7 @@ namespace p3
 
         void TranslateForward(const float distance)
         {
-            position += forward * distance;
+            Position += forward * distance;
         }
 
         void RotateThirdPerson_OX(const float angle)
@@ -30,7 +30,7 @@ namespace p3
             forward = glm::rotate(glm::mat4(1.0f), angle, right) * glm::vec4(forward, 1);
             forward = glm::normalize(forward);
             up = glm::cross(right, forward);
-			rotation.x += angle;
+			Rotation.x += angle;
             TranslateForward(-distanceToTarget);
         }
 
@@ -42,7 +42,7 @@ namespace p3
             right = glm::vec3(glm::rotate(glm::mat4(1), angle, glm::vec3(0, 1, 0)) * glm::vec4(right, 1));
             right = glm::normalize(right);
             up = glm::cross(right, forward);
-			rotation.y += angle;
+			Rotation.y += angle;
             TranslateForward(-distanceToTarget);
         }
 
@@ -52,13 +52,13 @@ namespace p3
             right = glm::rotate(glm::mat4(1.0f), angle, forward) * glm::vec4(right, 1);
             right = glm::normalize(forward);
 			up = glm::cross(forward, right);
-			rotation.z += angle;
+			Rotation.z += angle;
             TranslateForward(-distanceToTarget);
         }
 
         glm::mat4 GetViewMatrix() const
         {
-            return glm::lookAt(position, position + forward, up);
+            return glm::lookAt(Position, Position + forward, up);
         }
 
         void Awake() override {}
@@ -69,11 +69,11 @@ namespace p3
 		{
 			if (followTarget != nullptr)
 			{
-				position = followTarget->position - forward * distanceToTarget;
+				Position = followTarget->Position - forward * distanceToTarget;
 			}
             if (lookAtTarget != nullptr)
             {
-                RotateThirdPerson_OY(lookAtTarget->rotation.y - rotation.y);
+                RotateThirdPerson_OY(lookAtTarget->Rotation.y - Rotation.y);
             }
 		}
 

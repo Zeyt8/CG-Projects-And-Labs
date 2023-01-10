@@ -7,6 +7,6 @@ namespace p3
 	public:
 		Gift(Tema3* scene);
 		~Gift();
-		void Update(float deltaTime) override;
+		void Render() override;
 	};
 }
