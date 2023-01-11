@@ -11,14 +11,9 @@ Gift::Gift(Tema3* scene) : GameObject(scene)
         Meshes[mesh->GetMeshID()] = mesh;
     }
 
-    {
-        Texture2D* texture = new Texture2D();
-        texture->Load2D(PATH_JOIN(scene->SourceTextureDir, "Gift.jpg").c_str(), GL_REPEAT);
-        Scene->Textures["gift"] = texture;
-    }
-
     SetRotation(glm::vec3(RADIANS(30), 0, 0));
     SetScale(glm::vec3(0.8f, 0.8f, 0.8f));
+    ColliderRadius = 0.5f;
 }
 
 void Gift::Update(float deltaTime)

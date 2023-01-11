@@ -3,6 +3,7 @@
 #include "Rock.h"
 #include "Lamp.h"
 #include "Tree.h"
+#include <iostream>
 
 using namespace p3;
 
@@ -12,25 +13,17 @@ Player::Player(Tema3* scene) : GameObject(scene)
     mesh->LoadMesh(scene->SourcePrimitiveDir, "box.obj");
     Meshes[mesh->GetMeshID()] = mesh;
 
-    {
-        Texture2D* texture = new Texture2D();
-        texture->Load2D(PATH_JOIN(scene->SourceTextureDir, "Player.jpg").c_str(), GL_REPEAT);
-        Scene->Textures["player"] = texture;
-    }
-
-    {
-        Texture2D* texture = new Texture2D();
-        texture->Load2D(PATH_JOIN(scene->SourceTextureDir, "Ski.jpg").c_str(), GL_REPEAT);
-        Scene->Textures["ski"] = texture;
-    }
-
 	SetRotation(glm::vec3(RADIANS(30), 0, 0));
     SetScale(glm::vec3(0.8f, 1, 0.8f));
+    ColliderRadius = 0.5f;
 }
 
 void Player::Update(float deltaTime)
 {
-    SetPosition(Position + Forward * _speed * deltaTime);
+    if (_canMove)
+    {
+    	SetPosition(Position + Forward * _speed * deltaTime);
+    }
 }
 
 void Player::Render()
@@ -66,16 +59,9 @@ void Player::OnCollisionEnter(GameObject* other)
         Score++;
         other->Destroy();
 	}
-    if (dynamic_cast<Rock*>(other))
+    if (dynamic_cast<Rock*>(other) || dynamic_cast<Tree*>(other) || dynamic_cast<Lamp*>(other))
     {
-	    
-    }
-    if (dynamic_cast<Tree*>(other))
-    {
-	    
-    }
-    if (dynamic_cast<Lamp*>(other))
-    {
-			
+		_canMove = false;
+        std::cout << "Score: " << Score << std::endl;
     }
 }

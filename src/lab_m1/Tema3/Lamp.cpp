@@ -11,11 +11,7 @@ Lamp::Lamp(Tema3* scene) : GameObject(scene)
         Meshes[mesh->GetMeshID()] = mesh;
     }
 
-    {
-        Texture2D* texture = new Texture2D();
-        texture->Load2D(PATH_JOIN(scene->SourceTextureDir, "Metal.jpg").c_str(), GL_REPEAT);
-        Scene->Textures["metal"] = texture;
-    }
+    ColliderRadius = 0.15f;
 }
 
 void Lamp::Update(float deltaTime)

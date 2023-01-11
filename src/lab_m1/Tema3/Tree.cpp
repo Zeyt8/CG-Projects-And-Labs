@@ -28,6 +28,8 @@ Tree::Tree(Tema3* scene) : GameObject(scene)
         texture->Load2D(PATH_JOIN(scene->SourceTextureDir, "Tree.png").c_str(), GL_REPEAT);
         Scene->Textures["tree"] = texture;
     }
+
+    ColliderRadius = 0.35f;
 }
 
 void Tree::Update(float deltaTime)

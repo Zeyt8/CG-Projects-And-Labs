@@ -17,6 +17,7 @@ namespace p3
 		int Score = 0;
 
 	private:
+		bool _canMove = true;
 		float _speed = 3;
 	};
 }

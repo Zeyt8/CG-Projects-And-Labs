@@ -11,13 +11,8 @@ Rock::Rock(Tema3* scene) : GameObject(scene)
         Meshes[mesh->GetMeshID()] = mesh;
     }
 
-    {
-        Texture2D* texture = new Texture2D();
-        texture->Load2D(PATH_JOIN(scene->SourceTextureDir, "Rock.png").c_str(), GL_REPEAT);
-        Scene->Textures["rock"] = texture;
-    }
-
     SetScale(glm::vec3(0.9f, 0.9f, 0.9f));
+    ColliderRadius = 1.0f;
 }
 
 void Rock::Update(float deltaTime)

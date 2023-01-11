@@ -13,9 +13,7 @@ Tema3::Tema3()
 {
 }
 
-Tema3::~Tema3()
-{
-}
+Tema3::~Tema3() = default;
 
 void Tema3::Init()
 {
@@ -36,13 +34,13 @@ void Tema3::Init()
 	ObjectSpawner* objectSpawner = new ObjectSpawner(this);
 	GameObjects.push_back(objectSpawner);
 
-	for (int i = 0; i < GameObjects.size(); i++)
+	for (GameObject* go : GameObjects)
 	{
-		GameObjects[i]->Awake();
+		go->Awake();
 	}
-	for (int i = 0; i < GameObjects.size(); i++)
+	for (GameObject* go : GameObjects)
 	{
-		GameObjects[i]->Start();
+		go->Start();
 	}
 
 	for (int i = 0; i < _objectsToAdd.size(); i++)
@@ -66,6 +64,36 @@ void Tema3::Init()
 		shader->AddShader(PATH_JOIN(window->props.selfDir, SOURCE_PATH::M1, "Tema3", "shaders", "snowFS.glsl"), GL_FRAGMENT_SHADER);
 		shader->CreateAndLink();
 		shaders[shader->GetName()] = shader;
+	}
+	{
+		Texture2D* texture = new Texture2D();
+		texture->Load2D(PATH_JOIN(SourceTextureDir, "Player.jpg").c_str(), GL_REPEAT);
+		Textures["player"] = texture;
+	}
+	{
+		Texture2D* texture = new Texture2D();
+		texture->Load2D(PATH_JOIN(SourceTextureDir, "Ski.jpg").c_str(), GL_REPEAT);
+		Textures["ski"] = texture;
+	}
+	{
+		Texture2D* texture = new Texture2D();
+		texture->Load2D(PATH_JOIN(SourceTextureDir, "Rock.png").c_str(), GL_REPEAT);
+		Textures["rock"] = texture;
+	}
+	{
+		Texture2D* texture = new Texture2D();
+		texture->Load2D(PATH_JOIN(SourceTextureDir, "Snow.png").c_str(), GL_REPEAT);
+		Textures["snow"] = texture;
+	}
+	{
+		Texture2D* texture = new Texture2D();
+		texture->Load2D(PATH_JOIN(SourceTextureDir, "Metal.jpg").c_str(), GL_REPEAT);
+		Textures["metal"] = texture;
+	}
+	{
+		Texture2D* texture = new Texture2D();
+		texture->Load2D(PATH_JOIN(SourceTextureDir, "Gift.jpg").c_str(), GL_REPEAT);
+		Textures["gift"] = texture;
 	}
 }
 
@@ -116,7 +144,7 @@ void Tema3::Update(float deltaTimeSeconds)
 		{
 			if (go != other)
 			{
-				if (glm::distance(go->Position, other->Position) < go->ColliderRadius + other->ColliderRadius)
+				if (glm::distance(go->Position, other->Position) <= go->ColliderRadius + other->ColliderRadius)
 				{
 					go->OnCollisionEnter(other);
 				}
@@ -188,6 +216,15 @@ void Tema3::OnInputUpdate(float deltaTime, int mods)
 
 void Tema3::OnKeyPress(int key, int mods)
 {
+	if (key == GLFW_KEY_ENTER)
+	{
+		for (const GameObject* object : GameObjects)
+		{
+			delete object;
+		}
+		GameObjects.clear();
+		Init();
+	}
 }
 
 void Tema3::OnKeyRelease(int key, int mods)
