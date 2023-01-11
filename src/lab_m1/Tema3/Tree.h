@@ -6,7 +6,7 @@ namespace p3
 	{
 	public:
 		Tree(Tema3* scene);
-		~Tree();
+		void Update(float deltaTime) override;
 		void Render() override;
 	};
 }

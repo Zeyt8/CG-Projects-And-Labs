@@ -1,4 +1,5 @@
 #include "Tree.h"
+#include "Player.h"
 
 using namespace p3;
 
@@ -29,7 +30,13 @@ Tree::Tree(Tema3* scene) : GameObject(scene)
     }
 }
 
-Tree::~Tree() = default;
+void Tree::Update(float deltaTime)
+{
+    if (glm::abs(Position.z - Scene->PlayerObject->Position.z) > 15)
+    {
+        Destroy();
+    }
+}
 
 void Tree::Render()
 {

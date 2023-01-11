@@ -1,4 +1,5 @@
 #include "Gift.h"
+#include "Player.h"
 
 using namespace p3;
 
@@ -20,7 +21,13 @@ Gift::Gift(Tema3* scene) : GameObject(scene)
     SetScale(glm::vec3(0.8f, 0.8f, 0.8f));
 }
 
-Gift::~Gift() = default;
+void Gift::Update(float deltaTime)
+{
+	if (glm::abs(Position.z - Scene->PlayerObject->Position.z) > 15)
+	{
+		Destroy();
+	}
+}
 
 void Gift::Render()
 {

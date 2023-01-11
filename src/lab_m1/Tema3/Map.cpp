@@ -12,6 +12,7 @@ p3::Map::Map(Tema3* scene) : GameObject(scene)
     texture->Load2D(PATH_JOIN(scene->SourceTextureDir, "Snow.png").c_str(), GL_REPEAT);
     scene->Textures["snow"] = texture;
 
+    SetScale(glm::vec3(1.2f, 1, 1.2f));
     SetRotation(glm::vec3(RADIANS(30), 0, 0));
 }
 

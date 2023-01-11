@@ -18,7 +18,7 @@ namespace p3
 		virtual void LateUpdate(float deltaTime);
 		virtual void OnInputUpdate(float deltaTime, int mods);
 		virtual void Render();
-		bool Destroy = false;
+		void Destroy() { ToDestroy = true; }
 		glm::mat4 ModelMatrix = glm::mat4(1);
 
 		Mesh* CreateMesh(const char* name, const std::vector<glm::vec3>& positions,
@@ -45,5 +45,6 @@ namespace p3
 		Tema3 *Scene = nullptr;
 		GameObject* Parent = nullptr;
 		std::vector<GameObject*> Children;
+		bool ToDestroy = false;
 	};
 }

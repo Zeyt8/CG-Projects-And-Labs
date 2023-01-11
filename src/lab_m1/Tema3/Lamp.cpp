@@ -1,4 +1,5 @@
 #include "Lamp.h"
+#include "Player.h"
 
 using namespace p3;
 
@@ -17,7 +18,13 @@ Lamp::Lamp(Tema3* scene) : GameObject(scene)
     }
 }
 
-Lamp::~Lamp() = default;
+void Lamp::Update(float deltaTime)
+{
+    if (glm::abs(Position.z - Scene->PlayerObject->Position.z) > 15)
+    {
+        Destroy();
+    }
+}
 
 void Lamp::Render()
 {

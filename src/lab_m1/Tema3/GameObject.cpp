@@ -11,13 +11,11 @@ GameObject::GameObject()
     Scale = glm::vec3(1);
 }
 
-GameObject::~GameObject()
-{
-}
+GameObject::~GameObject() = default;
 
 GameObject::GameObject(Tema3* scene) : GameObject()
 {
-    GameObject::Scene = scene;
+    Scene = scene;
 }
 
 void p3::GameObject::Awake()

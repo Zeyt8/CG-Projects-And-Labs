@@ -3,10 +3,8 @@
 #include "Camera.h"
 #include "Player.h"
 #include "Map.h"
-#include "Tree.h"
-#include "Rock.h"
-#include "Gift.h"
-#include "Lamp.h"
+#include "ObjectSpawner.h"
+#include <iostream>
 #include <glm/gtx/rotate_vector.hpp>
 
 using namespace p3;
@@ -35,20 +33,8 @@ void Tema3::Init()
 	Map* map = new Map(this);
 	GameObjects.push_back(map);
 
-	Tree* tree = new Tree(this);
-	GameObjects.push_back(tree);
-
-	Rock* rock = new Rock(this);
-	rock->SetPosition(rock->Position + ConvertToTiltedPlane(glm::vec3(0, 0, 1)));
-	GameObjects.push_back(rock);
-
-	Lamp* lamp = new Lamp(this);
-	lamp->SetPosition(lamp->Position + ConvertToTiltedPlane(glm::vec3(0, 0, 3)));
-	GameObjects.push_back(lamp);
-
-	Gift* gift = new Gift(this);
-	gift->SetPosition(gift->Position + ConvertToTiltedPlane(glm::vec3(0, 0, 5)));
-	GameObjects.push_back(gift);
+	ObjectSpawner* objectSpawner = new ObjectSpawner(this);
+	GameObjects.push_back(objectSpawner);
 
 	for (int i = 0; i < GameObjects.size(); i++)
 	{
@@ -110,7 +96,7 @@ void Tema3::Update(float deltaTimeSeconds)
 {
 	for (int i = GameObjects.size() - 1; i >= 0; i--)
 	{
-		if (GameObjects[i]->Destroy)
+		if (GameObjects[i]->ToDestroy)
 		{
 			GameObjects.erase(std::remove(GameObjects.begin(), GameObjects.end(), GameObjects[i]), GameObjects.end());
 			delete GameObjects[i];

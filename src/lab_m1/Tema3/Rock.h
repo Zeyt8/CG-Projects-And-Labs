@@ -1,3 +1,5 @@
+#pragma once
+
 #include "GameObject.h"
 
 namespace p3
@@ -6,8 +8,7 @@ namespace p3
 	{
 	public:
 		Rock(Tema3* scene);
-		~Rock();
-
+		void Update(float deltaTime) override;
 		void Render() override;
 	};
 }
