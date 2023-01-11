@@ -99,8 +99,9 @@ void Tema2::Update(float deltaTimeSeconds)
 	{
 		if (gameObjects[i]->Destroy)
 		{
-			gameObjects.erase(std::remove(gameObjects.begin(), gameObjects.end(), gameObjects[i]), gameObjects.end());
-			delete gameObjects[i];
+			const GameObject* go_to_delete = gameObjects[i];
+			gameObjects.erase(gameObjects.begin() + i);
+			delete go_to_delete;
 			continue;
 		}
 		gameObjects[i]->Update(deltaTimeSeconds);

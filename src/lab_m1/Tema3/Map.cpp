@@ -16,10 +16,6 @@ p3::Map::Map(Tema3* scene) : GameObject(scene)
     SetRotation(glm::vec3(RADIANS(30), 0, 0));
 }
 
-p3::Map::~Map()
-{
-}
-
 void p3::Map::Update(float deltaTime)
 {
 	SetPosition(Scene->PlayerObject->Position);

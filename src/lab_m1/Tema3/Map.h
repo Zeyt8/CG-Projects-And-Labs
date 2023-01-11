@@ -6,7 +6,6 @@ namespace p3
 	{
 	public:
 		Map(Tema3* scene);
-		~Map();
 		void Update(float deltaTime) override;
 		void Render() override;
 	};

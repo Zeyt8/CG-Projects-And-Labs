@@ -36,8 +36,11 @@ void ObjectSpawner::Update(float deltaTimeSeconds)
 		default:
 			break;
 		}
-		go->SetPosition(Scene->PlayerObject->Position + Tema3::ConvertToTiltedPlane(glm::vec3((rand() % 20) - 10, 0, 10)));
-		Scene->AddObject(go);
+		if (go != nullptr)
+		{
+			go->SetPosition(Scene->PlayerObject->Position + Tema3::ConvertToTiltedPlane(glm::vec3((rand() % 20) - 10, 0, 10)));
+			Scene->AddObject(go);
+		}
 	}
 	_timeUntilSpawn -= deltaTimeSeconds;
 }

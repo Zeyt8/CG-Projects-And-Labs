@@ -10,7 +10,7 @@ namespace p3
 	public:
 		GameObject();
 		GameObject(Tema3* scene);
-		~GameObject();
+		virtual ~GameObject();
 
 		virtual void Awake();
 		virtual void Start();
