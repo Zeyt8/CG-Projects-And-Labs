@@ -4,7 +4,7 @@
 #include "Player.h"
 #include "Map.h"
 #include "ObjectSpawner.h"
-#include <iostream>
+#include "Light.h"
 #include <glm/gtx/rotate_vector.hpp>
 
 using namespace p3;
@@ -22,6 +22,9 @@ void Tema3::Init()
 	_camera->RotateThirdPerson_OX(RADIANS(-20));
 	_camera->projectionMatrix = glm::perspective(RADIANS(60), window->props.aspectRatio, 0.01f, 200.0f);
 	GameObjects.push_back(_camera);
+
+	Light* light = new Light(LightTypes::Directional);
+	Lights.push_back(light);
 
 	PlayerObject = new Player(this);
 	GameObjects.push_back(PlayerObject);

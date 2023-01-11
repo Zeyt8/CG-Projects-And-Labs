@@ -8,6 +8,7 @@ namespace p3
     class GameObject;
     class Camera;
     class Player;
+    struct Light;
 
     class Tema3 : public gfxc::SimpleScene
     {
@@ -55,8 +56,8 @@ namespace p3
         std::unordered_map<std::string, Texture2D*> Textures;
         const std::string SourceTextureDir = PATH_JOIN(window->props.selfDir, RESOURCE_PATH::TEXTURES, "Tema3");
         const std::string SourcePrimitiveDir = PATH_JOIN(window->props.selfDir, RESOURCE_PATH::MODELS, "primitives");
-        glm::mat4 ProjectionMatrix;
         Player* PlayerObject;
+        std::vector<Light*> Lights;
     protected:
         std::vector<GameObject*> _objectsToAdd;
         Camera* _camera;
