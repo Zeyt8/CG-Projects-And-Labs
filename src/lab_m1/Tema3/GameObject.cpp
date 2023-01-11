@@ -42,10 +42,14 @@ void GameObject::Render()
 {
 }
 
+void GameObject::OnCollisionEnter(GameObject* gameObject)
+{
+}
+
 Mesh* GameObject::CreateMesh(const char* name, const std::vector<glm::vec3>& positions,
-    const std::vector<glm::vec3>& normals,
-    const std::vector<glm::vec2>& texCoords,
-    const std::vector<unsigned int>& indices)
+                             const std::vector<glm::vec3>& normals,
+                             const std::vector<glm::vec2>& texCoords,
+                             const std::vector<unsigned int>& indices)
 {
     // Mesh information is saved into a Mesh object
     Meshes[name] = new Mesh(name);

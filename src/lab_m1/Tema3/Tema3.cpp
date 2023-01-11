@@ -106,9 +106,22 @@ void Tema3::Update(float deltaTimeSeconds)
 		GameObjects[i]->Update(deltaTimeSeconds);
 		GameObjects[i]->Render();
 	}
-	for (int i = GameObjects.size() - 1; i >= 0; i--)
+	for (GameObject* go : GameObjects)
 	{
-		GameObjects[i]->LateUpdate(deltaTimeSeconds);
+		go->LateUpdate(deltaTimeSeconds);
+	}
+	for (GameObject* go : GameObjects)
+	{
+		for (GameObject* other : GameObjects)
+		{
+			if (go != other)
+			{
+				if (glm::distance(go->Position, other->Position) < go->ColliderRadius + other->ColliderRadius)
+				{
+					go->OnCollisionEnter(other);
+				}
+			}
+		}
 	}
 	for (int i = 0; i < _objectsToAdd.size(); i++)
 	{

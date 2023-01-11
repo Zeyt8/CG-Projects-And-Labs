@@ -1,4 +1,8 @@
 #include "Player.h"
+#include "Gift.h"
+#include "Rock.h"
+#include "Lamp.h"
+#include "Tree.h"
 
 using namespace p3;
 
@@ -43,7 +47,7 @@ void Player::Render()
 
 void Player::OnInputUpdate(float deltaTime, int mods)
 {
-	/*glm::vec2 mousePos = Scene->GetWindow()->GetCursorPosition();
+	glm::vec2 mousePos = Scene->GetWindow()->GetCursorPosition();
 	glm::vec2 res = Scene->GetWindow()->GetResolution();
 	mousePos.y = res.y - mousePos.y;
 	glm::vec2 dir = res / 2.0f - mousePos;
@@ -52,5 +56,26 @@ void Player::OnInputUpdate(float deltaTime, int mods)
     float angle = glm::acos(glm::dot(glm::vec2(0, 1), dir));
     angle *= dir.x > 0 ? -1 : 1;
     angle = glm::max(RADIANS(-45), glm::min(RADIANS(45), angle));
-    SetRotation(glm::vec3(Rotation.x, angle, Rotation.z));*/
+    SetRotation(glm::vec3(Rotation.x, angle, Rotation.z));
+}
+
+void Player::OnCollisionEnter(GameObject* other)
+{
+	if (dynamic_cast<Gift*>(other))
+	{
+        Score++;
+        other->Destroy();
+	}
+    if (dynamic_cast<Rock*>(other))
+    {
+	    
+    }
+    if (dynamic_cast<Tree*>(other))
+    {
+	    
+    }
+    if (dynamic_cast<Lamp*>(other))
+    {
+			
+    }
 }
