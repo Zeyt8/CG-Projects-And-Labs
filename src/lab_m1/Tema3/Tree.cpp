@@ -1,5 +1,6 @@
 #include "Tree.h"
 #include "Player.h"
+#include "Light.h"
 
 using namespace p3;
 
@@ -32,9 +33,21 @@ Tree::Tree(Tema3* scene) : GameObject(scene)
     ColliderRadius = 0.35f;
 }
 
+Tree::~Tree()
+{
+	std::_Erase_remove(Scene->Lights, _light);
+    delete _light;
+}
+
+void Tree::Awake()
+{
+    _light = new Light(LightTypes::Point, Position + glm::vec3(0, 0.5f, 0), glm::vec3(1));
+    Scene->Lights.push_back(_light);
+}
+
 void Tree::Update(float deltaTime)
 {
-    if (glm::abs(Position.z - Scene->PlayerObject->Position.z) > 15)
+    if (glm::abs(Position.z - Scene->PlayerObject->Position.z) > 20)
     {
         Destroy();
     }

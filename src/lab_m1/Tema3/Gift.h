@@ -8,7 +8,11 @@ namespace p3
 	{
 	public:
 		Gift(Tema3* scene);
+		~Gift() override;
+		void Awake() override;
 		void Update(float deltaTime) override;
 		void Render() override;
+	private:
+		Light* _light;
 	};
 }

@@ -23,7 +23,7 @@ void Tema3::Init()
 	_camera->projectionMatrix = glm::perspective(RADIANS(60), window->props.aspectRatio, 0.01f, 200.0f);
 	GameObjects.push_back(_camera);
 
-	Light* light = new Light(LightTypes::Directional);
+	Light* light = new Light(LightTypes::Directional, glm::vec3(0), glm::vec3(1), glm::vec3(0.45f, 0.45f, 0));
 	Lights.push_back(light);
 
 	PlayerObject = new Player(this);
@@ -185,6 +185,19 @@ void Tema3::RenderMesh(Mesh* mesh, Shader* shader, const glm::mat4& modelMatrix,
 	int loc_projection_matrix = glGetUniformLocation(shader->program, "Projection");
 	glUniformMatrix4fv(loc_projection_matrix, 1, GL_FALSE, glm::value_ptr(projectionMatrix));
 
+	glm::vec3 eyePosition = GetCamera()->Position;
+	int eye_position = glGetUniformLocation(shader->program, "eye_position");
+	glUniform3f(eye_position, eyePosition.x, eyePosition.y, eyePosition.z);
+
+	int material_shininess = glGetUniformLocation(shader->program, "material_shininess");
+	glUniform1i(material_shininess, 10);
+
+	int material_kd = glGetUniformLocation(shader->program, "material_kd");
+	glUniform1f(material_kd, 0.5f);
+
+	int material_ks = glGetUniformLocation(shader->program, "material_ks");
+	glUniform1f(material_ks, 0.5f);
+
 	if (texture)
 	{
 		// - activate texture location 0
@@ -198,6 +211,18 @@ void Tema3::RenderMesh(Mesh* mesh, Shader* shader, const glm::mat4& modelMatrix,
 	if (time)
 	{
 		glUniform2fv(glGetUniformLocation(shader->program, "displacement"), 1, glm::value_ptr(glm::vec2(PlayerObject->Position.x, PlayerObject->Position.z) / 50.0f));
+	}
+
+	// Send lights
+	for (uint32_t i = 0; i < Lights.size(); i++)
+	{
+		std::string name = "lights[" + std::to_string(i) + "]";
+		glUniform1i(glGetUniformLocation(shader->program, (name + ".type").c_str()), Lights[i]->LightType + 1);
+		glUniform3fv(glGetUniformLocation(shader->program, (name + ".position").c_str()), 1, glm::value_ptr(Lights[i]->Position));
+		glUniform3fv(glGetUniformLocation(shader->program, (name + ".direction").c_str()), 1, glm::value_ptr(Lights[i]->Forward));
+		glUniform3fv(glGetUniformLocation(shader->program, (name + ".color").c_str()), 1, glm::value_ptr(Lights[i]->Color));
+		glUniform1f(glGetUniformLocation(shader->program, (name + ".angle").c_str()), Lights[i]->Angle);
+		glUniform1f(glGetUniformLocation(shader->program, (name + ".intensity").c_str()), Lights[i]->Intensity);
 	}
 
 	// Draw the object

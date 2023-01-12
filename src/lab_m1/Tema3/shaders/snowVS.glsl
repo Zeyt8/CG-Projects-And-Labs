@@ -13,11 +13,14 @@ uniform mat4 Projection;
 
 // Output
 out vec2 texcoord;
+out vec3 world_position;
+out vec3 world_normal;
 
 
 void main()
 {
-    // Pass v_texture_coord as output to fragment shader
+    world_position = (Model * vec4(v_position, 1)).xyz;
+    world_normal = normalize(mat3(Model) * v_normal);
     texcoord = v_texture_coord;
     gl_Position = Projection * View * Model * vec4(v_position, 1.0);
 }

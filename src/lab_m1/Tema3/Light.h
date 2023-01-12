@@ -26,6 +26,7 @@ namespace p3
 		LightTypes LightType;
 
 		glm::vec3 Color;
+		float Intensity = 1;
 		float Angle = -1;
 	};
 }

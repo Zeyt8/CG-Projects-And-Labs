@@ -17,7 +17,7 @@ Rock::Rock(Tema3* scene) : GameObject(scene)
 
 void Rock::Update(float deltaTime)
 {
-    if (glm::abs(Position.z - Scene->PlayerObject->Position.z) > 15)
+    if (glm::abs(Position.z - Scene->PlayerObject->Position.z) > 20)
     {
         Destroy();
     }

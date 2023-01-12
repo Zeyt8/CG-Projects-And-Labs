@@ -1,5 +1,6 @@
 #include "Lamp.h"
 #include "Player.h"
+#include "Light.h"
 
 using namespace p3;
 
@@ -14,9 +15,26 @@ Lamp::Lamp(Tema3* scene) : GameObject(scene)
     ColliderRadius = 0.15f;
 }
 
+Lamp::~Lamp()
+{
+	std::_Erase_remove(Scene->Lights, _light1);
+	std::_Erase_remove(Scene->Lights, _light2);
+    delete _light1;
+    delete _light2;
+}
+
+void Lamp::Awake()
+{
+    _light1 = new Light(LightTypes::Spot, Position + glm::vec3(-0.5f, 5.0f, 0), glm::vec3(1), glm::vec3(RADIANS(90), 0, 0), 0.3f);
+    _light2 = new Light(LightTypes::Spot, Position + glm::vec3(0.5f, 5.0f, 0), glm::vec3(1), glm::vec3(RADIANS(90), 0, 0), 0.3f);
+
+    Scene->Lights.push_back(_light1);
+    Scene->Lights.push_back(_light2);
+}
+
 void Lamp::Update(float deltaTime)
 {
-    if (glm::abs(Position.z - Scene->PlayerObject->Position.z) > 15)
+    if (glm::abs(Position.z - Scene->PlayerObject->Position.z) > 20)
     {
         Destroy();
     }
