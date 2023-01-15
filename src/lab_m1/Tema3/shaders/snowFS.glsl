@@ -30,24 +30,29 @@ uniform Light lights[100];
 
 vec3 lightContrib(in Light light)
 {
-    // Define diffuse and specular light components
-	vec3 L = normalize(light.position - world_position);
+    vec3 L = vec3(0);
+    if (light.type == 1)
+	{
+		L = normalize(-light.direction);
+	}
+	else
+	{
+		L = normalize(light.position - world_position);
+	}
     vec3 V = normalize(eye_position - world_position);
     vec3 H = normalize(L + V);
 	
-    float diffuse_light = material_kd * max(dot(world_normal, L), 0);
+    float diffuse_light = material_kd * light.intensity * max(dot(world_normal, L), 0);
     vec3 R = reflect(-L, world_normal);
     float specular_light = 0;
 	
     if (diffuse_light > 0)
     {
-        specular_light = material_ks * pow(max(dot(V, R), 0), material_shininess);
+        specular_light = material_ks * light.intensity * pow(max(dot(V, R), 0), material_shininess);
     }
 
-    // If (and only if) the light is a spotlight, we need to do
-    // some additional things.
     float light_att_factor = 0;
-	if (light.type == 1)
+	if (light.type == 2)
 	{
 	    float cut_off = radians(light.angle);
         float spot_light = dot(-L, light.direction);
@@ -63,7 +68,13 @@ vec3 lightContrib(in Light light)
         light_att_factor = 1;
     }
 
-    vec3 lightColor = (1 / pow(length(light.position - world_position), 2)) * light_att_factor * (diffuse_light + specular_light) * light.color;
+    float attenuation = 1;
+    if (light.type != 1)
+    {
+        attenuation = (1 / pow(length(light.position - world_position), 2)) * light_att_factor;
+    }
+
+    vec3 lightColor = attenuation * (diffuse_light + specular_light) * light.color;
 
     return lightColor;
 }
@@ -80,6 +91,6 @@ void main()
 		}
 		lightColor += lightContrib(lights[i]);
     }
-    vec4 color = texture(texture_1, texcoord);
+    vec4 color = texture(texture_1, texcoord + displacement);
     out_color = vec4((ambient_light + lightColor) * vec3(color), color.a);
 }

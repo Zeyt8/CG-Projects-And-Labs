@@ -18,6 +18,6 @@ namespace p3
 
 	private:
 		bool _canMove = true;
-		float _speed = 3;
+		float _speed = 5;
 	};
 }

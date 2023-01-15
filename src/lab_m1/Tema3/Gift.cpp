@@ -26,7 +26,7 @@ Gift::~Gift()
 
 void Gift::Awake()
 {
-    _light = new Light(LightTypes::Point, Position + glm::vec3(0, 0.5f, 0), glm::vec3(1));
+    _light = new Light(LightTypes::Point, 1.5f, Position + glm::vec3(0, 0.5f, 0) + Tema3::ConvertToTiltedPlane(glm::vec3(0, 0, 0.2f)), _colors[rand() % _colors.size()]);
     Scene->Lights.push_back(_light);
 }
 

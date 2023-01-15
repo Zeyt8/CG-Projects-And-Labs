@@ -13,10 +13,11 @@ namespace p3
 
 	struct Light : GameObject
 	{
-		Light(const LightTypes lightType, const glm::vec3 position = glm::vec3(0),
+		Light(const LightTypes lightType, float intensity = 1, const glm::vec3 position = glm::vec3(0),
 			const glm::vec3 color = glm::vec3(1), const glm::vec3 rotation = glm::vec3(0), const float angle = -1)
 		{
 			LightType = lightType;
+			Intensity = intensity;
 			SetPosition(position);
 			Color = color;
 			SetRotation(rotation);

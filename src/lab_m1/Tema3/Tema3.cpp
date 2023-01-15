@@ -6,11 +6,15 @@
 #include "ObjectSpawner.h"
 #include "Light.h"
 #include <glm/gtx/rotate_vector.hpp>
+#include <iostream>
 
 using namespace p3;
 
+bool Tema3::GameOver = false;
+
 Tema3::Tema3()
 {
+	srand(time(0));
 }
 
 Tema3::~Tema3() = default;
@@ -23,7 +27,7 @@ void Tema3::Init()
 	_camera->projectionMatrix = glm::perspective(RADIANS(60), window->props.aspectRatio, 0.01f, 200.0f);
 	GameObjects.push_back(_camera);
 
-	Light* light = new Light(LightTypes::Directional, glm::vec3(0), glm::vec3(1), glm::vec3(0.45f, 0.45f, 0));
+	Light* light = new Light(LightTypes::Directional, 1, glm::vec3(0), glm::vec3(0.7f, 0.7f, 0.8f), glm::vec3(RADIANS(90), 0, 0));
 	Lights.push_back(light);
 
 	PlayerObject = new Player(this);
@@ -190,7 +194,7 @@ void Tema3::RenderMesh(Mesh* mesh, Shader* shader, const glm::mat4& modelMatrix,
 	glUniform3f(eye_position, eyePosition.x, eyePosition.y, eyePosition.z);
 
 	int material_shininess = glGetUniformLocation(shader->program, "material_shininess");
-	glUniform1i(material_shininess, 10);
+	glUniform1i(material_shininess, 30);
 
 	int material_kd = glGetUniformLocation(shader->program, "material_kd");
 	glUniform1f(material_kd, 0.5f);
@@ -251,6 +255,12 @@ void Tema3::OnKeyPress(int key, int mods)
 			delete object;
 		}
 		GameObjects.clear();
+		for (const Light* light : Lights)
+		{
+			delete light;
+		}
+		Lights.clear();
+		GameOver = false;
 		Init();
 	}
 }

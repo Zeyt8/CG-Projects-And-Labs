@@ -25,8 +25,8 @@ Lamp::~Lamp()
 
 void Lamp::Awake()
 {
-    _light1 = new Light(LightTypes::Spot, Position + glm::vec3(-0.5f, 5.0f, 0), glm::vec3(1), glm::vec3(RADIANS(90), 0, 0), 0.3f);
-    _light2 = new Light(LightTypes::Spot, Position + glm::vec3(0.5f, 5.0f, 0), glm::vec3(1), glm::vec3(RADIANS(90), 0, 0), 0.3f);
+    _light1 = new Light(LightTypes::Spot, 10, Position + glm::vec3(-1.1f, 4.0f, 0), glm::vec3(1), glm::vec3(RADIANS(90), 0, 0), 40);
+    _light2 = new Light(LightTypes::Spot, 10, Position + glm::vec3(1.1f, 4.0f, 0), glm::vec3(1), glm::vec3(RADIANS(90), 0, 0), 40);
 
     Scene->Lights.push_back(_light1);
     Scene->Lights.push_back(_light2);
@@ -47,6 +47,6 @@ void Lamp::Render()
 	Scene->RenderMesh(Meshes["cube"], Scene->GetShader("texture"), modelMatrix, Scene->Textures["metal"]);
 
 	modelMatrix = TranslateMatrix(ModelMatrix, glm::vec3(0, 4.05f, 0));
-    modelMatrix = ScaleMatrix(modelMatrix, glm::vec3(1, 0.1f, 0.5f));
+    modelMatrix = ScaleMatrix(modelMatrix, glm::vec3(2, 0.1f, 0.5f));
 	Scene->RenderMesh(Meshes["cube"], Scene->GetShader("texture"), modelMatrix, Scene->Textures["metal"]);
 }

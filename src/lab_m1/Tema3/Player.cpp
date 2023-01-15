@@ -62,6 +62,10 @@ void Player::OnCollisionEnter(GameObject* other)
     if (dynamic_cast<Rock*>(other) || dynamic_cast<Tree*>(other) || dynamic_cast<Lamp*>(other))
     {
 		_canMove = false;
-        std::cout << "Score: " << Score << ". Press Enter to play again." << std::endl;
+        if (!Tema3::GameOver)
+        {
+            std::cout << "Score: " << Score << ". Press Enter to play again." << std::endl;
+            Tema3::GameOver = true;
+        }
     }
 }

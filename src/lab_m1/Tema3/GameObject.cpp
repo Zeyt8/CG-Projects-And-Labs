@@ -69,9 +69,10 @@ void GameObject::SetPosition(const glm::vec3 pos)
 
 void GameObject::SetRotation(const glm::vec3 rot)
 {
-	Forward = glm::rotateX(glm::vec3(0, 0, 1), rot.x);
+    Forward = glm::rotateZ(glm::vec3(0, 0, 1), rot.z);
 	Forward = glm::rotateY(Forward, rot.y);
-	Forward = glm::rotateZ(Forward, rot.z);
+    Forward = glm::rotateX(Forward, rot.x);
+    Forward = glm::normalize(Forward);
 	SetModelMatrix(Position, rot, Scale);
 }
 

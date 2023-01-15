@@ -58,6 +58,7 @@ namespace p3
         const std::string SourcePrimitiveDir = PATH_JOIN(window->props.selfDir, RESOURCE_PATH::MODELS, "primitives");
         Player* PlayerObject;
         std::vector<Light*> Lights;
+        static bool GameOver;
     protected:
         std::vector<GameObject*> _objectsToAdd;
         Camera* _camera;

@@ -9,7 +9,7 @@ namespace p3
 		~ObjectSpawner();
 		void Update(float deltaTimeSeconds) override;
 	private:
-		float _timeBetweenSpawns = 1.0f;
+		float _timeBetweenSpawns = 0.5f;
 		float _timeUntilSpawn = 0.0f;
 	};
 }
