@@ -38,7 +38,7 @@ void ObjectSpawner::Update(float deltaTimeSeconds)
 		}
 		if (go != nullptr)
 		{
-			go->SetPosition(Scene->PlayerObject->Position + Tema3::ConvertToTiltedPlane(glm::vec3((rand() % 20) - 10, 0, 15)));
+			go->SetPosition(Scene->PlayerObject->Position + Tema3::ConvertToTiltedPlane(glm::vec3(((rand() % 20) - 10) + Scene->PlayerObject->Forward.x * 5, 0, 15)));
 			Scene->AddObject(go);
 		}
 	}
