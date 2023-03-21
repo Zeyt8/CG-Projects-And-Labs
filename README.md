@@ -1,3 +1,15 @@
+# Computer Graphics Projects and Labs
+
+Projects are located in src/lab_m1/Tema*
+
+Labs are located in src/lab_m1/lab*
+
+## Project 1 - Duck Hunt
+
+## Project 2 - Car Race
+
+## Project 3 - Ski Free 3D
+
 # GFX Framework
 
 ## :sparkles: Introduction
