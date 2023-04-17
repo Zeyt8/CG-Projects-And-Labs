@@ -4,11 +4,11 @@ Projects are located in src/lab_m1/Tema*
 
 Labs are located in src/lab_m1/lab*
 
-## Project 1 - Duck Hunt
+## Duck Hunt
 
-## Project 2 - Car Race
+## Car Race
 
-## Project 3 - Ski Free 3D
+## Ski Free 3D
 
 # GFX Framework
 
