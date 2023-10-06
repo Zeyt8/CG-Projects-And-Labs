@@ -6,7 +6,7 @@
 #include <glm/gtc/random.hpp>
 #include <glm/gtx/matrix_decompose.hpp>
 
-using namespace m1;
+using namespace p1;
 
 Duck::Duck(Tema1* scene, float speed) : GameObject(scene)
 {
@@ -230,7 +230,7 @@ void Duck::Escape()
     Player::Instance->health--;
 }
 
-void m1::Duck::TakeDamage()
+void p1::Duck::TakeDamage()
 {
     health--;
     if (health <= 0)

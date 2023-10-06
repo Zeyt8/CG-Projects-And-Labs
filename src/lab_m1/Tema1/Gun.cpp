@@ -1,10 +1,10 @@
 #include "Gun.h"
 
-m1::Gun::Gun(Tema1* scene) : GameObject(scene)
+p1::Gun::Gun(Tema1* scene) : GameObject(scene)
 {
 }
 
-void m1::Gun::Awake()
+void p1::Gun::Awake()
 {
     {
         std::vector<VertexFormat> vertices
@@ -30,11 +30,11 @@ void m1::Gun::Awake()
     position = glm::vec3(scene->GetSceneCamera()->GetProjectionInfo().width / 2, 1, 0.16f);
 }
 
-void m1::Gun::Start()
+void p1::Gun::Start()
 {
 }
 
-void m1::Gun::Update(float deltaTime)
+void p1::Gun::Update(float deltaTime)
 {
     glm::mat4 modelMatrix = glm::mat4(1);
     modelMatrix = Translate(modelMatrix, position);

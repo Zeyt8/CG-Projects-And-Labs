@@ -2,7 +2,7 @@
 #include "components/simple_scene.h"
 #include <vector>
 
-namespace m1
+namespace p1
 {
     class GameObject;
     class Duck;

@@ -1,6 +1,6 @@
 #include "lab_m1/Tema1/Grass.h"
 
-using namespace m1;
+using namespace p1;
 
 Grass::Grass(Tema1* scene) : GameObject(scene)
 {

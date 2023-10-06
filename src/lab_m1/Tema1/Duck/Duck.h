@@ -3,7 +3,7 @@
 #include "lab_m1/Tema1/GameObject.h"
 #include <vector>
 
-namespace m1
+namespace p1
 {
 	class Duck : public GameObject
 	{

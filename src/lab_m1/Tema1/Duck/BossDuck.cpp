@@ -1,12 +1,12 @@
 #include "BossDuck.h"
 
-m1::BossDuck::BossDuck(Tema1* scene) : Duck(scene, 4)
+p1::BossDuck::BossDuck(Tema1* scene) : Duck(scene, 4)
 {
 	scale *= 2;
 	health = 3;
 }
 
-void m1::BossDuck::Awake()
+void p1::BossDuck::Awake()
 {
 	Duck::Awake();
     {
@@ -31,12 +31,12 @@ void m1::BossDuck::Awake()
     }
 }
 
-void m1::BossDuck::Start()
+void p1::BossDuck::Start()
 {
 	Duck::Start();
 }
 
-void m1::BossDuck::Update(float deltaTime)
+void p1::BossDuck::Update(float deltaTime)
 {
 	Duck::Update(deltaTime);
 

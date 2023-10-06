@@ -8,7 +8,7 @@
 #include "lab_m1/Tema1/Duck/BossDuck.h"
 #include <glm/gtc/random.hpp>
 
-using namespace m1;
+using namespace p1;
 
 Tema1::Tema1()
 {

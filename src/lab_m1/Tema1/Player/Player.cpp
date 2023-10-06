@@ -1,6 +1,6 @@
 #include "lab_m1/Tema1/Player/Player.h"
 
-using namespace m1;
+using namespace p1;
 
 Player* Player::Instance = nullptr;
 

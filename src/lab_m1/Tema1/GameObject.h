@@ -4,7 +4,7 @@
 #include "core/gpu/shader.h"
 #include "lab_m1/Tema1/Tema1.h"
 
-namespace m1
+namespace p1
 {
 	class GameObject
 	{

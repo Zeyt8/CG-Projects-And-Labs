@@ -2,7 +2,7 @@
 
 #include "lab_m1/Tema1/GameObject.h"
 
-namespace m1
+namespace p1
 {
 	class Player : public GameObject
 	{

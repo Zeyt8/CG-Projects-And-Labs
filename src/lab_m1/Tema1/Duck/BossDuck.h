@@ -2,7 +2,7 @@
 
 #include "lab_m1/Tema1/Duck/Duck.h"
 
-namespace m1
+namespace p1
 {
 	class BossDuck : public Duck
 	{

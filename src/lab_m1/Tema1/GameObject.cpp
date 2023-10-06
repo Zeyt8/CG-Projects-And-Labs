@@ -1,7 +1,7 @@
 #include "lab_m1/Tema1/GameObject.h"
 #include "components/simple_scene.h"
 
-using namespace m1;
+using namespace p1;
 
 GameObject::GameObject(Tema1* scene)
 {

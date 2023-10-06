@@ -1,6 +1,6 @@
 #include "lab_m1/Tema1/Crosshair.h"
 
-using namespace m1;
+using namespace p1;
 
 Crosshair::Crosshair(Tema1* scene) : GameObject(scene)
 {
