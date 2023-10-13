@@ -1,17 +1,19 @@
 #version 430
 
 // Input and output topologies
-// TODO(student): First, generate a curve (via line strip),
+// First, generate a curve (via line strip),
 // then a rotation/translation surface (via triangle strip)
 layout(lines) in;
-layout(line_strip, max_vertices = 256) out;
+layout(triangle_strip, max_vertices = 256) out;
 
 // Uniform properties
 uniform mat4 View;
 uniform mat4 Projection;
 uniform vec3 control_p0, control_p1, control_p2, control_p3;
 uniform int no_of_instances;
-// TODO(student): Declare any other uniforms here
+uniform int no_of_generated_points;
+uniform float max_translate;
+uniform float max_rotate;
 
 // Input
 in int instance[2];
@@ -46,7 +48,7 @@ vec3 bezier(float t)
 }
 
 
-// TODO(student): If you want to take things a step further, try drawing a
+// If you want to take things a step further, try drawing a
 // Hermite spline. Hint: you can repurpose two of the control points. For a
 // visual example, see [1]. For an interactive Javascript example with the
 // exact points in this code, see [2].
@@ -69,13 +71,30 @@ void main()
 
     if (instance[0] < no_of_instances)
     {
-        // TODO(student): Rather than emitting vertices for the control
+        // Rather than emitting vertices for the control
         // points, you must emit vertices that approximate the curve itself.
-        gl_Position = Projection * View * vec4(control_p0, 1);   EmitVertex();
-        gl_Position = Projection * View * vec4(control_p1, 1);   EmitVertex();
-        gl_Position = Projection * View * vec4(control_p2, 1);   EmitVertex();
-        gl_Position = Projection * View * vec4(control_p3, 1);   EmitVertex();
-        EndPrimitive();
+        for (int i = 0; i < no_of_generated_points; i++)
+		{
+			float t = float(i) / float(no_of_generated_points - 1);
+			vec3 point = bezier(t);
+            vec3 point2 = point;
 
+			if (SURFACE_TYPE == SURFACE_TYPE_ROTATION)
+			{
+				point = rotateY(point, max_rotate * instance[0] / no_of_instances);
+                point2 = rotateY(point2, max_rotate * (instance[0] + 1) / no_of_instances);
+			}
+			else if (SURFACE_TYPE == SURFACE_TYPE_TRANSLATION)
+			{
+				point = translateX(point, max_translate * instance[0] / no_of_instances);
+                point2 = translateX(point2, max_translate * (instance[0] + 1) / no_of_instances);
+			}
+
+			gl_Position = Projection * View * vec4(point, 1);
+			EmitVertex();
+            gl_Position = Projection * View * vec4(point2, 1);
+			EmitVertex();
+		}
+        EndPrimitive();
     }
 }
