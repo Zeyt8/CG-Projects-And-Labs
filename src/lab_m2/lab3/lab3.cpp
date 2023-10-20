@@ -85,31 +85,45 @@ void Lab3::Init()
 
 void Lab3::CreateFramebuffer(int width, int height)
 {
-    // TODO(student): In this method, use the attributes
+    // In this method, use the attributes
     // 'framebuffer_object', 'color_texture' and 'depth_texture'
     // declared in lab3.h
+    glGenFramebuffers(1, &framebuffer_object);
 
-    // TODO(student): Generate and bind the framebuffer
+    // Generate and bind the framebuffer
+    glBindFramebuffer(GL_FRAMEBUFFER, framebuffer_object);
 
-    // TODO(student): Generate, bind and initialize the color texture
+    // Generate, bind and initialize the color texture
+    glGenTextures(1, &color_texture);
+    glBindTexture(GL_TEXTURE_2D, color_texture);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 
-    // TODO(student): Bind the color texture to the
+    // Bind the color texture to the
     // framebuffer as a color attachment at position 0
+    glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, color_texture, 0);
 
-    // TODO(student): Generate, bind and initialize the depth texture
+    // Generate, bind and initialize the depth texture
+    glGenTextures(1, &depth_texture);
+    glBindTexture(GL_TEXTURE_2D, depth_texture);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT32F, width, height, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE, NULL);
 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 
-    // TODO(student): Bind the depth texture to the framebuffer as a depth attachment
+    // Bind the depth texture to the framebuffer as a depth attachment
+    glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, depth_texture, 0);
 
-    // TODO(student): Set the color texture as the draw texture
+    // Set the color texture as the draw texture
+    GLenum draw_buffers[] = { GL_COLOR_ATTACHMENT0 };
+    glDrawBuffers(1, draw_buffers);
 
-    // TODO(student): Check the status of the framebuffer
-
-    // Bind the default framebuffer
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    // Check the status of the framebuffer
+    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+    {
+        // Bind the default framebuffer
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    }
 }
 
 void Lab3::FrameStart()
@@ -148,17 +162,19 @@ void Lab3::Update(float deltaTimeSeconds)
         light_space_view = camera->GetViewMatrix();
         light_space_projection = camera->GetProjectionMatrix();
 
-        // TODO(student): Bind the framebuffer created before
+        // Bind the framebuffer created before
         // and clear the color and depth textures
+        glBindFramebuffer(GL_FRAMEBUFFER, framebuffer_object);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        // TODO(student): Use glViewport to specify the render
+        // Use glViewport to specify the render
         // area whose size (width, height) is the resolution of
         // the textures in the framebuffer
-        //
-        // glViewport(start_X, start_Y, width, height);
+        glViewport(0, 0, 1024, 1024);
 
-        // TODO(student): Use DrawScene to render the objects
+        // Use DrawScene to render the objects
         // with "ShadowMappingPassOne" shader
+        DrawScene(shaders["ShadowMappingPassOne"]);
     }
 
     // Render the scene with shadows
@@ -167,11 +183,14 @@ void Lab3::Update(float deltaTimeSeconds)
         camera->SetRotation(camRotation);
         camera->SetProjection(projectionInfo);
 
-        // TODO(student): Bind the default framebuffer
+        // Bind the default framebuffer
         // and clear the color and depth textures
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        // TODO(student): Use glViewport to specify the render
+        // Use glViewport to specify the render
         // area whose size is the resolution of the window
+        glViewport(0, 0, 1024, 1024);
 
         DrawScene(shaders["ShadowMappingPassTwo"]);
     }
@@ -265,8 +284,11 @@ void Lab3::RenderSimpleMesh(Mesh* mesh, Shader* shader, const glm::mat4& modelMa
         glUniform1i(glGetUniformLocation(shader->program, "texture_1"), 0);
     }
 
-    // TODO(student): Activate texture location 1, bind
+    // Activate texture location 1, bind
     // the depth texture and send the uniform value
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D, depth_texture);
+    glUniform1i(glGetUniformLocation(shader->program, "depth_texture"), 1);
 
     // Draw the object
     glBindVertexArray(mesh->GetBuffers()->m_VAO);
