@@ -43,10 +43,11 @@ void main()
     vec3 spd = data[gl_VertexID].speed.xyz;
     float lifetime = data[gl_VertexID].lifetime;
 
-    // TODO(student): Compute the new lifetime of the fire particle based on the actual lifetime
+    // Compute the new lifetime of the fire particle based on the actual lifetime
     // The lifetime should decrease each frame with deltaTime
+    lifetime -= deltaTime;
     
-    // TODO(student): Compute the new position as the sum
+    // Compute the new position as the sum
     // between the actual position and the speed.
     //
     // Because the y coordinate is already set positive since the
@@ -55,6 +56,7 @@ void main()
     //
     // For animations that are independent of the platform,
     // the speed must be multiplied with deltaTime.
+    pos += spd * deltaTime;
 
     if (lifetime < 0)
     {

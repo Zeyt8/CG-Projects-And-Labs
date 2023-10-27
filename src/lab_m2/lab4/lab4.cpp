@@ -79,10 +79,12 @@ void Lab4::Init()
     {
         TextureManager::LoadTexture(PATH_JOIN(window->props.selfDir, RESOURCE_PATH::TEXTURES), "particle2.png");
 
-        // TODO(student): Load images "rain.png", "snowflake.png" and "fire.png" as
+        // Load images "rain.png", "snowflake.png" and "fire.png" as
         // textures, similar to "particle2.png", loaded above. The images can be
         // found in the same directory as "particle2.png"
-
+        TextureManager::LoadTexture(PATH_JOIN(window->props.selfDir, RESOURCE_PATH::TEXTURES), "rain.png");
+        TextureManager::LoadTexture(PATH_JOIN(window->props.selfDir, RESOURCE_PATH::TEXTURES), "snowflake.png");
+        TextureManager::LoadTexture(PATH_JOIN(window->props.selfDir, RESOURCE_PATH::TEXTURES), "fire2.png");
     }
 
     LoadShader("Fireworks", "Particle_fireworks", "Particle_simple", "Particle", true);
@@ -183,7 +185,7 @@ void Lab4::ResetParticlesFire(float radius)
         pos = glm::normalize(pos) * radius ;
 
         glm::vec3 speed(0);
-        speed = glm::normalize(glm::vec3(0, 5, 0) - glm::vec3(pos));
+        speed = glm::normalize(glm::vec3(0, 10000, 0) - glm::vec3(pos));
         speed *= (rand() % 100 / 100.0f);
         speed += glm::vec3(rand() % 5 / 5.0f, rand() % 5 / 5.0f, rand() % 5 / 5.0f) * 0.2f;
 
@@ -225,9 +227,11 @@ void Lab4::Update(float deltaTimeSeconds)
             TextureManager::GetTexture("particle2.png")->BindToTextureUnit(GL_TEXTURE0);
             particleEffect->Render(GetSceneCamera(), shader);
 
-            // TODO(student): Send uniforms generator_position,
+            // Send uniforms generator_position,
             // deltaTime and offset to the shader
-
+            glUniform1f(glGetUniformLocation(shader->program, "deltaTime"), deltaTimeSeconds);
+            glUniform3fv(glGetUniformLocation(shader->program, "generator_position"), 1, glm::value_ptr(generator_position));
+            glUniform1f(glGetUniformLocation(shader->program, "offset"), offset);
         }
     }
 
@@ -238,13 +242,15 @@ void Lab4::Update(float deltaTimeSeconds)
         {
             shader->Use();
 
-            // TODO(student): Send correct texture for snow
-            TextureManager::GetTexture("particle2.png")->BindToTextureUnit(GL_TEXTURE0);
+            // Send correct texture for snow
+            TextureManager::GetTexture("snowflake.png")->BindToTextureUnit(GL_TEXTURE0);
             particleEffect->Render(GetSceneCamera(), shader);
 
-            // TODO(student): Send uniforms generator_position,
+            // Send uniforms generator_position,
             // deltaTime and offset to the shader
-
+            glUniform1f(glGetUniformLocation(shader->program, "deltaTime"), deltaTimeSeconds);
+            glUniform3fv(glGetUniformLocation(shader->program, "generator_position"), 1, glm::value_ptr(generator_position));
+            glUniform1f(glGetUniformLocation(shader->program, "offset"), offset);
         }
     }
 
@@ -255,13 +261,15 @@ void Lab4::Update(float deltaTimeSeconds)
         {
             shader->Use();
 
-            // TODO(student): Send correct texture for rain
-            TextureManager::GetTexture("particle2.png")->BindToTextureUnit(GL_TEXTURE0);
+            // Send correct texture for rain
+            TextureManager::GetTexture("rain.png")->BindToTextureUnit(GL_TEXTURE0);
             particleEffect->Render(GetSceneCamera(), shader);
 
-            // TODO(student): Send uniforms generator_position,
+            // Send uniforms generator_position,
             // deltaTime and offset to the shader
-
+            glUniform1f(glGetUniformLocation(shader->program, "deltaTime"), deltaTimeSeconds);
+            glUniform3fv(glGetUniformLocation(shader->program, "generator_position"), 1, glm::value_ptr(generator_position));
+            glUniform1f(glGetUniformLocation(shader->program, "offset"), offset);
         }
     }
 
@@ -271,13 +279,15 @@ void Lab4::Update(float deltaTimeSeconds)
         if (shader->GetProgramID())
         {
             shader->Use();
-            // TODO(student): Send correct texture for fire
-            TextureManager::GetTexture("particle2.png")->BindToTextureUnit(GL_TEXTURE0);
+            // Send correct texture for fire
+            TextureManager::GetTexture("fire2.png")->BindToTextureUnit(GL_TEXTURE0);
             particleEffect->Render(GetSceneCamera(), shader);
 
-            // TODO(student): Send uniforms generator_position,
+            // Send uniforms generator_position,
             // deltaTime and offset to the shader
-
+            glUniform1f(glGetUniformLocation(shader->program, "deltaTime"), deltaTimeSeconds);
+            glUniform3fv(glGetUniformLocation(shader->program, "generator_position"), 1, glm::value_ptr(generator_position));
+            glUniform1f(glGetUniformLocation(shader->program, "offset"), offset);
         }
     }
 

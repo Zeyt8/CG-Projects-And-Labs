@@ -49,7 +49,7 @@ void main()
         return;
     }
 
-    // TODO(student): Compute the new position as the sum
+    // Compute the new position as the sum
     // between the actual position and the speed.
     //
     // Because the y coordinate is already set negative since the
@@ -58,6 +58,7 @@ void main()
     //
     // For animations that are independent of the platform,
     // the speed must be multiplied with deltaTime.
+    pos += spd * deltaTime;
 
     spd = spd - vec3(0, 0.9, 0) * deltaTime;
 
