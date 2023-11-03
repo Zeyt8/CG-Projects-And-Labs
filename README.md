@@ -48,11 +48,33 @@ The compiler requirements are listed below. We strongly recommend to always use 
     -   macOS: `clang++` version 4
 
 -   Recommended:
-    -   Windows: Visual Studio 2019 with `Workloads -> Desktop development with C++` checked when installing
+    -   Windows: Visual Studio 2022 with `Workloads -> Desktop development with C++` checked when installing
+        -    When installing Visual Studio 2019 or later, double-check that you selected "Desktop development with C++". This should download and install approximately 8 GB of stuff from the Microsoft servers. If you installed Visual Studio and it only took several minutes, you probably missed this step
     -   Linux: `g++` latest
     -   macOS: `clang++` latest, by doing one of the following:
         -   for LLVM/Clang: install [`brew`](https://brew.sh/) then run `brew install llvm`
         -   for Apple Clang: install XCode
+
+
+### Install an editor
+
+We recommend the following editors:
+
+-    Windows: Visual Studio (***not*** the same thing as Visual Studio Code)
+-    Linux: Visual Studio Code
+-    macOS: Visual Studio Code (***do not*** use Visual Studio for Mac, as it's discontinued)
+
+
+### Install or update your graphics drivers
+
+Use the following steps as a guideline. Detailed instructions differ across manufacturers and operating systems, and are ***not*** covered here.
+
+-   Update the drivers for your integrated graphics processor (for example, Intel Graphics XXXX)
+-   Update the drivers for your dedicated graphics card, if your computer has one:
+    -   for Nvidia cards: https://www.nvidia.com/Download/index.aspx
+    -   for AMD cards: https://www.amd.com/en/support
+
+Not updating your drivers may result in the project not working, or displaying a white screen.
 
 
 ### Check your graphics capabilities
@@ -97,7 +119,7 @@ This project requires CMake ***3.16 or newer,*** however, as with the compilers,
 -   macOS:
     1.  run `brew install cmake`
 
-After installation, run `cmake --version` (again) to check that it's in your `PATH` environment variable. This should happen automatically, but if it didn't, just add it manually. Instructions on how to add an executable to your `PATH` differ across operating systems and are ***not*** covered here.
+After installation, run `cmake --version` to check that it's in your `PATH` environment variable. This should happen automatically, but if it didn't, just add it manually. Instructions on how to add an executable to your `PATH` differ across operating systems and are ***not*** covered here.
 
 
 ## :gear: Building
@@ -121,6 +143,8 @@ Do not run CMake directly from the top-level folder (meaning, do not do this: `c
         -   or just `make`
 
 That's it! :tada:
+
+***Note:*** When running the CMake generation step on Windows (meaning, `cmake ..`), you may receive errors that include the phrase `Permission denied`. If you currently have the framework on the `C:` drive, for example on the Desktop, you might not have write permissions. Experimentally, we've found that this happens on single-drive devices (meaning, for example, computers with no disk partition other than `C:`). As an alternative, move the framework on the top-level (directly in `C:`) or create another drive partition (for example `D:`) and move it there.
 
 
 ### Rebuilding
