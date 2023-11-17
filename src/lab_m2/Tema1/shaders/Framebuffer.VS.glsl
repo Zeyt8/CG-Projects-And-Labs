@@ -12,11 +12,13 @@ uniform mat4 Projection;
 
 out vec3 geom_position;
 out vec2 geom_texture_coord;
+out vec3 geom_normal;
 
 void main()
 {
     geom_position = v_position;
     geom_texture_coord = v_texture_coord;
+    geom_normal = v_normal;
 
     gl_Position = Model * vec4(v_position, 1); 
 }

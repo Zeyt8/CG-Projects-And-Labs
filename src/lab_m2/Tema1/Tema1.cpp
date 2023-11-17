@@ -145,6 +145,7 @@ void Tema1::Update(float deltaTimeSeconds)
             glUniform1i(glGetUniformLocation(shader->program, "texture_cubemap"), 1);
 
             glUniform1i(glGetUniformLocation(shader->program, "cube_draw"), 1);
+            glUniform3fv(glGetUniformLocation(shader->program, "cameraDirection"), 1, glm::value_ptr(glm::normalize(GetSceneCamera()->m_transform->GetLocalOZVector())));
 
             meshes["cube"]->Render();
         }

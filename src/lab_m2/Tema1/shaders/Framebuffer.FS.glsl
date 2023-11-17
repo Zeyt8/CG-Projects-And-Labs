@@ -5,6 +5,7 @@ layout(location = 0) out vec4 out_color;
 uniform sampler2D texture_1;
 uniform samplerCube texture_cubemap;
 uniform int cube_draw;
+uniform int type;
 
 in vec3 frag_position;
 in vec2 frag_texture_coord;
