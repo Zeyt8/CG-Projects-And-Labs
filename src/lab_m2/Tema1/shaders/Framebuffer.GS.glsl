@@ -3,6 +3,7 @@
 layout(triangles) in;
 layout(triangle_strip, max_vertices = 100) out;
 
+uniform mat4 Model;
 uniform mat4 View;
 uniform mat4 Projection;
 uniform mat4 viewMatrices[6];
@@ -24,24 +25,32 @@ void duplicate(int layer)
 	    gl_Position = Projection * viewMatrices[layer] * gl_in[i].gl_Position;
         EmitVertex();
     }
+    EndPrimitive();
 }
 
 void edge(vec3 p1, vec3 p2, vec3 p3, float[3] o, int layer)
 {
-    vec3 p12 = p1 + (p2 - p1) * (abs(o[0]) / (abs(o[1]) - abs(o[0])));
-    vec3 p23 = p2 + (p3 - p2) * (abs(o[1]) / (abs(o[2]) - abs(o[1])));
+    vec3 p12 = p1 + (p2 - p1) * (abs(o[0]) / (abs(o[0]) + abs(o[1])));
+    vec3 p23 = p3 + (p2 - p3) * (abs(o[2]) / (abs(o[2]) + abs(o[1])));
     frag_position = p12;
-    frag_texture_coord = geom_texture_coord[0];
-    gl_Position = Projection * viewMatrices[layer] * vec4(p12, 1);
+    gl_Position = Projection * viewMatrices[layer] * Model * vec4(p12, 1);
     EmitVertex();
     frag_position = p23;
-    frag_texture_coord = geom_texture_coord[2];
-    gl_Position = Projection * viewMatrices[layer] * vec4(p23, 1);
+    gl_Position = Projection * viewMatrices[layer] * Model * vec4(p23, 1);
     EmitVertex();
-    frag_position = p2;
-    frag_texture_coord = geom_texture_coord[1];
-    gl_Position = Projection * viewMatrices[layer] * vec4(p2, 1);
-    EmitVertex();
+    if (o[1] < 0) {
+		frag_position = p2;
+		gl_Position = Projection * viewMatrices[layer] * Model * vec4(p2, 1);
+		EmitVertex();
+	} else {
+		frag_position = p1;
+		gl_Position = Projection * viewMatrices[layer] * Model * vec4(p1, 1);
+		EmitVertex();
+		frag_position = p3;
+		gl_Position = Projection * viewMatrices[layer] * Model * vec4(p3, 1);
+		EmitVertex();
+	}
+    EndPrimitive();
 }
 
 void wireframe(int layer)
@@ -80,6 +89,5 @@ void main()
         } else if (type == 1) {
 			wireframe(layer);
 		}
-        EndPrimitive();
     }
 }

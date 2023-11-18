@@ -145,7 +145,6 @@ void Tema1::Update(float deltaTimeSeconds)
             glUniform1i(glGetUniformLocation(shader->program, "texture_cubemap"), 1);
 
             glUniform1i(glGetUniformLocation(shader->program, "cube_draw"), 1);
-            glUniform3fv(glGetUniformLocation(shader->program, "cameraDirection"), 1, glm::value_ptr(glm::normalize(GetSceneCamera()->m_transform->GetLocalOZVector())));
 
             meshes["cube"]->Render();
         }
@@ -179,6 +178,9 @@ void Tema1::Update(float deltaTimeSeconds)
             glUniform1i(glGetUniformLocation(shader->program, "texture_1"), 0);
 
             glUniform1i(glGetUniformLocation(shader->program, "cube_draw"), 0);
+            glUniform1i(glGetUniformLocation(shader->program, "type"), type);
+            glm::vec3 cameraDirection = GetSceneCamera()->m_transform->GetLocalOZVector();
+            glUniform3f(glGetUniformLocation(shader->program, "cameraDirection"), cameraDirection.x, cameraDirection.y, cameraDirection.z);
 
             meshes["archer"]->Render();
         }
@@ -267,8 +269,6 @@ void Tema1::Update(float deltaTimeSeconds)
 
         int loc_camera = shader->GetUniformLocation("camera_position");
         glUniform3f(loc_camera, cameraPosition.x, cameraPosition.y, cameraPosition.z);
-
-        glUniform1i(shader->GetUniformLocation("type"), type);
 
         meshes["quad"]->Render();
     }
