@@ -40,5 +40,7 @@ namespace m2
         unsigned int color_texture;
         unsigned int depth_texture;
         unsigned int type;
+        glm::vec3 mirrorPosition;
+        glm::vec3 mirrorRotation;
     };
 }   // namespace m2

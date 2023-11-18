@@ -24,6 +24,9 @@ Tema1::Tema1()
     angle = 0;
 
     type = 0;
+
+    mirrorPosition = glm::vec3(0);
+    mirrorRotation = glm::vec3(0);
 }
 
 
@@ -162,12 +165,12 @@ void Tema1::Update(float deltaTimeSeconds)
 
             glm::mat4 cubeView[6] =
             {
-                glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(0.0f,-1.0f, 0.0f)), // +X
-                glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(-1.0f, 0.0f, 0.0f), glm::vec3(0.0f,-1.0f, 0.0f)), // -X
-                glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f)), // +Y
-                glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f,-1.0f, 0.0f), glm::vec3(0.0f, 0.0f,-1.0f)), // -Y
-                glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f,-1.0f, 0.0f)), // +Z
-                glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f,-1.0f), glm::vec3(0.0f,-1.0f, 0.0f)), // -Z
+                glm::lookAt(mirrorPosition, glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(0.0f,-1.0f, 0.0f)), // +X
+                glm::lookAt(mirrorPosition, glm::vec3(-1.0f, 0.0f, 0.0f), glm::vec3(0.0f,-1.0f, 0.0f)), // -X
+                glm::lookAt(mirrorPosition, glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f)), // +Y
+                glm::lookAt(mirrorPosition, glm::vec3(0.0f,-1.0f, 0.0f), glm::vec3(0.0f, 0.0f,-1.0f)), // -Y
+                glm::lookAt(mirrorPosition, glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f,-1.0f, 0.0f)), // +Z
+                glm::lookAt(mirrorPosition, glm::vec3(0.0f, 0.0f,-1.0f), glm::vec3(0.0f,-1.0f, 0.0f)), // -Z
             };
 
             glUniformMatrix4fv(glGetUniformLocation(shader->GetProgramID(), "viewMatrices"), 6, GL_FALSE, glm::value_ptr(cubeView[0]));
@@ -179,8 +182,6 @@ void Tema1::Update(float deltaTimeSeconds)
 
             glUniform1i(glGetUniformLocation(shader->program, "cube_draw"), 0);
             glUniform1i(glGetUniformLocation(shader->program, "type"), type);
-            glm::vec3 cameraDirection = GetSceneCamera()->m_transform->GetLocalOZVector();
-            glUniform3f(glGetUniformLocation(shader->program, "cameraDirection"), cameraDirection.x, cameraDirection.y, cameraDirection.z);
 
             meshes["archer"]->Render();
         }
@@ -244,7 +245,12 @@ void Tema1::Update(float deltaTimeSeconds)
         Shader* shader = shaders["CubeMap"];
         shader->Use();
 
-        glm::mat4 modelMatrix = glm::scale(glm::mat4(1), glm::vec3(2.5f));
+        glm::mat4 modelMatrix = glm::mat4(1);
+        modelMatrix *= glm::translate(glm::mat4(1), mirrorPosition);
+        modelMatrix *= glm::rotate(glm::mat4(1), mirrorRotation.x, glm::vec3(1, 0, 0));
+        modelMatrix *= glm::rotate(glm::mat4(1), mirrorRotation.y, glm::vec3(0, 1, 0));
+        modelMatrix *= glm::rotate(glm::mat4(1), mirrorRotation.z, glm::vec3(0, 0, 1));
+        modelMatrix *= glm::scale(glm::mat4(1), glm::vec3(2.5f));
 
         glUniformMatrix4fv(shader->loc_model_matrix, 1, GL_FALSE, glm::value_ptr(modelMatrix));
         glUniformMatrix4fv(shader->loc_view_matrix, 1, GL_FALSE, glm::value_ptr(camera->GetViewMatrix()));
@@ -418,6 +424,43 @@ void Tema1::CreateFramebuffer(int width, int height)
 void Tema1::OnInputUpdate(float deltaTime, int mods)
 {
     // Treat continuous update based on input
+    if (window->KeyHold(GLFW_KEY_UP)) {
+        mirrorPosition += glm::vec3(0, 0, 1) * deltaTime;
+    }
+    if (window->KeyHold(GLFW_KEY_DOWN)) {
+        mirrorPosition += glm::vec3(0, 0, -1) * deltaTime;
+    }
+    if (window->KeyHold(GLFW_KEY_LEFT)) {
+        mirrorPosition += glm::vec3(1, 0, 0) * deltaTime;
+    }
+    if (window->KeyHold(GLFW_KEY_RIGHT)) {
+        mirrorPosition += glm::vec3(-1, 0, 0) * deltaTime;
+    }
+    if (window->KeyHold(GLFW_KEY_N)) {
+        mirrorPosition += glm::vec3(0, 1, 0) * deltaTime;
+    }
+    if (window->KeyHold(GLFW_KEY_M)) {
+        mirrorPosition += glm::vec3(0, -1, 0) * deltaTime;
+    }
+
+    if (window->KeyHold(GLFW_KEY_U)) {
+        mirrorRotation += glm::vec3(0, 0, 1) * deltaTime;
+    }
+    if (window->KeyHold(GLFW_KEY_J)) {
+        mirrorRotation += glm::vec3(0, 0, -1) * deltaTime;
+    }
+    if (window->KeyHold(GLFW_KEY_H)) {
+        mirrorRotation += glm::vec3(1, 0, 0) * deltaTime;
+    }
+    if (window->KeyHold(GLFW_KEY_K)) {
+        mirrorRotation += glm::vec3(-1, 0, 0) * deltaTime;
+    }
+    if (window->KeyHold(GLFW_KEY_Y)) {
+        mirrorRotation += glm::vec3(0, 1, 0) * deltaTime;
+    }
+    if (window->KeyHold(GLFW_KEY_I)) {
+        mirrorRotation += glm::vec3(0, -1, 0) * deltaTime;
+    }
 }
 
 

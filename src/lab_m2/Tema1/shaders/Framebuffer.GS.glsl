@@ -8,7 +8,6 @@ uniform mat4 View;
 uniform mat4 Projection;
 uniform mat4 viewMatrices[6];
 uniform int type;
-uniform vec3 cameraDirection;
 
 in vec3 geom_position[3];
 in vec2 geom_texture_coord[3];
@@ -16,6 +15,8 @@ in vec3 geom_normal[3];
 
 out vec3 frag_position;
 out vec2 frag_texture_coord;
+
+vec3 cameraDirection;
 
 void duplicate(int layer)
 {
@@ -77,6 +78,28 @@ void wireframe(int layer)
     }
 }
 
+void setCameraDirection(int layer)
+{
+    if (layer == 0) {
+        cameraDirection = vec3(1, 0, 0);
+    }
+    if (layer == 1) {
+		cameraDirection = vec3(-1, 0, 0);
+	}
+    if (layer == 2) {
+		cameraDirection = vec3(0, 1, 0);
+	}
+    if (layer == 3) {
+		cameraDirection = vec3(0, -1, 0);
+	}
+    if (layer == 4) {
+		cameraDirection = vec3(0, 0, 1);
+	}
+    if (layer == 5) {
+		cameraDirection = vec3(0, 0, -1);
+	}
+}
+
 void main()
 {
     // Update the code to compute the position from each camera view 
@@ -84,6 +107,7 @@ void main()
     // attribute according to the corresponding layer.
     for (int layer = 0; layer < 6; layer++) {
 		gl_Layer = layer;
+        setCameraDirection(layer);
         if (type == 0) {
             duplicate(layer);
         } else if (type == 1) {

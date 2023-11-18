@@ -20,13 +20,6 @@ vec3 myReflect()
 }
 
 
-vec3 myRefract(float refractive_index)
-{
-    // Compute the refraction color value
-    return texture(texture_cubemap, refract(normalize(world_position - camera_position), world_normal, 1.0 / refractive_index)).rgb;
-}
-
-
 void main()
 {
     out_color = vec4(myReflect(), 0);
