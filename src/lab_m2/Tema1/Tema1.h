@@ -2,9 +2,11 @@
 
 #include "components/simple_scene.h"
 #include "components/transform.h"
+#include "core/gpu/particle_effect.h"
 
 #include <string>
 
+struct Particle;
 
 namespace m2
 {
@@ -23,6 +25,9 @@ namespace m2
         void FrameEnd() override;
 
         unsigned int UploadCubeMapTexture(const std::string& pos_x, const std::string& pos_y, const std::string& pos_z, const std::string& neg_x, const std::string& neg_y, const std::string& neg_z);
+        void LoadShader(const std::string& name,
+            const std::string& VS, const std::string& FS, const std::string& GS = "",
+            bool hasGeomtery = false);
 
         void OnInputUpdate(float deltaTime, int mods) override;
         void OnKeyPress(int key, int mods) override;
@@ -32,6 +37,7 @@ namespace m2
         void OnMouseBtnRelease(int mouseX, int mouseY, int button, int mods) override;
         void OnMouseScroll(int mouseX, int mouseY, int offsetX, int offsetY) override;
         void OnWindowResize(int width, int height) override;
+        float RandomFloat(float a, float b);
 
     private:
         int cubeMapTextureID;
@@ -42,5 +48,6 @@ namespace m2
         unsigned int type;
         glm::vec3 mirrorPosition;
         glm::vec3 mirrorRotation;
+        ParticleEffect<Particle>* particleEffect;
     };
 }   // namespace m2

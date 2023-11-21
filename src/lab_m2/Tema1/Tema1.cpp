@@ -8,6 +8,34 @@
 using namespace std;
 using namespace m2;
 
+struct Particle
+{
+    int id;
+    float speed;
+    float delay;
+    float initialDelay;
+    float lifetime;
+    float initialLifetime;
+
+    Particle() {}
+
+    Particle(int id, float speed)
+    {
+        SetInitial(id, speed);
+    }
+
+    void SetInitial(int id, float speed, float delay = 0, float lifetime = 0)
+    {
+        this->id = id;
+        this->speed = speed;
+
+        this->delay = delay;
+        initialDelay = delay;
+
+        this->lifetime = lifetime;
+        initialLifetime = lifetime;
+    }
+};
 
 /*
  *  To find out more about `FrameStart`, `Update`, `FrameEnd`
@@ -106,6 +134,26 @@ void Tema1::Init()
     // Create the framebuffer on which the scene is rendered from the perspective of the mesh
     // Texture size must be cubic
     CreateFramebuffer(1024, 1024);
+
+    TextureManager::LoadTexture(PATH_JOIN(window->props.selfDir, RESOURCE_PATH::TEXTURES), "particle2.png");
+    LoadShader("Fireflies", "Particle_fireworks", "Particle_simple", "Particle", true);
+
+    // generate particle effect
+    int nrParticles = 100;
+    particleEffect = new ParticleEffect<Particle>();
+    particleEffect->Generate(nrParticles, true);
+
+    auto particleSSBO = particleEffect->GetParticleBuffer();
+    Particle* data = const_cast<Particle*>(particleSSBO->GetBuffer());
+
+    for (unsigned int i = 0; i < nrParticles; i++)
+    {
+        float speed = RandomFloat(0.2f, 0.4f);
+
+        data[i].SetInitial(i / (nrParticles / 5), speed, RandomFloat(10, 20), RandomFloat(2, 5));
+    }
+
+    particleSSBO->SetBufferData(data);
 }
 
 
@@ -277,6 +325,19 @@ void Tema1::Update(float deltaTimeSeconds)
         glUniform3f(loc_camera, cameraPosition.x, cameraPosition.y, cameraPosition.z);
 
         meshes["quad"]->Render();
+    }
+
+    {
+        auto shader = shaders["Fireflies"];
+        if (shader->GetProgramID())
+        {
+            shader->Use();
+
+            TextureManager::GetTexture("particle2.png")->BindToTextureUnit(GL_TEXTURE0);
+            particleEffect->Render(GetSceneCamera(), shader);
+
+            glUniform1f(glGetUniformLocation(shader->program, "deltaTime"), deltaTimeSeconds);
+        }
     }
 }
 
@@ -517,4 +578,31 @@ void Tema1::OnMouseScroll(int mouseX, int mouseY, int offsetX, int offsetY)
 void Tema1::OnWindowResize(int width, int height)
 {
     // Treat window resize event
+}
+
+void Tema1::LoadShader(const std::string& name, const std::string& VS, const std::string& FS, const std::string& GS, bool hasGeomtery)
+{
+    std::string shaderPath = PATH_JOIN(window->props.selfDir, SOURCE_PATH::M2, "Tema1", "shaders");
+
+    // Create a shader program for particle system
+    {
+        Shader* shader = new Shader(name);
+        shader->AddShader(PATH_JOIN(shaderPath, VS + ".VS.glsl"), GL_VERTEX_SHADER);
+        shader->AddShader(PATH_JOIN(shaderPath, FS + ".FS.glsl"), GL_FRAGMENT_SHADER);
+        if (hasGeomtery)
+        {
+            shader->AddShader(PATH_JOIN(shaderPath, GS + ".GS.glsl"), GL_GEOMETRY_SHADER);
+        }
+
+        shader->CreateAndLink();
+        shaders[shader->GetName()] = shader;
+    }
+}
+
+float Tema1::RandomFloat(float a, float b)
+{
+    float random = ((float)rand()) / (float)RAND_MAX;
+    float diff = b - a;
+    float r = random * diff;
+    return a + r;
 }
