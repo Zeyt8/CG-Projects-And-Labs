@@ -108,7 +108,7 @@ void main()
     for (int layer = 0; layer < 6; layer++) {
 		gl_Layer = layer;
         setCameraDirection(layer);
-        if (type == 0) {
+        if (type == 0 || type == 2) {
             duplicate(layer);
         } else if (type == 1) {
 			wireframe(layer);

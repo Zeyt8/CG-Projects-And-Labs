@@ -2,12 +2,13 @@
 
 // Input and output topologies
 layout(points) in;
-layout(triangle_strip, max_vertices = 4) out;
+layout(triangle_strip, max_vertices = 100) out;
 
 // Uniform properties
-uniform mat4 View;
 uniform mat4 Projection;
+uniform mat4 viewMatrices[6];
 uniform vec3 eye_position;
+uniform int type;
 
 in float vert_lifetime[1];
 in float vert_iLifetime[1];
@@ -25,12 +26,12 @@ vec3 right = normalize(cross(forward, vec3(0, 1, 0)));
 vec3 up = normalize(cross(forward, right));
 
 
-void EmitPoint(vec2 offset)
+void EmitPoint(vec2 offset, int layer)
 {
     geom_lifetime = vert_lifetime[0];
     geom_iLifetime = vert_iLifetime[0];
     vec3 pos = right * offset.x + up * offset.y + vpos;
-    gl_Position = Projection * View * vec4(pos, 1.0);
+    gl_Position = Projection * viewMatrices[layer] * vec4(pos, 1.0);
     EmitVertex();
 }
 
@@ -38,13 +39,16 @@ void EmitPoint(vec2 offset)
 void main()
 {
     float ds = 0.05f;
-    texture_coord = vec2(0, 0);
-    EmitPoint(vec2(-ds, -ds));
-    texture_coord = vec2(0, 1);
-    EmitPoint(vec2(-ds, ds));
-    texture_coord = vec2(1, 0);
-    EmitPoint(vec2(ds, -ds));
-    texture_coord = vec2(1, 1);
-    EmitPoint(vec2(ds, ds));
-	EndPrimitive();
+    for (int layer = 0; layer < 6; layer++) {
+        gl_Layer = layer;
+        texture_coord = vec2(0, 0);
+        EmitPoint(vec2(-ds, -ds), layer);
+        texture_coord = vec2(0, 1);
+        EmitPoint(vec2(-ds, ds), layer);
+        texture_coord = vec2(1, 0);
+        EmitPoint(vec2(ds, -ds), layer);
+        texture_coord = vec2(1, 1);
+        EmitPoint(vec2(ds, ds), layer);
+	    EndPrimitive();
+    }
 }

@@ -15,7 +15,7 @@ void main()
     vec3 color = vec3(0);
 
     if (cube_draw == 0) {
-        if (type == 0) {
+        if (type == 0 || type == 2) {
             color = texture(texture_1, frag_texture_coord).xyz;
         } else if (type == 1) {
             color = vec3(1, 0, 0);

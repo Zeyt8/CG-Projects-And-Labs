@@ -200,6 +200,16 @@ void Tema1::Update(float deltaTimeSeconds)
             meshes["cube"]->Render();
         }
 
+        glm::mat4 cubeView[6] =
+        {
+            glm::lookAt(mirrorPosition, mirrorPosition + glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(0.0f,-1.0f, 0.0f)), // +X
+            glm::lookAt(mirrorPosition, mirrorPosition + glm::vec3(-1.0f, 0.0f, 0.0f), glm::vec3(0.0f,-1.0f, 0.0f)), // -X
+            glm::lookAt(mirrorPosition, mirrorPosition + glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f)), // +Y
+            glm::lookAt(mirrorPosition, mirrorPosition + glm::vec3(0.0f,-1.0f, 0.0f), glm::vec3(0.0f, 0.0f,-1.0f)), // -Y
+            glm::lookAt(mirrorPosition, mirrorPosition + glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f,-1.0f, 0.0f)), // +Z
+            glm::lookAt(mirrorPosition, mirrorPosition + glm::vec3(0.0f, 0.0f,-1.0f), glm::vec3(0.0f,-1.0f, 0.0f)), // -Z
+        };
+
         for (int i = 0; i < 5; i++)
         {
             glm::mat4 modelMatrix = glm::mat4(1);
@@ -210,16 +220,6 @@ void Tema1::Update(float deltaTimeSeconds)
 
             glUniformMatrix4fv(shader->loc_model_matrix, 1, GL_FALSE, glm::value_ptr(modelMatrix));
             glUniformMatrix4fv(shader->loc_view_matrix, 1, GL_FALSE, glm::value_ptr(camera->GetViewMatrix()));
-
-            glm::mat4 cubeView[6] =
-            {
-                glm::lookAt(mirrorPosition, glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(0.0f,-1.0f, 0.0f)), // +X
-                glm::lookAt(mirrorPosition, glm::vec3(-1.0f, 0.0f, 0.0f), glm::vec3(0.0f,-1.0f, 0.0f)), // -X
-                glm::lookAt(mirrorPosition, glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f)), // +Y
-                glm::lookAt(mirrorPosition, glm::vec3(0.0f,-1.0f, 0.0f), glm::vec3(0.0f, 0.0f,-1.0f)), // -Y
-                glm::lookAt(mirrorPosition, glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f,-1.0f, 0.0f)), // +Z
-                glm::lookAt(mirrorPosition, glm::vec3(0.0f, 0.0f,-1.0f), glm::vec3(0.0f,-1.0f, 0.0f)), // -Z
-            };
 
             glUniformMatrix4fv(glGetUniformLocation(shader->GetProgramID(), "viewMatrices"), 6, GL_FALSE, glm::value_ptr(cubeView[0]));
             glUniformMatrix4fv(shader->loc_projection_matrix, 1, GL_FALSE, glm::value_ptr(projection));
@@ -232,6 +232,18 @@ void Tema1::Update(float deltaTimeSeconds)
             glUniform1i(glGetUniformLocation(shader->program, "type"), type);
 
             meshes["archer"]->Render();
+        }
+
+        shader = shaders["Fireflies"];
+        shader->Use();
+        {
+            glUniformMatrix4fv(glGetUniformLocation(shader->GetProgramID(), "viewMatrices"), 6, GL_FALSE, glm::value_ptr(cubeView[0]));
+            glUniformMatrix4fv(shader->loc_projection_matrix, 1, GL_FALSE, glm::value_ptr(projection));
+            glUniform1i(glGetUniformLocation(shader->program, "type"), type);
+            glUniform1f(glGetUniformLocation(shader->program, "deltaTime"), deltaTimeSeconds);
+
+            TextureManager::GetTexture("particle2.png")->BindToTextureUnit(GL_TEXTURE0);
+            particleEffect->Render(GetSceneCamera(), shader);
         }
 
         glBindTexture(GL_TEXTURE_CUBE_MAP, color_texture);
@@ -325,19 +337,6 @@ void Tema1::Update(float deltaTimeSeconds)
         glUniform3f(loc_camera, cameraPosition.x, cameraPosition.y, cameraPosition.z);
 
         meshes["quad"]->Render();
-    }
-
-    {
-        auto shader = shaders["Fireflies"];
-        if (shader->GetProgramID())
-        {
-            shader->Use();
-
-            TextureManager::GetTexture("particle2.png")->BindToTextureUnit(GL_TEXTURE0);
-            particleEffect->Render(GetSceneCamera(), shader);
-
-            glUniform1f(glGetUniformLocation(shader->program, "deltaTime"), deltaTimeSeconds);
-        }
     }
 }
 
