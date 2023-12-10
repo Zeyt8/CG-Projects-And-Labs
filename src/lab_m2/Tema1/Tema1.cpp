@@ -230,6 +230,8 @@ void Tema1::Update(float deltaTimeSeconds)
 
             glUniform1i(glGetUniformLocation(shader->program, "cube_draw"), 0);
             glUniform1i(glGetUniformLocation(shader->program, "type"), type);
+            glm::vec3 cameraDir = GetSceneCamera()->m_transform->GetLocalOZVector();
+            glUniform3fv(glGetUniformLocation(shader->program, "cameraDirection"), 1, glm::value_ptr(cameraDir));
 
             meshes["archer"]->Render();
         }

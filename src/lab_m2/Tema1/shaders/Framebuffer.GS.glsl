@@ -8,6 +8,7 @@ uniform mat4 View;
 uniform mat4 Projection;
 uniform mat4 viewMatrices[6];
 uniform int type;
+uniform vec3 cameraDirection;
 
 in vec3 geom_position[3];
 in vec2 geom_texture_coord[3];
@@ -15,8 +16,6 @@ in vec3 geom_normal[3];
 
 out vec3 frag_position;
 out vec2 frag_texture_coord;
-
-vec3 cameraDirection;
 
 void duplicate(int layer)
 {
@@ -32,12 +31,12 @@ void duplicate(int layer)
 void edge(vec3 p1, vec3 p2, vec3 p3, float[3] o, int layer)
 {
     vec3 p12 = p1 + (p2 - p1) * (abs(o[0]) / (abs(o[0]) + abs(o[1])));
-    vec3 p23 = p3 + (p2 - p3) * (abs(o[2]) / (abs(o[2]) + abs(o[1])));
+    vec3 p32 = p3 + (p2 - p3) * (abs(o[2]) / (abs(o[2]) + abs(o[1])));
     frag_position = p12;
     gl_Position = Projection * viewMatrices[layer] * Model * vec4(p12, 1);
     EmitVertex();
-    frag_position = p23;
-    gl_Position = Projection * viewMatrices[layer] * Model * vec4(p23, 1);
+    frag_position = p32;
+    gl_Position = Projection * viewMatrices[layer] * Model * vec4(p32, 1);
     EmitVertex();
     if (o[1] < 0) {
 		frag_position = p2;
@@ -78,28 +77,6 @@ void wireframe(int layer)
     }
 }
 
-void setCameraDirection(int layer)
-{
-    if (layer == 0) {
-        cameraDirection = vec3(1, 0, 0);
-    }
-    if (layer == 1) {
-		cameraDirection = vec3(-1, 0, 0);
-	}
-    if (layer == 2) {
-		cameraDirection = vec3(0, 1, 0);
-	}
-    if (layer == 3) {
-		cameraDirection = vec3(0, -1, 0);
-	}
-    if (layer == 4) {
-		cameraDirection = vec3(0, 0, 1);
-	}
-    if (layer == 5) {
-		cameraDirection = vec3(0, 0, -1);
-	}
-}
-
 void main()
 {
     // Update the code to compute the position from each camera view 
@@ -107,7 +84,6 @@ void main()
     // attribute according to the corresponding layer.
     for (int layer = 0; layer < 6; layer++) {
 		gl_Layer = layer;
-        setCameraDirection(layer);
         if (type == 0 || type == 2) {
             duplicate(layer);
         } else if (type == 1) {
