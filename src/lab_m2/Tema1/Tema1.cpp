@@ -245,7 +245,7 @@ void Tema1::Update(float deltaTimeSeconds)
             glUniform1f(glGetUniformLocation(shader->program, "deltaTime"), deltaTimeSeconds);
 
             TextureManager::GetTexture("particle2.png")->BindToTextureUnit(GL_TEXTURE0);
-            particleEffect->Render(GetSceneCamera(), shader);
+            particleEffect->Render(GetSceneCamera(), shader, -1, false);
         }
 
         glBindTexture(GL_TEXTURE_CUBE_MAP, color_texture);

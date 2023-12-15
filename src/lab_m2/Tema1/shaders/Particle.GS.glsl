@@ -7,6 +7,7 @@ layout(triangle_strip, max_vertices = 100) out;
 // Uniform properties
 uniform mat4 Projection;
 uniform mat4 viewMatrices[6];
+uniform mat4 Model;
 uniform vec3 eye_position;
 uniform int type;
 
@@ -31,13 +32,14 @@ void EmitPoint(vec2 offset, int layer)
     geom_lifetime = vert_lifetime[0];
     geom_iLifetime = vert_iLifetime[0];
     vec3 pos = right * offset.x + up * offset.y + vpos;
-    gl_Position = Projection * viewMatrices[layer] * vec4(pos, 1.0);
+    gl_Position = Projection * viewMatrices[layer] * Model * vec4(pos, 1.0);
     EmitVertex();
 }
 
 
 void main()
 {
+    if (type != 2) return;
     float ds = 0.05f;
     for (int layer = 0; layer < 6; layer++) {
         gl_Layer = layer;
