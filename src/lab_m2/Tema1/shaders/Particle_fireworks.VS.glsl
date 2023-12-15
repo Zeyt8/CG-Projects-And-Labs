@@ -12,10 +12,10 @@ uniform float deltaTime;
 out float vert_lifetime;
 out float vert_iLifetime;
 
-vec3 controls_0[5] = vec3[](vec3(-1.0, -2.0,  0), vec3(-0.8, -2.0,  0.7), vec3(13, -2.0,  1.75), vec3(0.25, -2.0, 1), vec3(-0.5, -2.0,  1.0));
-vec3 controls_1[5] = vec3[](vec3(-0.5,  1.0,  0), vec3(-0.35,  1.0,  0.5), vec3(-0.15,  1.0,  1.6), vec3(0.25,  1.0,  -7), vec3(1.5,  1.0,  0.5));
-vec3 controls_2[5] = vec3[](vec3(-0.3,  2.0,  0), vec3(-1.5,  2.0,  0.4), vec3(0,  2.0,  1.5), vec3(0.25,  2.0,  0.5), vec3(1.5,  2.0,  0));
-vec3 controls_3[5] = vec3[](vec3(-1.0,  3.5,  0), vec3(-0.75,  3.5,  0.7), vec3(-0.3,  3.5,  1), vec3(0.25,  3.5,  1), vec3(1.5,  3.5,  1.0));
+vec3 controls_0[5] = vec3[](vec3(0, 0,  0), vec3(0, 0, 0), vec3(0, 0, 0), vec3(0, 0, 0), vec3(0, 0, 0));
+vec3 controls_1[5] = vec3[](vec3(0,  0.5,  1), vec3(0.2,  1.0,  0.5), vec3(0.4,  0,  1), vec3(0.25,  -1,  -7), vec3(1.5,  -1,  0.5));
+vec3 controls_2[5] = vec3[](vec3(-0.3,  1,  0), vec3(-1.5,  2.0,  0.4), vec3(0,  0,  1.5), vec3(0.25,  -2.0,  0.5), vec3(1.5,  0,  0));
+vec3 controls_3[5] = vec3[](vec3(-1.0,  2,  0), vec3(-0.75,  1,  0.7), vec3(-0.3,  2,  1), vec3(0.25,  -1,  1), vec3(1.5,  0,  1.0));
 
 struct Particle
 {
