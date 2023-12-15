@@ -121,6 +121,15 @@ void Tema1::Init()
         shaders[shader->GetName()] = shader;
     }
 
+    {
+        Shader* shader = new Shader("Framebuffer2");
+        shader->AddShader(PATH_JOIN(shaderPath, "Framebuffer.VS.glsl"), GL_VERTEX_SHADER);
+        shader->AddShader(PATH_JOIN(shaderPath, "Framebuffer.FS.glsl"), GL_FRAGMENT_SHADER);
+        shader->AddShader(PATH_JOIN(shaderPath, "Framebuffer2.GS.glsl"), GL_GEOMETRY_SHADER);
+        shader->CreateAndLink();
+        shaders[shader->GetName()] = shader;
+    }
+
     cubeMapTextureID = UploadCubeMapTexture(
         PATH_JOIN(texturePath, "pos_x.png"),
         PATH_JOIN(texturePath, "pos_y.png"),
@@ -180,6 +189,10 @@ void Tema1::Update(float deltaTimeSeconds)
         glViewport(0, 0, 1024, 1024);
 
         Shader* shader = shaders["Framebuffer"];
+        if (type == 1)
+        {
+            shader = shaders["Framebuffer2"];
+        }
         shader->Use();
 
         glm::mat4 projection = glm::perspective(glm::radians(90.0f), 1.0f, 0.1f, 100.0f);
