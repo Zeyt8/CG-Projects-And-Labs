@@ -30,8 +30,9 @@ Tema2::~Tema2()
 void Tema2::Init()
 {
     // Load default texture fore imagine processing
-    originalImage = TextureManager::LoadTexture(PATH_JOIN(window->props.selfDir, RESOURCE_PATH::TEXTURES, "cube", "pos_x.png"), nullptr, "image", true, true);
-    processedImage = TextureManager::LoadTexture(PATH_JOIN(window->props.selfDir, RESOURCE_PATH::TEXTURES, "cube", "pos_x.png"), nullptr, "newImage", true, true);
+    originalImage = TextureManager::LoadTexture(PATH_JOIN(window->props.selfDir, RESOURCE_PATH::TEXTURES, "test_images", "star.png"), nullptr, "image", true, true);
+    processedImage = TextureManager::LoadTexture(PATH_JOIN(window->props.selfDir, RESOURCE_PATH::TEXTURES, "test_images", "star.png"), nullptr, "newImage", true, true);
+    watermark = TextureManager::LoadTexture(PATH_JOIN(window->props.selfDir, RESOURCE_PATH::TEXTURES, "test_images", "watermark.png"), nullptr, "watermark", true, true);
 
     {
         Mesh* mesh = new Mesh("quad");
@@ -82,6 +83,12 @@ void Tema2::Update(float deltaTimeSeconds)
     glUniform1i(locTexture, 0);
 
     originalImage->BindToTextureUnit(GL_TEXTURE0);
+
+    glUniform2i(shader->GetUniformLocation("watermarkSize"), watermark->GetWidth(), watermark->GetHeight());
+
+    int locWatermark = shader->GetUniformLocation("watermark");
+    glUniform1i(locWatermark, 1);
+    watermark->BindToTextureUnit(GL_TEXTURE1);
 
     RenderMesh(meshes["quad"], shader, glm::mat4(1));
 

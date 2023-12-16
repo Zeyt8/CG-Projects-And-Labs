@@ -39,6 +39,7 @@ namespace m2
      private:
         Texture2D *originalImage;
         Texture2D *processedImage;
+        Texture2D* watermark;
 
         bool saveScreenToImage;
     };
