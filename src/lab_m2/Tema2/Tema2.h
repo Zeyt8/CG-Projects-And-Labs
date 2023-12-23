@@ -35,11 +35,16 @@ namespace m2
 
         // Processing effects
         void SaveImage(const std::string &fileName);
+        void CreateFramebuffer(unsigned int& framebuffer, unsigned int& color_texure, int width, int height);
 
      private:
         Texture2D *originalImage;
         Texture2D *processedImage;
         Texture2D* watermark;
+        unsigned int framebuffer_object;
+        unsigned int color_texture;
+        unsigned int watermark_framebuffer;
+        unsigned int watermark_color_texture;
 
         bool saveScreenToImage;
     };

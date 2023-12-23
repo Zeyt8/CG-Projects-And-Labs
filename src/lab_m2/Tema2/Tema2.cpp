@@ -52,6 +52,36 @@ void Tema2::Init()
         shader->CreateAndLink();
         shaders[shader->GetName()] = shader;
     }
+
+    {
+        Shader* shader = new Shader("DisplayImage");
+        shader->AddShader(PATH_JOIN(shaderPath, "VertexShader.glsl"), GL_VERTEX_SHADER);
+        shader->AddShader(PATH_JOIN(shaderPath, "SimpleFragmentShader.glsl"), GL_FRAGMENT_SHADER);
+
+        shader->CreateAndLink();
+        shaders[shader->GetName()] = shader;
+    }
+
+    float aspectRatio = static_cast<float>(originalImage->GetWidth()) / originalImage->GetHeight();
+    CreateFramebuffer(framebuffer_object, color_texture, static_cast<int>(600 * aspectRatio), 600);
+    CreateFramebuffer(watermark_framebuffer, watermark_color_texture, static_cast<int>(600 * aspectRatio), 600);
+}
+
+void Tema2::CreateFramebuffer(unsigned int& framebuffer, unsigned int& color_texure, int width, int height)
+{
+    // Generate and bind the framebuffer
+    glGenFramebuffers(1, &framebuffer);
+    glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
+    // Generate and bind the color texture
+    glGenTextures(1, &color_texure);
+    glBindTexture(GL_TEXTURE_2D, color_texure);
+    // Initialize the color textures
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glBindTexture(GL_TEXTURE_2D, 0);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, color_texure, 0);
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
 
@@ -64,33 +94,54 @@ void Tema2::Update(float deltaTimeSeconds)
 {
     ClearScreen();
 
-    auto shader = shaders["ImageProcessing"];
-    shader->Use();
-
     if (saveScreenToImage)
     {
         window->SetSize(originalImage->GetWidth(), originalImage->GetHeight());
     }
 
-    int flip_loc = shader->GetUniformLocation("flipVertical");
-    glUniform1i(flip_loc, saveScreenToImage ? 0 : 1);
+    auto shader = shaders["ImageProcessing"];
+    shader->Use();
 
-    int screenSize_loc = shader->GetUniformLocation("screenSize");
-    glm::ivec2 resolution = window->GetResolution();
-    glUniform2i(screenSize_loc, resolution.x, resolution.y);
+    {
+        glBindFramebuffer(GL_FRAMEBUFFER, framebuffer_object);
 
-    int locTexture = shader->GetUniformLocation("textureImage");
-    glUniform1i(locTexture, 0);
+        int screenSize_loc = shader->GetUniformLocation("screenSize");
+        glm::ivec2 resolution = window->GetResolution();
+        glUniform2i(screenSize_loc, resolution.x, resolution.y);
 
-    originalImage->BindToTextureUnit(GL_TEXTURE0);
+        int locTexture = shader->GetUniformLocation("textureImage");
+        glUniform1i(locTexture, 0);
 
-    glUniform2i(shader->GetUniformLocation("watermarkSize"), watermark->GetWidth(), watermark->GetHeight());
+        originalImage->BindToTextureUnit(GL_TEXTURE0);
 
-    int locWatermark = shader->GetUniformLocation("watermark");
-    glUniform1i(locWatermark, 1);
-    watermark->BindToTextureUnit(GL_TEXTURE1);
+        RenderMesh(meshes["quad"], shader, glm::mat4(1));
+    }
 
-    RenderMesh(meshes["quad"], shader, glm::mat4(1));
+    {
+        glBindFramebuffer(GL_FRAMEBUFFER, watermark_framebuffer);
+
+        glUniform2i(shader->GetUniformLocation("watermarkSize"), watermark->GetWidth(), watermark->GetHeight());
+
+        int locWatermark = shader->GetUniformLocation("textureImage");
+        glUniform1i(locWatermark, 0);
+        watermark->BindToTextureUnit(GL_TEXTURE0);
+        RenderMesh(meshes["quad"], shader, glm::mat4(1));
+    }
+
+    {
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+        shader = shaders["DisplayImage"];
+        shader->Use();
+
+        int flip_loc = shader->GetUniformLocation("flipVertical");
+        glUniform1i(flip_loc, saveScreenToImage ? 0 : 1);
+        glActiveTexture(GL_TEXTURE1);
+        glBindTexture(GL_TEXTURE_2D, color_texture);
+        int locTexture = shader->GetUniformLocation("textureImage");
+        glUniform1i(locTexture, 1);
+        RenderMesh(meshes["quad"], shader, glm::mat4(1));
+    }
 
     if (saveScreenToImage)
     {
