@@ -76,7 +76,7 @@ void Tema2::CreateFramebuffer(unsigned int& framebuffer, unsigned int& color_tex
     glGenTextures(1, &color_texure);
     glBindTexture(GL_TEXTURE_2D, color_texure);
     // Initialize the color textures
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glBindTexture(GL_TEXTURE_2D, 0);
@@ -117,6 +117,10 @@ void Tema2::Update(float deltaTimeSeconds)
         RenderMesh(meshes["quad"], shader, glm::mat4(1));
     }
 
+    float aspectRatio = static_cast<float>(originalImage->GetWidth()) / originalImage->GetHeight();
+    std::vector<GLubyte> imagePixels(4 * static_cast<int>(600 * aspectRatio) * 600);
+    glReadPixels(0, 0, static_cast<int>(600 * aspectRatio), 600, GL_RGBA, GL_UNSIGNED_BYTE, imagePixels.data());
+
     {
         glBindFramebuffer(GL_FRAMEBUFFER, watermark_framebuffer);
 
@@ -128,18 +132,59 @@ void Tema2::Update(float deltaTimeSeconds)
         RenderMesh(meshes["quad"], shader, glm::mat4(1));
     }
 
+    std::vector<GLubyte> watermarkPixels(4 * static_cast<int>(600 * aspectRatio) * 600);
+    glReadPixels(0, 0, static_cast<int>(600 * aspectRatio), 600, GL_RGBA, GL_UNSIGNED_BYTE, watermarkPixels.data());
+
+    for (int x = 0; x < static_cast<int>(600 * aspectRatio); x++)
+    {
+        for (int y = 0; y < 600; y++)
+        {
+            int matchingPixels = 0;
+            for (int i = 0; i < watermark->GetWidth(); i++)
+            {
+                for (int j = 0; j < watermark->GetHeight(); j++)
+                {
+                    int index = 4 * ((y + j) * static_cast<int>(600 * aspectRatio) + x + i);
+                    int watermarkIndex = 4 * (j * watermark->GetWidth() + i);
+                    if (watermarkPixels[watermarkIndex] == imagePixels[index])
+                    {
+                        matchingPixels++;
+                    }
+                }
+            }
+            if (matchingPixels > 0.9 * watermark->GetWidth() * watermark->GetHeight())
+            {
+                for (int i = 0; i < watermark->GetWidth(); i++)
+                {
+                    for (int j = 0; j < watermark->GetHeight(); j++)
+                    {
+                        int index = 4 * ((y + j) * static_cast<int>(600 * aspectRatio) + x + i);
+                        int watermarkIndex = 4 * (j * watermark->GetWidth() + i);
+                        imagePixels[index] = 0;
+                        imagePixels[index + 1] = 0;
+                        imagePixels[index + 2] = 0;
+                        imagePixels[index + 3] = 0;
+                    }
+                }
+            }
+        }
+    }
+
     {
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
         shader = shaders["DisplayImage"];
         shader->Use();
 
-        int flip_loc = shader->GetUniformLocation("flipVertical");
-        glUniform1i(flip_loc, saveScreenToImage ? 0 : 1);
-        glActiveTexture(GL_TEXTURE1);
-        glBindTexture(GL_TEXTURE_2D, color_texture);
-        int locTexture = shader->GetUniformLocation("textureImage");
-        glUniform1i(locTexture, 1);
+        glUniform1i(shader->GetUniformLocation("flipVertical"), saveScreenToImage ? 0 : 1);
+        GLuint newTexture;
+        glGenTextures(1, &newTexture);
+        glBindTexture(GL_TEXTURE_2D, newTexture);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, static_cast<int>(600 * aspectRatio), 600, 0, GL_RGBA, GL_UNSIGNED_BYTE, imagePixels.data());
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glActiveTexture(GL_TEXTURE0);
+        glUniform1i(shader->GetUniformLocation("textureImage"), 0);
         RenderMesh(meshes["quad"], shader, glm::mat4(1));
     }
 
@@ -157,7 +202,6 @@ void Tema2::Update(float deltaTimeSeconds)
         processedImage->UploadNewData(processedImage->GetImageData());
         SaveImage("shader_processing");
 
-        float aspectRatio = static_cast<float>(originalImage->GetWidth()) / originalImage->GetHeight();
         window->SetSize(static_cast<int>(600 * aspectRatio), 600);
     }
 }
