@@ -45,7 +45,9 @@ namespace m2
         unsigned int color_texture;
         unsigned int watermark_framebuffer;
         unsigned int watermark_color_texture;
+        std::vector<GLubyte> pixels;
 
         bool saveScreenToImage;
+        bool processed;
     };
 }   // namespace m2
