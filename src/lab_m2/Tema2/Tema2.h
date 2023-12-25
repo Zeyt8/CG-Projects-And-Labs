@@ -45,7 +45,10 @@ namespace m2
         unsigned int color_texture;
         unsigned int watermark_framebuffer;
         unsigned int watermark_color_texture;
-        std::vector<GLubyte> pixels;
+        std::vector<GLubyte> originalImagePixels;
+        std::vector<GLubyte> watermarkPixels;
+        std::vector<GLubyte> imageBPixels;
+        std::vector<GLubyte> watermarkBPixels;
 
         bool saveScreenToImage;
         bool processed;
