@@ -37,6 +37,8 @@ namespace m2
         void SaveImage(const std::string &fileName);
         void CreateFramebuffer(unsigned int& framebuffer, unsigned int& color_texure, int width, int height);
 
+        void DoProccesing();
+
      private:
         Texture2D *originalImage;
         Texture2D *processedImage;
@@ -52,5 +54,6 @@ namespace m2
 
         bool saveScreenToImage;
         bool processed;
+        int frame;
     };
 }   // namespace m2

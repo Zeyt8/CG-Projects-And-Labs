@@ -2,6 +2,8 @@
 
 #include <vector>
 #include <iostream>
+#include <windows.h>
+#include <ppl.h>
 
 #include "pfd/portable-file-dialogs.h"
 
@@ -20,6 +22,7 @@ Tema2::Tema2()
     saveScreenToImage = false;
     window->SetSize(600, 600);
     processed = false;
+    frame = 200;
 }
 
 
@@ -67,24 +70,44 @@ void Tema2::Init()
     CreateFramebuffer(watermark_framebuffer, watermark_color_texture, watermark->GetWidth(), watermark->GetHeight());
 
     watermarkPixels.resize(4 * watermark->GetWidth() * watermark->GetHeight());
+    bool isrgba = watermark->GetNrChannels() == 4;
     for (int i = 0, j = 0; i < watermark->GetWidth() * watermark->GetHeight(); i++)
     {
         watermarkPixels[4 * i] = watermark->GetImageData()[j];
         watermarkPixels[4 * i + 1] = watermark->GetImageData()[j + 1];
         watermarkPixels[4 * i + 2] = watermark->GetImageData()[j + 2];
-        j += 3;
-        watermarkPixels[4 * i + 3] = 1;
+        if (isrgba)
+        {
+            watermarkPixels[4 * i + 3] = watermark->GetImageData()[j + 3];
+            j += 4;
+        }
+        else
+        {
+            watermarkPixels[4 * i + 3] = 1;
+            j += 3;
+        }
     }
 
     originalImagePixels.resize(4 * originalImage->GetWidth() * originalImage->GetHeight());
+    isrgba = originalImage->GetNrChannels() == 4;
     for (int i = 0, j = 0; i < originalImage->GetWidth() * originalImage->GetHeight(); i++)
     {
         originalImagePixels[4 * i] = originalImage->GetImageData()[j];
         originalImagePixels[4 * i + 1] = originalImage->GetImageData()[j + 1];
         originalImagePixels[4 * i + 2] = originalImage->GetImageData()[j + 2];
-        j += 3;
-        originalImagePixels[4 * i + 3] = 1;
+        if (isrgba)
+        {
+            originalImagePixels[4 * i + 3] = originalImage->GetImageData()[j + 3];
+            j += 4;
+        }
+        else
+        {
+            originalImagePixels[4 * i + 3] = 1;
+            j += 3;
+        }
     }
+
+    window->SetSize(originalImage->GetWidth(), originalImage->GetHeight());
 }
 
 void Tema2::CreateFramebuffer(unsigned int& framebuffer, unsigned int& color_texure, int width, int height)
@@ -104,6 +127,83 @@ void Tema2::CreateFramebuffer(unsigned int& framebuffer, unsigned int& color_tex
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
+void m2::Tema2::DoProccesing()
+{
+    auto shader = shaders["ImageProcessing"];
+    switch (frame)
+    {
+    case 0:
+        shader->Use();
+        {
+            glBindFramebuffer(GL_FRAMEBUFFER, framebuffer_object);
+            glUniform2i(shader->GetUniformLocation("screenSize"), originalImage->GetWidth(), originalImage->GetHeight());
+            glUniform1i(shader->GetUniformLocation("textureImage"), 0);
+            originalImage->BindToTextureUnit(GL_TEXTURE0);
+            RenderMesh(meshes["quad"], shader, glm::mat4(1));
+        }
+        imageBPixels.resize(4 * originalImage->GetWidth() * originalImage->GetHeight());
+        glReadPixels(0, 0, originalImage->GetWidth(), originalImage->GetHeight(), GL_RGBA, GL_UNSIGNED_BYTE, imageBPixels.data());
+        window->SetSize(watermark->GetWidth(), watermark->GetHeight());
+        frame++;
+        break;
+    case 1:
+        shader->Use();
+        {
+            glBindFramebuffer(GL_FRAMEBUFFER, watermark_framebuffer);
+            glUniform2i(shader->GetUniformLocation("screenSize"), watermark->GetWidth(), watermark->GetHeight());
+            glUniform1i(shader->GetUniformLocation("textureImage"), 0);
+            watermark->BindToTextureUnit(GL_TEXTURE0);
+            RenderMesh(meshes["quad"], shader, glm::mat4(1));
+        }
+        watermarkBPixels.resize(4 * watermark->GetWidth() * watermark->GetHeight());
+        glReadPixels(0, 0, watermark->GetWidth(), watermark->GetHeight(), GL_RGBA, GL_UNSIGNED_BYTE, watermarkBPixels.data());
+        window->SetSize(originalImage->GetWidth(), originalImage->GetHeight());
+        frame++;
+        break;
+    case 2:
+        concurrency::parallel_for<size_t>(0, originalImage->GetHeight() - watermark->GetHeight() + 1, [&](size_t y)
+            {
+                for (int x = 0; x < originalImage->GetWidth() - watermark->GetWidth() + 1; x++)
+                {
+                    int matchingPixels = 0;
+                    for (int wy = 0; wy < watermark->GetHeight(); wy++)
+                    {
+                        for (int wx = 0; wx < watermark->GetWidth(); wx++)
+                        {
+                            int index = 4 * ((y + wy) * originalImage->GetWidth() + x + wx);
+                            int watermarkIndex = 4 * (wy * watermark->GetWidth() + wx);
+                            if (watermarkBPixels[watermarkIndex] == 255 && imageBPixels[index] == 255)
+                            {
+                                matchingPixels++;
+                            }
+                        }
+                    }
+                    if (matchingPixels > 3000)
+                    {
+                        for (int wy = 0; wy < watermark->GetHeight(); wy++)
+                        {
+                            for (int wx = 0; wx < watermark->GetWidth(); wx++)
+                            {
+                                int index = 4 * ((y + wy) * originalImage->GetWidth() + x + wx);
+                                int watermarkIndex = 4 * (wy * watermark->GetWidth() + wx);
+                                originalImagePixels[index] = max(originalImagePixels[index] - watermarkPixels[watermarkIndex], 0);
+                                originalImagePixels[index + 1] = max(originalImagePixels[index + 1] - watermarkPixels[watermarkIndex + 1], 0);
+                                originalImagePixels[index + 2] = max(originalImagePixels[index + 2] - watermarkPixels[watermarkIndex + 2], 0);
+                            }
+                        }
+                        x += watermark->GetWidth();
+                    }
+                }
+            });
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        processed = true;
+        frame++;
+        break;
+    default:
+        break;
+    }
+}
+
 
 void Tema2::FrameStart()
 {
@@ -113,13 +213,6 @@ void Tema2::FrameStart()
 void Tema2::Update(float deltaTimeSeconds)
 {
     ClearScreen();
-
-    if (saveScreenToImage)
-    {
-        window->SetSize(originalImage->GetWidth(), originalImage->GetHeight());
-    }
-
-    float aspectRatio = static_cast<float>(originalImage->GetWidth()) / originalImage->GetHeight();
 
     auto shader = shaders["DisplayImage"];
     shader->Use();
@@ -149,8 +242,9 @@ void Tema2::Update(float deltaTimeSeconds)
         glReadPixels(0, 0, originalImage->GetWidth(), originalImage->GetHeight(), format, GL_UNSIGNED_BYTE, processedImage->GetImageData());
         processedImage->UploadNewData(processedImage->GetImageData());
         SaveImage("shader_processing");
-        window->SetSize(static_cast<int>(600 * aspectRatio), 600);
     }
+
+    DoProccesing();
 }
 
 
@@ -168,18 +262,27 @@ void Tema2::OnFileSelected(const std::string &fileName)
         originalImage = TextureManager::LoadTexture(fileName, nullptr, "image", true, true);
         processedImage = TextureManager::LoadTexture(fileName, nullptr, "newImage", true, true);
 
-        float aspectRatio = static_cast<float>(originalImage->GetWidth()) / originalImage->GetHeight();
-        window->SetSize(static_cast<int>(600 * aspectRatio), 600);
+        window->SetSize(originalImage->GetWidth(), originalImage->GetHeight());
 
         processed = false;
+        CreateFramebuffer(framebuffer_object, color_texture, originalImage->GetWidth(), originalImage->GetHeight());
         originalImagePixels.resize(4 * originalImage->GetWidth() * originalImage->GetHeight());
+        bool isrgba = originalImage->GetNrChannels() == 4;
         for (int i = 0, j = 0; i < originalImage->GetWidth() * originalImage->GetHeight(); i++)
         {
             originalImagePixels[4 * i] = originalImage->GetImageData()[j];
             originalImagePixels[4 * i + 1] = originalImage->GetImageData()[j + 1];
             originalImagePixels[4 * i + 2] = originalImage->GetImageData()[j + 2];
-            j += 3;
-            originalImagePixels[4 * i + 3] = 1;
+            if (isrgba)
+            {
+                originalImagePixels[4 * i + 3] = originalImage->GetImageData()[j + 3];
+                j += 4;
+            }
+            else
+            {
+                originalImagePixels[4 * i + 3] = 1;
+                j += 3;
+            }
         }
     }
 }
@@ -237,75 +340,7 @@ void Tema2::OnKeyPress(int key, int mods)
 
     if (key == GLFW_KEY_P)
     {
-        auto shader = shaders["ImageProcessing"];
-        shader->Use();
-        {
-            glBindFramebuffer(GL_FRAMEBUFFER, framebuffer_object);
-            glm::ivec2 resolution = window->GetResolution();
-            glUniform2i(shader->GetUniformLocation("screenSize"), resolution.x, resolution.y);
-            glUniform1i(shader->GetUniformLocation("textureImage"), 0);
-            originalImage->BindToTextureUnit(GL_TEXTURE0);
-            RenderMesh(meshes["quad"], shader, glm::mat4(1));
-        }
-
-        imageBPixels.resize(4 * originalImage->GetWidth() * originalImage->GetHeight());
-        glReadPixels(0, 0, originalImage->GetWidth(), originalImage->GetHeight(), GL_RGBA, GL_UNSIGNED_BYTE, imageBPixels.data());
-
-        {
-            glBindFramebuffer(GL_FRAMEBUFFER, watermark_framebuffer);
-            glUniform2i(shader->GetUniformLocation("screenSize"), watermark->GetWidth(), watermark->GetHeight());
-            glUniform1i(shader->GetUniformLocation("textureImage"), 0);
-            watermark->BindToTextureUnit(GL_TEXTURE0);
-            RenderMesh(meshes["quad"], shader, glm::mat4(1));
-        }
-
-        watermarkBPixels.resize(4 * watermark->GetWidth() * watermark->GetHeight());
-        glReadPixels(0, 0, watermark->GetWidth(), watermark->GetHeight(), GL_RGBA, GL_UNSIGNED_BYTE, watermarkBPixels.data());
-
-        int sum = 0;
-        for (int i = 0; i < watermark->GetWidth() * watermark->GetHeight(); i++)
-        {
-            if (watermarkBPixels[4 * i] == 255)
-            {
-                sum++;
-            }
-        }
-        for (int y = 0; y < originalImage->GetHeight() - watermark->GetHeight(); y++)
-        {
-            for (int x = 0; x < originalImage->GetWidth() - watermark->GetWidth(); x++)
-            {
-                int matchingPixels = 0;
-                for (int wy = 0; wy < watermark->GetHeight(); wy++)
-                {
-                    for (int wx = 0; wx < watermark->GetWidth(); wx++)
-                    {
-                        int index = 4 * ((y + wy) * originalImage->GetWidth() + x + wx);
-                        int watermarkIndex = 4 * (wy * watermark->GetWidth() + wx);
-                        if (watermarkBPixels[watermarkIndex] == 255 && imageBPixels[index] == 255)
-                        {
-                            matchingPixels++;
-                        }
-                    }
-                }
-                if (matchingPixels > 780)
-                {
-                    for (int wy = 0; wy < watermark->GetHeight(); wy++)
-                    {
-                        for (int wx = 0; wx < watermark->GetWidth(); wx++)
-                        {
-                            int index = 4 * ((y + wy) * originalImage->GetWidth() + x + wx);
-                            int watermarkIndex = 4 * (wy * watermark->GetWidth() + wx);
-                            originalImagePixels[index] = max(originalImagePixels[index] - watermarkPixels[watermarkIndex], 0);
-                            originalImagePixels[index + 1] = max(originalImagePixels[index + 1] - watermarkPixels[watermarkIndex + 1], 0);
-                            originalImagePixels[index + 2] = max(originalImagePixels[index + 2] - watermarkPixels[watermarkIndex + 2], 0);
-                        }
-                    }
-                    x += watermark->GetWidth();
-                }
-            }
-        }
-        glBindFramebuffer(GL_FRAMEBUFFER, 0);
-        processed = true;
+        frame = 0;
 	}
 }
 
