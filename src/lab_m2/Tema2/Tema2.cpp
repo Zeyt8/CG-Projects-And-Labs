@@ -190,7 +190,7 @@ void m2::Tema2::DoProccesing()
                 {
                     int first = 4 * ((y + firstWhitePixel.y) * originalImage->GetWidth() + x + firstWhitePixel.x);
                     int last = 4 * ((y + lastWhitePixel.y) * originalImage->GetWidth() + x + lastWhitePixel.x);
-                    if (imageBPixels[first] != 255 || imageBPixels[last] != 255)
+                    if (imageBPixels[first] != 255 && imageBPixels[last] != 255)
                     {
                         continue;
 					}
