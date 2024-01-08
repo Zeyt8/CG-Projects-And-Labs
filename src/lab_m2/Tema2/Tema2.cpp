@@ -23,6 +23,8 @@ Tema2::Tema2()
     window->SetSize(600, 600);
     processed = false;
     frame = 200;
+    firstWhitePixel = glm::vec2(0, 0);
+    lastWhitePixel = glm::vec2(0, 0);
 }
 
 
@@ -157,6 +159,27 @@ void m2::Tema2::DoProccesing()
         }
         watermarkBPixels.resize(4 * watermark->GetWidth() * watermark->GetHeight());
         glReadPixels(0, 0, watermark->GetWidth(), watermark->GetHeight(), GL_RGBA, GL_UNSIGNED_BYTE, watermarkBPixels.data());
+        firstWhitePixel = glm::vec2(-1, -1);
+        lastWhitePixel = glm::vec2(-1, -1);
+        for (int y = 0; y < watermark->GetHeight(); y++)
+        {
+            for (int x = 0; x < watermark->GetWidth(); x++)
+            {
+				int index = 4 * (y * watermark->GetWidth() + x);
+                if (watermarkBPixels[index] == 255)
+                {
+                    if (firstWhitePixel.x == -1)
+                    {
+                        firstWhitePixel = glm::vec2(x, y);
+					}
+                    else
+                    {
+                        lastWhitePixel = glm::vec2(x, y);
+                    }
+				}
+
+			}
+        }
         window->SetSize(originalImage->GetWidth(), originalImage->GetHeight());
         frame++;
         break;
@@ -165,10 +188,16 @@ void m2::Tema2::DoProccesing()
             {
                 for (int x = 0; x < originalImage->GetWidth() - watermark->GetWidth() + 1; x++)
                 {
+                    int first = 4 * ((y + firstWhitePixel.y) * originalImage->GetWidth() + x + firstWhitePixel.x);
+                    int last = 4 * ((y + lastWhitePixel.y) * originalImage->GetWidth() + x + lastWhitePixel.x);
+                    if (imageBPixels[first] != 255 || imageBPixels[last] != 255)
+                    {
+                        continue;
+					}
                     int matchingPixels = 0;
                     for (int wy = 0; wy < watermark->GetHeight(); wy++)
                     {
-                        for (int wx = 0; wx < watermark->GetWidth(); wx++)
+                        for (int wx = 0; wx < watermark->GetWidth() / 4; wx++)
                         {
                             int index = 4 * ((y + wy) * originalImage->GetWidth() + x + wx);
                             int watermarkIndex = 4 * (wy * watermark->GetWidth() + wx);
@@ -178,7 +207,7 @@ void m2::Tema2::DoProccesing()
                             }
                         }
                     }
-                    if (matchingPixels > 3000)
+                    if (matchingPixels > 800)
                     {
                         for (int wy = 0; wy < watermark->GetHeight(); wy++)
                         {

@@ -55,5 +55,7 @@ namespace m2
         bool saveScreenToImage;
         bool processed;
         int frame;
+        glm::vec2 firstWhitePixel;
+        glm::vec2 lastWhitePixel;
     };
 }   // namespace m2
