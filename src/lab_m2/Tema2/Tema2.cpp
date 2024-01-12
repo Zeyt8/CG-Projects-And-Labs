@@ -122,8 +122,8 @@ void Tema2::CreateFramebuffer(unsigned int& framebuffer, unsigned int& color_tex
     glBindTexture(GL_TEXTURE_2D, color_texure);
     // Initialize the color textures
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glBindTexture(GL_TEXTURE_2D, 0);
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, color_texure, 0);
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -136,6 +136,7 @@ void m2::Tema2::DoProccesing()
     {
     case 0:
         shader->Use();
+        glViewport(0, 0, originalImage->GetWidth(), originalImage->GetHeight());
         {
             glBindFramebuffer(GL_FRAMEBUFFER, framebuffer_object);
             glUniform2i(shader->GetUniformLocation("screenSize"), originalImage->GetWidth(), originalImage->GetHeight());
@@ -144,12 +145,13 @@ void m2::Tema2::DoProccesing()
             RenderMesh(meshes["quad"], shader, glm::mat4(1));
         }
         imageBPixels.resize(4 * originalImage->GetWidth() * originalImage->GetHeight());
+        glReadBuffer(GL_COLOR_ATTACHMENT0);
         glReadPixels(0, 0, originalImage->GetWidth(), originalImage->GetHeight(), GL_RGBA, GL_UNSIGNED_BYTE, imageBPixels.data());
-        window->SetSize(watermark->GetWidth(), watermark->GetHeight());
         frame++;
         break;
     case 1:
         shader->Use();
+        glViewport(0, 0, watermark->GetWidth(), watermark->GetHeight());
         {
             glBindFramebuffer(GL_FRAMEBUFFER, watermark_framebuffer);
             glUniform2i(shader->GetUniformLocation("screenSize"), watermark->GetWidth(), watermark->GetHeight());
@@ -158,6 +160,7 @@ void m2::Tema2::DoProccesing()
             RenderMesh(meshes["quad"], shader, glm::mat4(1));
         }
         watermarkBPixels.resize(4 * watermark->GetWidth() * watermark->GetHeight());
+        glReadBuffer(GL_COLOR_ATTACHMENT0);
         glReadPixels(0, 0, watermark->GetWidth(), watermark->GetHeight(), GL_RGBA, GL_UNSIGNED_BYTE, watermarkBPixels.data());
         firstWhitePixel = glm::vec2(-1, -1);
         lastWhitePixel = glm::vec2(-1, -1);
@@ -180,10 +183,10 @@ void m2::Tema2::DoProccesing()
 
 			}
         }
-        window->SetSize(originalImage->GetWidth(), originalImage->GetHeight());
         frame++;
         break;
     case 2:
+        glViewport(0, 0, originalImage->GetWidth(), originalImage->GetHeight());
         concurrency::parallel_for<size_t>(0, originalImage->GetHeight() - watermark->GetHeight() + 1, [&](size_t y)
             {
                 for (int x = 0; x < originalImage->GetWidth() - watermark->GetWidth() + 1; x++)
