@@ -48,7 +48,6 @@ void Tema2::Init()
 
     std::string shaderPath = PATH_JOIN(window->props.selfDir, SOURCE_PATH::M2, "Tema2", "shaders");
 
-    // Create a shader program for particle system
     {
         Shader *shader = new Shader("ImageProcessing");
         shader->AddShader(PATH_JOIN(shaderPath, "VertexShader.glsl"), GL_VERTEX_SHADER);
@@ -108,6 +107,42 @@ void Tema2::Init()
         }
     }
 
+    // watermark borders
+    auto shader = shaders["ImageProcessing"];
+    shader->Use();
+    glViewport(0, 0, watermark->GetWidth(), watermark->GetHeight());
+    {
+        glBindFramebuffer(GL_FRAMEBUFFER, watermark_framebuffer);
+        glUniform2i(shader->GetUniformLocation("screenSize"), watermark->GetWidth(), watermark->GetHeight());
+        glUniform1i(shader->GetUniformLocation("textureImage"), 0);
+        watermark->BindToTextureUnit(GL_TEXTURE0);
+        RenderMesh(meshes["quad"], shader, glm::mat4(1));
+    }
+    watermarkBPixels.resize(4 * watermark->GetWidth() * watermark->GetHeight());
+    glReadBuffer(GL_COLOR_ATTACHMENT0);
+    glReadPixels(0, 0, watermark->GetWidth(), watermark->GetHeight(), GL_RGBA, GL_UNSIGNED_BYTE, watermarkBPixels.data());
+    firstWhitePixel = glm::vec2(-1, -1);
+    lastWhitePixel = glm::vec2(-1, -1);
+    for (int y = 0; y < watermark->GetHeight(); y++)
+    {
+        for (int x = 0; x < watermark->GetWidth(); x++)
+        {
+            int index = 4 * (y * watermark->GetWidth() + x);
+            if (watermarkBPixels[index] == 255)
+            {
+                if (firstWhitePixel.x == -1)
+                {
+                    firstWhitePixel = glm::vec2(x, y);
+                }
+                else
+                {
+                    lastWhitePixel = glm::vec2(x, y);
+                }
+            }
+
+        }
+    }
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
     float aspect = (float)originalImage->GetWidth() / originalImage->GetHeight();
     window->SetSize(600 * aspect, 600);
     glViewport(0, 0, 600 * aspect, 600);
@@ -146,39 +181,6 @@ void m2::Tema2::DoProccesing()
     imageBPixels.resize(4 * originalImage->GetWidth() * originalImage->GetHeight());
     glReadBuffer(GL_COLOR_ATTACHMENT0);
     glReadPixels(0, 0, originalImage->GetWidth(), originalImage->GetHeight(), GL_RGBA, GL_UNSIGNED_BYTE, imageBPixels.data());
-    // watermark borders
-    glViewport(0, 0, watermark->GetWidth(), watermark->GetHeight());
-    {
-        glBindFramebuffer(GL_FRAMEBUFFER, watermark_framebuffer);
-        glUniform2i(shader->GetUniformLocation("screenSize"), watermark->GetWidth(), watermark->GetHeight());
-        glUniform1i(shader->GetUniformLocation("textureImage"), 0);
-        watermark->BindToTextureUnit(GL_TEXTURE0);
-        RenderMesh(meshes["quad"], shader, glm::mat4(1));
-    }
-    watermarkBPixels.resize(4 * watermark->GetWidth() * watermark->GetHeight());
-    glReadBuffer(GL_COLOR_ATTACHMENT0);
-    glReadPixels(0, 0, watermark->GetWidth(), watermark->GetHeight(), GL_RGBA, GL_UNSIGNED_BYTE, watermarkBPixels.data());
-    firstWhitePixel = glm::vec2(-1, -1);
-    lastWhitePixel = glm::vec2(-1, -1);
-    for (int y = 0; y < watermark->GetHeight(); y++)
-    {
-        for (int x = 0; x < watermark->GetWidth(); x++)
-        {
-			int index = 4 * (y * watermark->GetWidth() + x);
-            if (watermarkBPixels[index] == 255)
-            {
-                if (firstWhitePixel.x == -1)
-                {
-                    firstWhitePixel = glm::vec2(x, y);
-				}
-                else
-                {
-                    lastWhitePixel = glm::vec2(x, y);
-                }
-			}
-
-		}
-    }
     // image compute
     glViewport(0, 0, originalImage->GetWidth(), originalImage->GetHeight());
     concurrency::parallel_for<size_t>(0, originalImage->GetHeight() - watermark->GetHeight() + 1, [&](size_t y)

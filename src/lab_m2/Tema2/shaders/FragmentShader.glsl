@@ -5,7 +5,6 @@ layout(location = 0) in vec2 texture_coord;
 
 // Uniform properties
 uniform sampler2D textureImage;
-uniform ivec2 screenSize;
 
 // Output
 layout(location = 0) out vec4 out_color;
@@ -20,15 +19,14 @@ vec4 grayscale(vec4 c)
 
 float sobel(sampler2D image)
 {
-	vec2 texelSize = 1.0f / screenSize;
-    float I11 = grayscale(texture(image, texture_coord + vec2(1, 1) * texelSize)).r;
-    float I10 = grayscale(texture(image, texture_coord + vec2(1, 0) * texelSize)).r;
-    float I1_1 = grayscale(texture(image, texture_coord + vec2(1, -1) * texelSize)).r;
-    float I_11 = grayscale(texture(image, texture_coord + vec2(-1, 1) * texelSize)).r;
-    float I_10 = grayscale(texture(image, texture_coord + vec2(-1, 0) * texelSize)).r;
-    float I_1_1 = grayscale(texture(image, texture_coord + vec2(-1, -1) * texelSize)).r;
-    float I01 = grayscale(texture(image, texture_coord + vec2(0, 1) * texelSize)).r;
-    float I0_1 = grayscale(texture(image, texture_coord + vec2(0, -1) * texelSize)).r;
+    float I11 = grayscale(texelFetch(image, ivec2(gl_FragCoord.xy) + ivec2(1, 1), 0)).r;
+    float I10 = grayscale(texelFetch(image, ivec2(gl_FragCoord.xy) + ivec2(1, 0), 0)).r;
+    float I1_1 = grayscale(texelFetch(image, ivec2(gl_FragCoord.xy) + ivec2(1, -1), 0)).r;
+    float I_11 = grayscale(texelFetch(image, ivec2(gl_FragCoord.xy) + ivec2(-1, 1), 0)).r;
+    float I_10 = grayscale(texelFetch(image, ivec2(gl_FragCoord.xy) + ivec2(-1, 0), 0)).r;
+    float I_1_1 = grayscale(texelFetch(image, ivec2(gl_FragCoord.xy) + ivec2(-1, -1), 0)).r;
+    float I01 = grayscale(texelFetch(image, ivec2(gl_FragCoord.xy) + ivec2(0, 1), 0)).r;
+    float I0_1 = grayscale(texelFetch(image, ivec2(gl_FragCoord.xy) + ivec2(0, -1), 0)).r;
     float dx = I11 + 2 * I10 + I1_1 - I_11 - 2 * I_10 - I_1_1;
     float dy = I11 + 2 * I01 + I_11 - I1_1 - 2 * I0_1 - I_1_1;
     return sqrt(dx * dx + dy * dy);
